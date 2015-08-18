@@ -2,9 +2,8 @@ console.log("WORKING DIRECTORY", process.cwd());
 console.log("ENVIRONMENT", process.env);
 
 var meteorSettings = JSON.parse(process.env.METEOR_SETTINGS);
+var electronSettings = meteorSettings.electron || {};
 var rootUrl = process.env.ROOT_URL;
-console.log("METEOR SETTINGS", meteorSettings);
-console.log("ROOT URL", rootUrl);
 
 var appName = meteorSettings.appName;
 
@@ -12,11 +11,19 @@ var app = require('app'); // Module to control application life.
 var BrowserWindow = require('browser-window'); // Module to create native browser window.
 
 var windowOptions = {
-  width: 800,
-  height:600,
+  width: electronSettings.width || 800,
+  height: electronSettings.height || 600,
   resizeable: true,
   frame: true
 };
+
+if (electronSettings.resizable === false){
+  windowOptions.resizable = false;
+}
+
+if (electronSettings.frame === false){
+  windowOptions.frame = false;
+}
 
 app.on("ready", function(){
   mainWindow = new BrowserWindow(windowOptions);
