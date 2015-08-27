@@ -1,6 +1,3 @@
-// console.log("WORKING DIRECTORY", process.cwd());
-// console.log("ENVIRONMENT", process.env);
-
 var meteorSettings = JSON.parse(process.env.METEOR_SETTINGS);
 var electronSettings = meteorSettings.electron || {};
 var rootUrl = process.env.ROOT_URL;
