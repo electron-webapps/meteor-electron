@@ -8,12 +8,12 @@ Package.describe({
 Npm.depends({
   connect: '2.11.0',
   //TODO remove this and use the asset below instead..
-  "electron-prebuilt": "0.30.4"
-
+  "electron-prebuilt": "0.30.4",
+  "is-running": "1.0.5"
 });
 
 Package.on_use(function (api, where) {
-  api.use("sanjo:meteor-files-helpers@1.1.0_7", "server");
+  // api.use("sanjo:meteor-files-helpers@1.1.0_7", "server");
   api.use("webapp", "server");
   api.add_files(['server.js'], 'server')
   api.add_files(['index.js'], 'server', {isAsset: true});

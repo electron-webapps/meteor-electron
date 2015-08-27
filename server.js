@@ -5,27 +5,58 @@ var os = Npm.require('os');
 var fs = Npm.require('fs');
 var connect = Npm.require('connect');
 
+var isRunning = Meteor.wrapAsync(Npm.require("is-running"));
+var writeFile = Meteor.wrapAsync(fs.writeFile);
+
+Meteor.wrapAsync(Npm.require("is-running"));
+
+var ElectronProcesses = new Meteor.Collection("processes");
+
+var ProcessManager = {
+  add: function(pid){
+    ElectronProcesses.insert({pid: pid, settings: Meteor.settings.electron});
+  },
+
+  running: function(){
+    //TODO restrict search based on Meteor.settings.electron
+    var isProcessRunning = false;
+    ElectronProcesses.find().forEach(function(proc){
+      if (isRunning(proc.pid)){
+        isProcessRunning = true
+      }
+      else {
+        ElectronProcesses.remove({_id: proc._id});
+      }
+    });
+    return isProcessRunning;
+  }
+};
  
-//prints path to electron
-//console.log(electron)
+
+
 //HACK fix up path, should use sanjo:meteor-files-helpers
-electron = electron.replace(/package-new-[1-9A-z]*\//, "package/");
+electron = electron.replace(/package-new-[0-9A-z]*\//, "package/");
+//console.log("PATH TO ELECGTRON", electron);
 
 var indexJsContents = Assets.getText("index.js");
 var scriptPath = path.join(os.tmpDir(), "index.js");
 
-fs.writeFile(scriptPath, indexJsContents, function(err){
-  if (err){
-    console.error("ERROR WRITING ATOM CONTROL FILE", err);
+//TODO better way to check if we're in development
+if (process.env.NODE_ENV === 'development'){
+  writeFile(scriptPath, indexJsContents);
+
+  if (ProcessManager.running()){
+    // console.log("app is already running");
+    return;
   }
 
-  //TODO only do this in development mode
-  // spawn electron
+
   var child = proc.spawn(
     electron, [scriptPath],
     {env:{METEOR_SETTINGS: JSON.stringify(Meteor.settings),
           ROOT_URL: process.env.ROOT_URL}});
 
+  ProcessManager.add(child.pid);
   child.stdout.on("data", function(data){
     console.log("ATOM:", data.toString());
   });
@@ -33,7 +64,8 @@ fs.writeFile(scriptPath, indexJsContents, function(err){
   child.stderr.on("data", function(data){
     console.log("ATOM:", data.toString());
   });
-});
+}
+
 
 //TODO FOR DEVELOPMENT
 //map between Meteor.settings.electron and current process PIDs
