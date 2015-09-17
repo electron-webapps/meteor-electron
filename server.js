@@ -5,9 +5,15 @@ var fs = Npm.require('fs');
 var connect = Npm.require('connect');
 var mkdirp = Meteor.wrapAsync(Npm.require('mkdirp'));
 var electronPackager = Meteor.wrapAsync(Npm.require("electron-packager"));
+var serveStatic = Npm.require('serve-static');
+
 
 var isRunning = Meteor.wrapAsync(Npm.require("is-running"));
 var writeFile = Meteor.wrapAsync(fs.writeFile);
+
+var zlib = Npm.require('zlib');
+var tar = Npm.require('tar');
+var fstream = Npm.require("fstream");
 
 Meteor.wrapAsync(Npm.require("is-running"));
 
@@ -51,10 +57,13 @@ var createBinaries= function(){
   var appDir = path.join(tmpDir, "electron", "apps");
   mkdirp(appDir);
 
-  // *buildDir* contains the apps ready to be downloaded by users of the app
+  // *buildDir* contains the uncompressed apps
   buildDir = path.join(tmpDir, "electron", "builds");
   mkdirp(buildDir);
 
+  // *finalDir* contains zipped apps ready to be downloaded
+  finalDir = path.join(tmpDir, "electron", "final");
+  mkdirp(finalDir);
 
   writeFile(path.join(appDir, "main.js"), Assets.getText("app/main.js"));
   writeFile(path.join(appDir, "package.json"), Assets.getText("app/package.json"));
@@ -62,9 +71,17 @@ var createBinaries= function(){
   writeFile(path.join(appDir, "electronSettings.json"), JSON.stringify(settings));
 
   var result = electronPackager({dir: appDir, name: "Electron", platform: "darwin", arch: "x64", version: "0.31.0", out: buildDir, cache: binaryDir, overwrite: true });
-  console.log("BUILD CREATED AT", result);
-};
+  console.log("BUILD CREATED AT", result[0]);
 
+  var compressedDownload = path.join(finalDir, "app-darwin.tar.gz");
+  var writer = fstream.Reader({"path": result[0], "type": "Directory"})
+  .pipe(tar.Pack())
+  .pipe(zlib.Gzip())
+  .pipe(fstream.Writer({path: compressedDownload}));
+  writer.on("close", function(){
+    console.log("Downloadable created at", compressedDownload);
+  });
+};
 
 var mainJsContents = Assets.getText("app/main.js");
 var scriptPath = path.join(os.tmpDir(), "index.js");
@@ -101,13 +118,9 @@ if (process.env.NODE_ENV === 'development'){
 
 }
 
-WebApp.rawConnectHandlers.use(function(req, res, next){
-  // console.log("INTERCEPTED", req.url);
+var serve = serveStatic(finalDir);
 
-  if (req.url === "/electron-download/:platform"){
-    //find the right platform and return it to the user
-   console.log("INITIATE THE ELECTRON DOWNLOAD");
-  } else {
-    next();
-  }
+WebApp.rawConnectHandlers.use(function(req, res, next){
+  // console.log("REQ", req.url);
+  serve(req, res, next)
 });
