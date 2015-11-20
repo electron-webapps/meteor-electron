@@ -1,5 +1,10 @@
 var path = require("path");
 var fs = require("fs");
+var underscore = require("underscore");
+require('electron-debug')({
+    showDevTools: false
+});
+
 
 if (process.env.METEOR_SETTINGS){
   var meteorSettings = JSON.parse(process.env.METEOR_SETTINGS);
@@ -7,10 +12,6 @@ if (process.env.METEOR_SETTINGS){
 } else {
   var electronSettings = JSON.parse(fs.readFileSync(
     path.join(__dirname, "electronSettings.json"), "utf-8"));
-}
-
-if (electronSettings.length < 3){
-  window.blah();
 }
 
 var rootUrl = electronSettings.rootUrl || process.env.ROOT_URL;

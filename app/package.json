@@ -1,5 +1,8 @@
 {
   "name": "electron",
   "productName": "Electron",
-  "main": "main.js"
+  "main": "main.js",
+  "dependencies": {
+    "electron-debug": "^0.5.1"
+  }
 }

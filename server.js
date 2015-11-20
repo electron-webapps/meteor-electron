@@ -7,6 +7,11 @@ var mkdirp = Meteor.wrapAsync(Npm.require('mkdirp'));
 var electronPackager = Meteor.wrapAsync(Npm.require("electron-packager"));
 var serveStatic = Npm.require('serve-static');
 
+var exec = Meteor.wrapAsync(function(command, options, callback){
+  proc.exec(command, options, function(err, stdout, stderr){
+    callback(err, {stdout: stdout, stderr: stderr});
+  });
+});
 
 var isRunning = Meteor.wrapAsync(Npm.require("is-running"));
 var writeFile = Meteor.wrapAsync(fs.writeFile);
@@ -66,6 +71,10 @@ var createBinaries= function(){
 
   writeFile(path.join(appDir, "main.js"), Assets.getText("app/main.js"));
   writeFile(path.join(appDir, "package.json"), Assets.getText("app/package.json"));
+
+  //TODO be smarter about caching this..
+  var result = exec("npm install", {cwd: appDir});
+
   var settings = _.extend(Meteor.settings, {rootUrl: process.env.ROOT_URL});
   writeFile(path.join(appDir, "electronSettings.json"), JSON.stringify(settings));
 
