@@ -17,7 +17,7 @@ var fstream = Npm.require("fstream");
 
 Meteor.wrapAsync(Npm.require("is-running"));
 
-var ElectronProcesses = new Meteor.Collection("processes");
+var ElectronProcesses = new Mongo.Collection("processes");
 
 var ProcessManager = {
   add: function(pid){
@@ -69,7 +69,7 @@ var createBinaries= function(){
   var settings = _.extend(Meteor.settings, {rootUrl: process.env.ROOT_URL});
   writeFile(path.join(appDir, "electronSettings.json"), JSON.stringify(settings));
 
-  var result = electronPackager({dir: appDir, name: "Electron", platform: "darwin", arch: "x64", version: "0.31.0", out: buildDir, cache: binaryDir, overwrite: true });
+  var result = electronPackager({dir: appDir, name: "Electron", platform: "darwin", arch: "x64", version: "0.35.0", out: buildDir, cache: binaryDir, overwrite: true });
   console.log("Build created at", result[0]);
 
   var compressedDownload = path.join(finalDir, "app-darwin.tar.gz");
@@ -127,8 +127,4 @@ if (process.env.NODE_ENV === 'development'){
   child.stderr.on("data", function(data){
     console.log("ATOM:", data.toString());
   });
-
 }
-
-console.log("%%%%%%%");
-

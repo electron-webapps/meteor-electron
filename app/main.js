@@ -37,5 +37,5 @@ if (electronSettings.frame === false){
 app.on("ready", function(){
   mainWindow = new BrowserWindow(windowOptions);
   mainWindow.focus();
-  mainWindow.loadUrl(rootUrl);
+  mainWindow.loadURL(rootUrl);
 });
