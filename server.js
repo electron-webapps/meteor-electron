@@ -38,12 +38,15 @@ var ProcessManager = {
     return isProcessRunning;
   }
 };
- 
+
 var buildDir = null;
+var tmpDir = os.tmpdir();
+// *finalDir* contains zipped apps ready to be downloaded
+var finalDir = path.join(tmpDir, "electron", "final");
+mkdirp(finalDir);
 
 var createBinaries= function(){
-  var tmpDir = os.tmpdir();
-  console.log("TMP DIR", tmpDir);
+
   //TODO probably want to allow users to add other more unusual
   //architectures if they want (ARM, 32 bit, etc.)
 
@@ -61,17 +64,13 @@ var createBinaries= function(){
   buildDir = path.join(tmpDir, "electron", "builds");
   mkdirp(buildDir);
 
-  // *finalDir* contains zipped apps ready to be downloaded
-  finalDir = path.join(tmpDir, "electron", "final");
-  mkdirp(finalDir);
-
   writeFile(path.join(appDir, "main.js"), Assets.getText("app/main.js"));
   writeFile(path.join(appDir, "package.json"), Assets.getText("app/package.json"));
   var settings = _.extend(Meteor.settings, {rootUrl: process.env.ROOT_URL});
   writeFile(path.join(appDir, "electronSettings.json"), JSON.stringify(settings));
 
   var result = electronPackager({dir: appDir, name: "Electron", platform: "darwin", arch: "x64", version: "0.31.0", out: buildDir, cache: binaryDir, overwrite: true });
-  console.log("BUILD CREATED AT", result[0]);
+  console.log("Build created at", result[0]);
 
   var compressedDownload = path.join(finalDir, "app-darwin.tar.gz");
   var writer = fstream.Reader({"path": result[0], "type": "Directory"})
@@ -85,6 +84,19 @@ var createBinaries= function(){
 
 var mainJsContents = Assets.getText("app/main.js");
 var scriptPath = path.join(os.tmpDir(), "index.js");
+
+var serve = serveStatic(finalDir);
+
+if (Package["iron:router"]){
+  Package["iron:router"].Router.route("/app-darwin.tar.gz", function(){
+    serve(this.request, this.response);
+  }, {where: "server"});
+} else {
+  //console.log("iron router not found, using WebApp.rawConnectHandlers
+  WebApp.rawConnectHandlers.use(function(req, res, next){
+    serve(req, res, next);
+  });
+}
 
 createBinaries();
 
@@ -118,9 +130,5 @@ if (process.env.NODE_ENV === 'development'){
 
 }
 
-var serve = serveStatic(finalDir);
+console.log("%%%%%%%");
 
-WebApp.rawConnectHandlers.use(function(req, res, next){
-  // console.log("REQ", req.url);
-  serve(req, res, next)
-});
