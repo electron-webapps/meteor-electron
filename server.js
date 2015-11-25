@@ -29,27 +29,6 @@ function platformSpecificSetting(settings) {
   }
 }
 
-var ElectronProcesses = new Mongo.Collection("processes");
-
-var ProcessManager = {
-  add: function(pid){
-    ElectronProcesses.insert({pid: pid, settings: Meteor.settings.electron});
-  },
-
-  running: function(){
-    //TODO restrict search based on Meteor.settings.electron
-    var isProcessRunning = false;
-    ElectronProcesses.find().forEach(function(proc){
-      if (isRunning(proc.pid)){
-        isProcessRunning = true
-      }
-      else {
-        ElectronProcesses.remove({_id: proc._id});
-      }
-    });
-    return isProcessRunning;
-  }
-};
 
 var build = null;
 var name = null;
@@ -146,6 +125,28 @@ if (Package["iron:router"]){
 createBinaries();
 
 if (process.env.NODE_ENV === 'development'){
+  var ElectronProcesses = new Mongo.Collection("processes");
+
+  var ProcessManager = {
+    add: function(pid){
+      ElectronProcesses.insert({pid: pid, settings: Meteor.settings.electron});
+    },
+
+    running: function(){
+      //TODO restrict search based on Meteor.settings.electron
+      var isProcessRunning = false;
+      ElectronProcesses.find().forEach(function(proc){
+        if (isRunning(proc.pid)){
+          isProcessRunning = true
+        }
+        else {
+          ElectronProcesses.remove({_id: proc._id});
+        }
+      });
+      return isProcessRunning;
+    }
+  };
+
   if (ProcessManager.running()){
     // console.log("app is already running");
     return;
