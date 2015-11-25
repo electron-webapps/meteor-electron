@@ -125,12 +125,7 @@ if (process.env.NODE_ENV === 'development'){
   //TODO figure out how to handle case where electron executable or
   //app dir don't exist
 
-  var child = proc.spawn(
-    electronExecutable, [appDir],
-    {env:{METEOR_SETTINGS: JSON.stringify(Meteor.settings),
-          ROOT_URL: process.env.ROOT_URL}});
-
-  ProcessManager.add(child.pid);
+  var child = proc.spawn(electronExecutable, [appDir]);
   child.stdout.on("data", function(data){
     console.log("ATOM:", data.toString());
   });
@@ -138,4 +133,6 @@ if (process.env.NODE_ENV === 'development'){
   child.stderr.on("data", function(data){
     console.log("ATOM:", data.toString());
   });
+
+  ProcessManager.add(child.pid);
 }
