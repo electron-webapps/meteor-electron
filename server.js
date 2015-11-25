@@ -22,6 +22,13 @@ var fstream = Npm.require("fstream");
 
 Meteor.wrapAsync(Npm.require("is-running"));
 
+function platformSpecificSetting(settings) {
+  switch (process.platform) {
+    case 'darwin':
+      return settings.osx;
+  }
+}
+
 var ElectronProcesses = new Mongo.Collection("processes");
 
 var ProcessManager = {
@@ -44,13 +51,16 @@ var ProcessManager = {
   }
 };
 
-var buildDir = null;
+var build = null;
+var name = null;
 var tmpDir = os.tmpdir();
 // *finalDir* contains zipped apps ready to be downloaded
 var finalDir = path.join(tmpDir, "electron", "final");
 mkdirp(finalDir);
 
 var createBinaries= function(){
+  var buildDir = null;
+
 
   //TODO probably want to allow users to add other more unusual
   //architectures if they want (ARM, 32 bit, etc.)
@@ -80,11 +90,37 @@ var createBinaries= function(){
   });
   writeFile(path.join(appDir, "electronSettings.json"), JSON.stringify(settings));
 
-  var result = electronPackager({dir: appDir, name: "Electron", platform: "darwin", arch: "x64", version: "0.35.0", out: buildDir, cache: binaryDir, overwrite: true });
-  console.log("Build created at", result[0]);
+  var packagerSettings = {
+    dir: appDir,
+    name: "Electron",
+    platform: "darwin",
+    arch: "x64",
+    version: "0.35.0",
+    out: buildDir,
+    cache: binaryDir,
+    overwrite: true
+  };
+  if (Meteor.settings.electron) {
+    if (Meteor.settings.electron.name) {
+      packagerSettings.name = Meteor.settings.electron.name;
+    }
+
+    if (Meteor.settings.electron.icon) {
+      var icon = platformSpecificSetting(Meteor.settings.electron.icon);
+      if (icon) {
+        var iconPath = path.join(process.cwd(), 'assets', 'app', icon);
+        packagerSettings.icon = iconPath;
+      }
+    }
+  }
+  name = packagerSettings.name;
+
+
+  build = electronPackager(packagerSettings)[0];
+  console.log("Build created at", build);
 
   var compressedDownload = path.join(finalDir, "app-darwin.tar.gz");
-  var writer = fstream.Reader({"path": result[0], "type": "Directory"})
+  var writer = fstream.Reader({"path": build, "type": "Directory"})
   .pipe(tar.Pack())
   .pipe(zlib.Gzip())
   .pipe(fstream.Writer({path: compressedDownload}));
@@ -118,9 +154,8 @@ if (process.env.NODE_ENV === 'development'){
   }
 
   //TODO make this platform independent
-  var runnableBuild = path.join(buildDir, "Electron-" + process.platform + "-" + os.arch());
-  var electronExecutable = path.join(runnableBuild, "Electron.app", "Contents", "MacOS", "Electron");
-  var appDir = path.join(runnableBuild, "Electron.app", "Contents", "Resources", "app");
+  var electronExecutable = path.join(build, name + ".app", "Contents", "MacOS", "Electron");
+  var appDir = path.join(build, name + ".app", "Contents", "Resources", "app");
 
   //TODO figure out how to handle case where electron executable or
   //app dir don't exist
