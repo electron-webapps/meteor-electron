@@ -1,6 +1,5 @@
 var path = require("path");
 var fs = require("fs");
-var underscore = require("underscore");
 require('electron-debug')({
     showDevTools: false
 });
