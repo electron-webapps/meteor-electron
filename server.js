@@ -106,8 +106,6 @@ var createBinaries= function(){
   });
 };
 
-var mainJsContents = Assets.getText("app/main.js");
-var scriptPath = path.join(os.tmpDir(), "index.js");
 
 var serve = serveStatic(finalDir);
 
