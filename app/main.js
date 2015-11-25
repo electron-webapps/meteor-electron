@@ -14,8 +14,7 @@ if (process.env.METEOR_SETTINGS){
     path.join(__dirname, "electronSettings.json"), "utf-8"));
 }
 
-var rootUrl = electronSettings.rootUrl || process.env.ROOT_URL;
-
+var rootUrl = electronSettings.rootUrl || process.env.APP_ROOT_URL || process.env.ROOT_URL;
 
 var app = require('app'); // Module to control application life.
 var BrowserWindow = require('browser-window'); // Module to create native browser window.
