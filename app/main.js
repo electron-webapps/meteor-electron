@@ -23,7 +23,17 @@ var windowOptions = {
   width: electronSettings.width || 800,
   height: electronSettings.height || 600,
   resizable: true,
-  frame: true
+  frame: true,
+  /**
+   * Disable Electron's Node integration so that browser dependencies like `moment` will load themselves
+   * like normal i.e. into the window rather than into modules, and also to prevent untrusted client
+   * code from having access to the process and file system:
+   *  - https://github.com/atom/electron/issues/254
+   *  - https://github.com/atom/electron/issues/1753
+   */
+  webPreferences: {
+    nodeIntegration: false
+  }
 };
 
 if (electronSettings.resizable === false){
