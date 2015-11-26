@@ -20,7 +20,9 @@ Limited configuration is possible via `Meteor.settings.electron` For example
     "icon": {
       "osx": "build/MyApp.icns"
     },
+    // minHeight/maxHeight are also supported.
     "height": 768,
+    // minWidth/maxWidth are also supported.
     "width": 1024,
     "frame": true,
     "resizable": true,
