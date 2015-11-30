@@ -31,6 +31,10 @@ if (electronSettings.resizable === false){
   windowOptions.resizable = false;
 }
 
+if (electronSettings['title-bar-style']) {
+  windowOptions['title-bar-style'] = electronSettings['title-bar-style'];
+}
+
 if (electronSettings.minWidth) {
   windowOptions.minWidth = electronSettings.minWidth;
 }

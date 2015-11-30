@@ -25,6 +25,7 @@ Limited configuration is possible via `Meteor.settings.electron` For example
     // minWidth/maxWidth are also supported.
     "width": 1024,
     "frame": true,
+    "title-bar-style": "hidden",
     "resizable": true
   }
 }
