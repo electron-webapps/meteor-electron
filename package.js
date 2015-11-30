@@ -18,11 +18,11 @@ Npm.depends({
 Package.on_use(function (api, where) {
   api.use(["mongo-livedata", "webapp", "ejson", "underscore"], "server");
   api.use(["iron:router"], {weak: true});
-  api.add_files(['server.js'], 'server')
-  api.add_files([
+  api.addFiles(['server.js'], 'server');
+  api.addAssets([
     "app/package.json",
     "app/main.js"
-  ], "server", {isAsset: true});
-  api.add_files(['client.js'], "client");
+  ], "server");
+  api.addFiles(['client.js'], "client");
   api.export("Electron", ["client", "server"]);
 });
