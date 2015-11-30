@@ -25,6 +25,7 @@ Limited configuration is possible via `Meteor.settings.electron` For example
     // minWidth/maxWidth are also supported.
     "width": 1024,
     "frame": true,
+    "title-bar-style": "hidden",
     "resizable": true,
     // If you want your app to open to a different URL than your website.
     // If unset, defaults to the APP_ROOT_URL and then ROOT_URL environment variables, in that order.
