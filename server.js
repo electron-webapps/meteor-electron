@@ -69,8 +69,9 @@ var createBinaries= function(){
   buildDir = path.join(tmpDir, "electron", "builds");
   mkdirp(buildDir);
 
-  writeFile(path.join(appDir, "main.js"), Assets.getText("app/main.js"));
-  writeFile(path.join(appDir, "package.json"), Assets.getText("app/package.json"));
+  ["main.js", "menu.js", "package.json"].forEach(function(filename) {
+    writeFile(path.join(appDir, filename), Assets.getText(path.join("app", filename)));
+  });
 
   //TODO be smarter about caching this..
   var result = exec("npm install", {cwd: appDir});
