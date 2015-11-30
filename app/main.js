@@ -1,5 +1,6 @@
 var path = require("path");
 var fs = require("fs");
+var createDefaultMenu = require('./menu.js');
 require('electron-debug')({
     showDevTools: false
 });
@@ -64,3 +65,5 @@ app.on("ready", function(){
   mainWindow.focus();
   mainWindow.loadURL(rootUrl);
 });
+
+createDefaultMenu(app, electronSettings.name);
