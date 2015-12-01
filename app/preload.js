@@ -1,3 +1,5 @@
+/* global ElectronImplementation:true */
+
 /**
  * Since we've disabled Node integration in the browser window, we must selectively expose
  * main-process/Node modules via this script.
