@@ -60,7 +60,7 @@ function createBinaries() {
   buildDir = path.join(tmpDir, "electron", "builds");
   mkdirp(buildDir);
 
-  ["main.js", "menu.js", "package.json"].forEach(function(filename) {
+  ["main.js", "menu.js", "proxyWindowEvents.js", "preload.js", "package.json"].forEach(function(filename) {
     writeFile(path.join(appDir, filename), Assets.getText(path.join("app", filename)));
   });
 

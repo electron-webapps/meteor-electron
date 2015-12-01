@@ -16,15 +16,18 @@ Npm.depends({
 });
 
 Package.on_use(function (api, where) {
-  api.use(["mongo-livedata", "webapp", "ejson", "underscore"], "server");
+  api.use(["mongo-livedata", "webapp", "ejson"], "server");
+  api.use("underscore", ["server", "client"]);
   api.use(["iron:router"], {weak: true});
   api.addFiles(['server.js'], 'server');
   // When adding new files, also edit `server.js` to write these files into the app directory.
   api.addAssets([
     "app/package.json",
     "app/main.js",
-    "app/menu.js"
+    "app/menu.js",
+    "app/proxyWindowEvents.js",
+    "app/preload.js"
   ], "server");
   api.addFiles(['client.js'], "client");
-  api.export("Electron", ["client", "server"]);
+  api.export("Electron", ["client"]);
 });
