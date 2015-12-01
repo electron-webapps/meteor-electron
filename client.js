@@ -21,6 +21,19 @@ Electron = {
   openExternal: _.noop,
 
   /**
+   * Determines if the browser window is currently in fullscreen mode.
+   *
+   * "Fullscreen" here refers to the state triggered by toggling the native controls, not that
+   * toggled by the HTML API.
+   *
+   * To detect when the browser window changes fullscreen state, observe the 'enter-full-screen'
+   * and 'leave-full-screen' events using `onWindowEvent`.
+   *
+   * @return {Boolean} `true` if the browser window is in fullscreen mode, `false` otherwise.
+   */
+  isFullScreen: _.noop,
+
+  /**
    * Invokes _callback_ when the specified `BrowserWindow` event is fired.
    *
    * See https://github.com/atom/electron/blob/master/docs/api/browser-window.md#events for a list

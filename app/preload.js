@@ -8,6 +8,7 @@
  */
 var _ = require('underscore');
 var ipc = require('electron').ipcRenderer;
+var remote = require('electron').remote;
 var shell = require('electron').shell;
 
 /**
@@ -22,6 +23,21 @@ ElectronImplementation = {
    * @param {String} url - The URL to open.
    */
   openExternal: shell.openExternal,
+
+  /**
+   * Determines if the browser window is currently in fullscreen mode.
+   *
+   * "Fullscreen" here refers to the state triggered by toggling the native controls, not that
+   * toggled by the HTML API.
+   *
+   * To detect when the browser window changes fullscreen state, observe the 'enter-full-screen'
+   * and 'leave-full-screen' events using `onWindowEvent`.
+   *
+   * @return {Boolean} `true` if the browser window is in fullscreen mode, `false` otherwise.
+   */
+  isFullScreen: function() {
+    return remote.getCurrentWindow().isFullScreen();
+  },
 
   /**
    * Invokes _callback_ when the specified `BrowserWindow` event is fired.
