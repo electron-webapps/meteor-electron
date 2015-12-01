@@ -1,8 +1,7 @@
 var path = Npm.require('path');
-var proc = Npm.require('child_process')
+var proc = Npm.require('child_process');
 var os = Npm.require('os');
 var fs = Npm.require('fs');
-var connect = Npm.require('connect');
 var mkdirp = Meteor.wrapAsync(Npm.require('mkdirp'));
 var electronPackager = Meteor.wrapAsync(Npm.require("electron-packager"));
 var serveStatic = Npm.require('serve-static');
@@ -65,7 +64,7 @@ function createBinaries() {
   });
 
   //TODO be smarter about caching this..
-  var result = exec("npm install", {cwd: appDir});
+  exec("npm install", {cwd: appDir});
 
   var settings = _.defaults({}, Meteor.settings.electron, {
     rootUrl: process.env.APP_ROOT_URL || process.env.ROOT_URL
@@ -142,7 +141,7 @@ if (build && (process.env.NODE_ENV === 'development')){
       var isProcessRunning = false;
       ElectronProcesses.find().forEach(function(proc){
         if (isRunning(proc.pid)){
-          isProcessRunning = true
+          isProcessRunning = true;
         }
         else {
           ElectronProcesses.remove({_id: proc._id});

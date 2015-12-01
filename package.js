@@ -8,7 +8,6 @@ Package.describe({
 });
 
 Npm.depends({
-  connect: '2.11.0',
   "electron-packager": "5.0.2",
   "is-running": "1.0.5",
   "mkdirp": "0.5.1",
@@ -17,7 +16,7 @@ Npm.depends({
   "serve-static": "1.1.0"
 });
 
-Package.on_use(function (api, where) {
+Package.on_use(function (api) {
   api.use(["mongo-livedata", "webapp", "ejson"], "server");
   api.use("underscore", ["server", "client"]);
   api.use(["iron:router"], {weak: true});

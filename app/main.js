@@ -68,6 +68,10 @@ if (electronSettings.frame === false){
   windowOptions.frame = false;
 }
 
+// Keep a global reference of the window object so that it won't be garbage collected
+// and the window closed.
+var mainWindow = null;
+
 app.on("ready", function(){
   mainWindow = new BrowserWindow(windowOptions);
   proxyWindowEvents(mainWindow);

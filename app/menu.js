@@ -98,8 +98,9 @@ var createDefaultMenu = function(app, appName) {
               accelerator: 'Command+R',
               click: function() {
                 var focusedWindow = BrowserWindow.getFocusedWindow();
-                if (focusedWindow)
-                  mainWindow.restart();
+                if (focusedWindow) {
+                  focusedWindow.restart();
+                }
               }
             },
             {
@@ -107,8 +108,9 @@ var createDefaultMenu = function(app, appName) {
               accelerator: 'Ctrl+Command+F',
               click: function() {
                 var focusedWindow = BrowserWindow.getFocusedWindow();
-                if (focusedWindow)
+                if (focusedWindow) {
                   focusedWindow.setFullScreen(!focusedWindow.isFullScreen());
+                }
               }
             }
           ]
@@ -150,8 +152,9 @@ var createDefaultMenu = function(app, appName) {
               accelerator: 'Ctrl+W',
               click: function() {
                 var focusedWindow = BrowserWindow.getFocusedWindow();
-                if (focusedWindow)
+                if (focusedWindow) {
                   focusedWindow.close();
+                }
               }
             },
           ]
@@ -164,8 +167,9 @@ var createDefaultMenu = function(app, appName) {
               accelerator: 'Ctrl+R',
               click: function() {
                 var focusedWindow = BrowserWindow.getFocusedWindow();
-                if (focusedWindow)
+                if (focusedWindow) {
                   focusedWindow.reload();
+                }
               }
             },
             {
@@ -173,8 +177,9 @@ var createDefaultMenu = function(app, appName) {
               accelerator: 'F11',
               click: function() {
                 var focusedWindow = BrowserWindow.getFocusedWindow();
-                if (focusedWindow)
+                if (focusedWindow) {
                   focusedWindow.setFullScreen(!focusedWindow.isFullScreen());
+                }
               }
             }
           ]
