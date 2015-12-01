@@ -3,6 +3,7 @@
   "productName": "Electron",
   "main": "main.js",
   "dependencies": {
-    "electron-debug": "^0.5.1"
+    "electron-debug": "^0.5.1",
+    "underscore": "^1.8.3"
   }
 }

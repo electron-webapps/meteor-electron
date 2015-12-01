@@ -69,7 +69,11 @@ I have not looked at [jrudio/meteor-electron](https://github.com/jrudio/meteor-e
 No. By maintaining control over the main process file, we are able to offer cross-platform builds. Allowing users to modify the main process file or NPM packages could easily break our build process.
 
 ### Q: If I can't modify the main process file, how can I create new browser windows, set app notifications and all the other awesome native functionality that Electron gives me?
-Electron exposes these to the client (of the Meteor app in our case) via the [remote module](http://electron.atom.io/docs/v0.31.0/api/remote/)
+
+This project selectively exposes such functionality to the client, in a way that is safe and avoids
+memory leaks, via the `Electron` module--see [`client.js`](client.js). To request that this module
+expose additional functionality, please [submit a pull request](https://github.com/rissem/meteor-electron/pull/new/master)
+or [file an issue](https://github.com/rissem/meteor-electron/issues/new).
 
 ### Q: How do I prevent the Electron app from being built/served in production if for instance I want to do that separately (means forthcoming)?
 
