@@ -119,9 +119,6 @@
                                 }
                               }
                             },
-                            "semver": {
-                              "version": "5.1.0"
-                            },
                             "validate-npm-package-license": {
                               "version": "3.0.1",
                               "dependencies": {
@@ -732,33 +729,8 @@
         }
       }
     },
-    "serve-static": {
-      "version": "1.1.0",
-      "dependencies": {
-        "parseurl": {
-          "version": "1.0.1"
-        },
-        "send": {
-          "version": "0.3.0",
-          "dependencies": {
-            "buffer-crc32": {
-              "version": "0.2.1"
-            },
-            "debug": {
-              "version": "0.8.0"
-            },
-            "fresh": {
-              "version": "0.2.4"
-            },
-            "mime": {
-              "version": "1.2.11"
-            },
-            "range-parser": {
-              "version": "1.0.2"
-            }
-          }
-        }
-      }
+    "semver": {
+      "version": "5.1.0"
     }
   }
 }

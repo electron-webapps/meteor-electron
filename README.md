@@ -16,22 +16,26 @@ Limited configuration is possible via `Meteor.settings.electron` For example
 ```json
 {
   "electron": {
-    // Must conform to Semver: https://docs.npmjs.com/getting-started/semantic-versioning.
-    "version": "0.1.0",
     "name": "MyApp",
     "icon": {
       "osx": "build/MyApp.icns"
     },
+    // Must conform to Semver: https://docs.npmjs.com/getting-started/semantic-versioning.
+    "version": "0.1.0",
+    // If you want your app to open to a different URL than your website.
+    // If unset, defaults to the ROOT_URL environment variable.
+    "rootUrl": "https://...",
+    // Place the latest version of the built app at this location.
+    "latestUrl": "...",
+    // Must be set to enable auto-updates on Mac.
+    "sign": "Developer ID Application: ...",
     // minHeight/maxHeight are also supported.
     "height": 768,
     // minWidth/maxWidth are also supported.
     "width": 1024,
     "frame": true,
     "title-bar-style": "hidden",
-    "resizable": true,
-    // If you want your app to open to a different URL than your website.
-    // If unset, defaults to the APP_ROOT_URL and then ROOT_URL environment variables, in that order.
-    "rootUrl": "https://..."
+    "resizable": true
   }
 }
 ```

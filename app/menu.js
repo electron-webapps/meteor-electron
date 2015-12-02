@@ -5,7 +5,7 @@ var Menu = require('menu');
  * Creates a default menu. Modeled after https://github.com/atom/electron/pull/1863, augmented with
  * the roles from https://github.com/atom/electron/blob/master/docs/api/menu.md.
  */
-var createDefaultMenu = function(app) {
+var createDefaultMenu = function(app, checkForUpdates) {
   app.once('ready', function() {
     var template;
     if (process.platform == 'darwin') {
@@ -138,6 +138,14 @@ var createDefaultMenu = function(app) {
           ]
         }
       ];
+
+      if (checkForUpdates) {
+        // Add 'Check for Updates' below the 'About' menu item.
+        template[0].submenu.splice(1, 0, {
+          label: 'Check for Updates',
+          click: checkForUpdates
+        });
+      }
     } else {
       template = [
         {
@@ -185,6 +193,16 @@ var createDefaultMenu = function(app) {
           ]
         }
       ];
+
+      if (checkForUpdates) {
+        // Add a separator and 'Check for Updates' at the bottom of the 'File' menu.
+        template[0].submenu.push({
+          type: 'separator'
+        }, {
+          label: '&Check for Updates',
+          click: checkForUpdates
+        });
+      }
     }
 
     var menu = Menu.buildFromTemplate(template);

@@ -1,5 +1,6 @@
 var app = require('electron').app; // Module to control application life.
 var BrowserWindow = require('electron').BrowserWindow; // Module to create native browser window.
+var autoUpdater = require('./autoUpdater');
 var path = require("path");
 var fs = require("fs");
 var createDefaultMenu = require('./menu.js');
@@ -9,11 +10,19 @@ require('electron-debug')({
     showDevTools: false
 });
 
-createDefaultMenu(app);
 var electronSettings = JSON.parse(fs.readFileSync(
   path.join(__dirname, "electronSettings.json"), "utf-8"));
 
+var checkForUpdates;
+if (electronSettings.updateFeedUrl) {
+  autoUpdater.setFeedURL(electronSettings.updateFeedUrl + '?version=' + electronSettings.version);
+  autoUpdater.checkForUpdates();
+  checkForUpdates = function() {
+    autoUpdater.checkForUpdates(true /* userTriggered */);
+  };
+}
 
+createDefaultMenu(app, checkForUpdates);
 
 var rootUrl = electronSettings.rootUrl;
 

@@ -11,7 +11,7 @@ Npm.depends({
   "electron-packager": "5.1.1",
   "is-running": "1.0.5",
   "mkdirp": "0.5.1",
-  "serve-static": "1.1.0"
+  "semver": "5.1.0"
 });
 
 Package.on_use(function (api) {
@@ -24,18 +24,19 @@ Package.on_use(function (api) {
     'server/launchApp.js',
     'server/platformSpecificSetting.js',
     'server/serve.js',
-    'server/serveBuild.js',
+    'server/serveUpdateFeed.js',
     // Must go last so that its dependencies have been defined.
     'server/index.js'
   ], 'server');
 
-  // When adding new files, also edit `server.js` to write these files into the app directory.
+  // When adding new files, also edit `server/createBinaries.js` to write these files into the app directory.
   api.addAssets([
-    "app/package.json",
+    "app/autoUpdater.js",
     "app/main.js",
     "app/menu.js",
-    "app/proxyWindowEvents.js",
-    "app/preload.js"
+    "app/package.json",
+    "app/preload.js",
+    "app/proxyWindowEvents.js"
   ], "server");
 
   api.addFiles(['client/index.js'], "client");

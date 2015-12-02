@@ -20,6 +20,7 @@ createBinaries = function() {
 
   //TODO probably want to allow users to add other more unusual
   //architectures if they want (ARM, 32 bit, etc.)
+  var platform = "darwin";
 
   //TODO seed the binaryDir from the package assets
 
@@ -35,11 +36,23 @@ createBinaries = function() {
   var buildDir = path.join(tmpDir, "electron", "builds");
   mkdirp(buildDir);
 
+  // *finalDir* contains zipped apps ready to be downloaded
+  var finalDir = path.join(tmpDir, "electron", "final");
+  mkdirp(finalDir);
+
+
   var electronSettings = Meteor.settings.electron || {};
   var appVersion = electronSettings.version;
   var appName = electronSettings.name;
 
-  ["main.js", "menu.js", "proxyWindowEvents.js", "preload.js", "package.json"].forEach(function(filename) {
+  [
+    "autoUpdater.js",
+    "main.js",
+    "menu.js",
+    "package.json",
+    "preload.js",
+    "proxyWindowEvents.js"
+  ].forEach(function(filename) {
     var fileContents = Assets.getText(path.join("app", filename));
 
     // Replace parameters in `package.json`.
@@ -47,7 +60,7 @@ createBinaries = function() {
       var packageJSON = JSON.parse(fileContents);
       if (appVersion) packageJSON.version = appVersion;
       if (appName) {
-        packageJSON.name = appName.toLowerCase();
+        packageJSON.name = appName.toLowerCase().replace(/\s/g, '-');
         packageJSON.productName = appName;
       }
       fileContents = JSON.stringify(packageJSON);
@@ -60,14 +73,27 @@ createBinaries = function() {
   exec("npm install", {cwd: appDir});
 
   var settings = _.defaults({}, electronSettings, {
-    rootUrl: process.env.APP_ROOT_URL || process.env.ROOT_URL
+    rootUrl: process.env.ROOT_URL
   });
+
+  var signingIdentity = electronSettings.sign;
+  if (canServeUpdates()) {
+    // Enable the auto-updater if possible.
+    if ((platform === 'darwin') && !signingIdentity) {
+      // If the app isn't signed and we try to use the auto-updater, it will
+      // throw an exception.
+      console.error('Developer ID signing identity is missing: remote updates will not work.');
+    } else {
+      settings.updateFeedUrl = process.env.ROOT_URL + UPDATE_FEED_PATH;
+    }
+  }
+
   writeFile(path.join(appDir, "electronSettings.json"), JSON.stringify(settings));
 
   var packagerSettings = {
     dir: appDir,
     name: appName || "Electron",
-    platform: "darwin",
+    platform: platform,
     arch: "x64",
     version: "0.35.0",
     out: buildDir,
@@ -84,9 +110,27 @@ createBinaries = function() {
       packagerSettings.icon = iconPath;
     }
   }
+  if (signingIdentity) {
+    packagerSettings.sign = signingIdentity;
+  }
 
   var build = electronPackager(packagerSettings)[0];
   console.log("Build created at", build);
+
+
+  // Package the build for download.
+
+  // The auto-updater framework only supports installing ZIP releases:
+  // https://github.com/Squirrel/Squirrel.Mac#update-json-format
+  var downloadName = "app-darwin.zip";
+  var compressedDownload = path.join(finalDir, downloadName);
+
+  // Use `ditto` to ZIP the app because I couldn't find a good npm module to do it and also that's
+  // what a couple of other related projects do:
+  // - https://github.com/Squirrel/Squirrel.Mac/blob/8caa2fa2007b29a253f7f5be8fc9f36ace6aa30e/Squirrel/SQRLZipArchiver.h#L24
+  // - https://github.com/jenslind/electron-release/blob/4a2a701c18664ec668c3570c3907c0fee72f5e2a/index.js#L109
+  exec('ditto -ck --sequesterRsrc --keepParent "' + build + '" "' + compressedDownload + '"');
+  console.log("Downloadable created at", compressedDownload);
 
   return build;
 };

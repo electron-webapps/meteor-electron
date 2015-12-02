@@ -25,6 +25,10 @@
     "launchApp": true,
     "platformSpecificSetting": true,
     "serve": true,
-    "serveBuild": true,
+    "canServeUpdates": true,
+    "serveUpdateFeed": true,
+
+    // Global variables.
+    "UPDATE_FEED_PATH": true
   }
 }
