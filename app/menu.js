@@ -2,7 +2,8 @@ var BrowserWindow = require('browser-window');
 var Menu = require('menu');
 
 /**
- * Creates a default menu. Modeled after https://github.com/atom/electron/pull/1863.
+ * Creates a default menu. Modeled after https://github.com/atom/electron/pull/1863, augmented with
+ * the roles from https://github.com/atom/electron/blob/master/docs/api/menu.md.
  */
 var createDefaultMenu = function(app) {
   app.once('ready', function() {
@@ -14,13 +15,14 @@ var createDefaultMenu = function(app) {
           submenu: [
             {
               label: 'About ' + app.getName(),
-              selector: 'orderFrontStandardAboutPanel:'
+              role: 'about',
             },
             {
               type: 'separator'
             },
             {
               label: 'Services',
+              role: 'services',
               submenu: []
             },
             {
@@ -29,16 +31,16 @@ var createDefaultMenu = function(app) {
             {
               label: 'Hide ' + app.getName(),
               accelerator: 'Command+H',
-              selector: 'hide:'
+              role: 'hide'
             },
             {
               label: 'Hide Others',
               accelerator: 'Command+Shift+H',
-              selector: 'hideOtherApplications:'
+              role: 'hideothers'
             },
             {
               label: 'Show All',
-              selector: 'unhideAllApplications:'
+              role: 'unhide'
             },
             {
               type: 'separator'
@@ -56,12 +58,12 @@ var createDefaultMenu = function(app) {
             {
               label: 'Undo',
               accelerator: 'Command+Z',
-              selector: 'undo:'
+              role: 'undo'
             },
             {
               label: 'Redo',
               accelerator: 'Shift+Command+Z',
-              selector: 'redo:'
+              role: 'redo'
             },
             {
               type: 'separator'
@@ -69,22 +71,22 @@ var createDefaultMenu = function(app) {
             {
               label: 'Cut',
               accelerator: 'Command+X',
-              selector: 'cut:'
+              role: 'cut'
             },
             {
               label: 'Copy',
               accelerator: 'Command+C',
-              selector: 'copy:'
+              role: 'copy'
             },
             {
               label: 'Paste',
               accelerator: 'Command+V',
-              selector: 'paste:'
+              role: 'paste'
             },
             {
               label: 'Select All',
               accelerator: 'Command+A',
-              selector: 'selectAll:'
+              role: 'selectall'
             },
           ]
         },
@@ -119,19 +121,19 @@ var createDefaultMenu = function(app) {
             {
               label: 'Minimize',
               accelerator: 'Command+M',
-              selector: 'performMiniaturize:'
+              role: 'minimize'
             },
             {
               label: 'Close',
               accelerator: 'Command+W',
-              selector: 'performClose:'
+              role: 'close'
             },
             {
               type: 'separator'
             },
             {
               label: 'Bring All to Front',
-              selector: 'arrangeInFront:'
+              role: 'front'
             },
           ]
         }
