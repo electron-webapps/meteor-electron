@@ -8,7 +8,7 @@ Package.describe({
 });
 
 Npm.depends({
-  "electron-packager": "5.0.2",
+  "electron-packager": "5.1.1",
   "is-running": "1.0.5",
   "mkdirp": "0.5.1",
   "serve-static": "1.1.0"

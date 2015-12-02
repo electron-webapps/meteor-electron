@@ -16,6 +16,8 @@ Limited configuration is possible via `Meteor.settings.electron` For example
 ```json
 {
   "electron": {
+    // Must conform to Semver: https://docs.npmjs.com/getting-started/semantic-versioning.
+    "version": "0.1.0",
     "name": "MyApp",
     "icon": {
       "osx": "build/MyApp.icns"

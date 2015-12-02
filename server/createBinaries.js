@@ -35,16 +35,21 @@ createBinaries = function() {
   var buildDir = path.join(tmpDir, "electron", "builds");
   mkdirp(buildDir);
 
-  var appName = Meteor.settings.electron && Meteor.settings.electron.name;
+  var electronSettings = Meteor.settings.electron || {};
+  var appVersion = electronSettings.version;
+  var appName = electronSettings.name;
 
   ["main.js", "menu.js", "proxyWindowEvents.js", "preload.js", "package.json"].forEach(function(filename) {
     var fileContents = Assets.getText(path.join("app", filename));
 
-    // Replace the app name in `package.json`.
-    if (appName && (filename === "package.json")) {
+    // Replace parameters in `package.json`.
+    if (filename === "package.json") {
       var packageJSON = JSON.parse(fileContents);
-      packageJSON.name = appName.toLowerCase();
-      packageJSON.productName = appName;
+      if (appVersion) packageJSON.version = appVersion;
+      if (appName) {
+        packageJSON.name = appName.toLowerCase();
+        packageJSON.productName = appName;
+      }
       fileContents = JSON.stringify(packageJSON);
     }
 
@@ -54,7 +59,7 @@ createBinaries = function() {
   //TODO be smarter about caching this..
   exec("npm install", {cwd: appDir});
 
-  var settings = _.defaults({}, Meteor.settings.electron, {
+  var settings = _.defaults({}, electronSettings, {
     rootUrl: process.env.APP_ROOT_URL || process.env.ROOT_URL
   });
   writeFile(path.join(appDir, "electronSettings.json"), JSON.stringify(settings));
@@ -69,13 +74,14 @@ createBinaries = function() {
     cache: binaryDir,
     overwrite: true
   };
-  if (Meteor.settings.electron) {
-    if (Meteor.settings.electron.icon) {
-      var icon = platformSpecificSetting(Meteor.settings.electron.icon);
-      if (icon) {
-        var iconPath = path.join(process.cwd(), 'assets', 'app', icon);
-        packagerSettings.icon = iconPath;
-      }
+  if (appVersion) {
+    packagerSettings['app-version'] = appVersion;
+  }
+  if (electronSettings.icon) {
+    var icon = platformSpecificSetting(electronSettings.icon);
+    if (icon) {
+      var iconPath = path.join(process.cwd(), 'assets', 'app', icon);
+      packagerSettings.icon = iconPath;
     }
   }
 
