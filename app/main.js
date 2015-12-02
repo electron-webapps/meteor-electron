@@ -10,17 +10,12 @@ require('electron-debug')({
 });
 
 createDefaultMenu(app);
-
-if (process.env.METEOR_SETTINGS){
-  var meteorSettings = JSON.parse(process.env.METEOR_SETTINGS);
-  var electronSettings = meteorSettings.electron || {};
-} else {
-  var electronSettings = JSON.parse(fs.readFileSync(
-    path.join(__dirname, "electronSettings.json"), "utf-8"));
-}
+var electronSettings = JSON.parse(fs.readFileSync(
+  path.join(__dirname, "electronSettings.json"), "utf-8"));
 
 
-var rootUrl = electronSettings.rootUrl || process.env.APP_ROOT_URL || process.env.ROOT_URL;
+
+var rootUrl = electronSettings.rootUrl;
 
 var windowOptions = {
   width: electronSettings.width || 800,
