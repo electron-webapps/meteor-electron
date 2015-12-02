@@ -1,3 +1,5 @@
+var app = require('electron').app; // Module to control application life.
+var BrowserWindow = require('electron').BrowserWindow; // Module to create native browser window.
 var path = require("path");
 var fs = require("fs");
 var createDefaultMenu = require('./menu.js');
@@ -7,6 +9,7 @@ require('electron-debug')({
     showDevTools: false
 });
 
+createDefaultMenu(app);
 
 if (process.env.METEOR_SETTINGS){
   var meteorSettings = JSON.parse(process.env.METEOR_SETTINGS);
@@ -16,10 +19,8 @@ if (process.env.METEOR_SETTINGS){
     path.join(__dirname, "electronSettings.json"), "utf-8"));
 }
 
-var rootUrl = electronSettings.rootUrl || process.env.APP_ROOT_URL || process.env.ROOT_URL;
 
-var app = require('app'); // Module to control application life.
-var BrowserWindow = require('browser-window'); // Module to create native browser window.
+var rootUrl = electronSettings.rootUrl || process.env.APP_ROOT_URL || process.env.ROOT_URL;
 
 var windowOptions = {
   width: electronSettings.width || 800,
@@ -78,5 +79,3 @@ app.on("ready", function(){
   mainWindow.focus();
   mainWindow.loadURL(rootUrl);
 });
-
-createDefaultMenu(app, electronSettings.name);

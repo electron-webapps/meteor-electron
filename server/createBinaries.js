@@ -35,8 +35,20 @@ createBinaries = function() {
   var buildDir = path.join(tmpDir, "electron", "builds");
   mkdirp(buildDir);
 
+  var appName = Meteor.settings.electron && Meteor.settings.electron.name;
+
   ["main.js", "menu.js", "proxyWindowEvents.js", "preload.js", "package.json"].forEach(function(filename) {
-    writeFile(path.join(appDir, filename), Assets.getText(path.join("app", filename)));
+    var fileContents = Assets.getText(path.join("app", filename));
+
+    // Replace the app name in `package.json`.
+    if (appName && (filename === "package.json")) {
+      var packageJSON = JSON.parse(fileContents);
+      packageJSON.name = appName.toLowerCase();
+      packageJSON.productName = appName;
+      fileContents = JSON.stringify(packageJSON);
+    }
+
+    writeFile(path.join(appDir, filename), fileContents);
   });
 
   //TODO be smarter about caching this..
@@ -49,7 +61,7 @@ createBinaries = function() {
 
   var packagerSettings = {
     dir: appDir,
-    name: "Electron",
+    name: appName || "Electron",
     platform: "darwin",
     arch: "x64",
     version: "0.35.0",
@@ -58,10 +70,6 @@ createBinaries = function() {
     overwrite: true
   };
   if (Meteor.settings.electron) {
-    if (Meteor.settings.electron.name) {
-      packagerSettings.name = Meteor.settings.electron.name;
-    }
-
     if (Meteor.settings.electron.icon) {
       var icon = platformSpecificSetting(Meteor.settings.electron.icon);
       if (icon) {

@@ -4,18 +4,16 @@ var Menu = require('menu');
 /**
  * Creates a default menu. Modeled after https://github.com/atom/electron/pull/1863.
  */
-var createDefaultMenu = function(app, appName) {
-  appName = appName || 'Electron';
-
+var createDefaultMenu = function(app) {
   app.once('ready', function() {
     var template;
     if (process.platform == 'darwin') {
       template = [
         {
-          label: appName,
+          label: app.getName(),
           submenu: [
             {
-              label: 'About ' + appName,
+              label: 'About ' + app.getName(),
               selector: 'orderFrontStandardAboutPanel:'
             },
             {
@@ -29,7 +27,7 @@ var createDefaultMenu = function(app, appName) {
               type: 'separator'
             },
             {
-              label: 'Hide ' + appName,
+              label: 'Hide ' + app.getName(),
               accelerator: 'Command+H',
               selector: 'hide:'
             },
