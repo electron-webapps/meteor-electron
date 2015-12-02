@@ -24,6 +24,7 @@
     "createBinaries": true,
     "launchApp": true,
     "platformSpecificSetting": true,
-    "serveBuild": true
+    "serve": true,
+    "serveBuild": true,
   }
 }

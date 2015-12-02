@@ -11,8 +11,6 @@ Npm.depends({
   "electron-packager": "5.0.2",
   "is-running": "1.0.5",
   "mkdirp": "0.5.1",
-  "tar":"2.2.1",
-  "fstream":"1.0.8",
   "serve-static": "1.1.0"
 });
 
@@ -25,8 +23,9 @@ Package.on_use(function (api) {
     'server/createBinaries.js',
     'server/launchApp.js',
     'server/platformSpecificSetting.js',
+    'server/serve.js',
     'server/serveBuild.js',
-    // Must go last so that its dependencies are defined.
+    // Must go last so that its dependencies have been defined.
     'server/index.js'
   ], 'server');
 
