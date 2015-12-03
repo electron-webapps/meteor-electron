@@ -1,6 +1,5 @@
 var electronPackager = Meteor.wrapAsync(Npm.require("electron-packager"));
 var fs = Npm.require('fs');
-var os = Npm.require('os');
 var mkdirp = Meteor.wrapAsync(Npm.require('mkdirp'));
 var path = Npm.require('path');
 var proc = Npm.require('child_process');
@@ -14,9 +13,11 @@ var exec = Meteor.wrapAsync(function(command, options, callback){
 });
 
 createBinaries = function() {
+  // Use a predictable directory so that other scripts can locate the builds, also so that the builds
+  // may be cached:
   // TODO(jeff): Use existing binaries if the app hasn't changed.
-
-  var tmpDir = os.tmpdir();
+  var workingDir = path.join(process.env.PWD, '.meteor-electron');
+  mkdirp(workingDir);
 
   //TODO probably want to allow users to add other more unusual
   //architectures if they want (ARM, 32 bit, etc.)
@@ -25,19 +26,19 @@ createBinaries = function() {
   //TODO seed the binaryDir from the package assets
 
   // *binaryDir* holds the vanilla electron apps
-  var binaryDir = path.join(tmpDir, "electron", "releases");
+  var binaryDir = path.join(workingDir, "releases");
   mkdirp(binaryDir);
 
   // *appDir* holds the electron application that points to a meteor app
-  var appDir = path.join(tmpDir, "electron", "apps");
+  var appDir = path.join(workingDir, "apps");
   mkdirp(appDir);
 
   // *buildDir* contains the uncompressed apps
-  var buildDir = path.join(tmpDir, "electron", "builds");
+  var buildDir = path.join(workingDir, "builds");
   mkdirp(buildDir);
 
   // *finalDir* contains zipped apps ready to be downloaded
-  var finalDir = path.join(tmpDir, "electron", "final");
+  var finalDir = path.join(workingDir, "final");
   mkdirp(finalDir);
 
 
