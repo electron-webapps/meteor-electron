@@ -2,45 +2,45 @@ var BrowserWindow = require('browser-window');
 var Menu = require('menu');
 
 /**
- * Creates a default menu. Modeled after https://github.com/atom/electron/pull/1863.
+ * Creates a default menu. Modeled after https://github.com/atom/electron/pull/1863, augmented with
+ * the roles from https://github.com/atom/electron/blob/master/docs/api/menu.md.
  */
-var createDefaultMenu = function(app, appName) {
-  appName = appName || 'Electron';
-
+var createDefaultMenu = function(app, checkForUpdates) {
   app.once('ready', function() {
     var template;
     if (process.platform == 'darwin') {
       template = [
         {
-          label: appName,
+          label: app.getName(),
           submenu: [
             {
-              label: 'About ' + appName,
-              selector: 'orderFrontStandardAboutPanel:'
+              label: 'About ' + app.getName(),
+              role: 'about',
             },
             {
               type: 'separator'
             },
             {
               label: 'Services',
+              role: 'services',
               submenu: []
             },
             {
               type: 'separator'
             },
             {
-              label: 'Hide ' + appName,
+              label: 'Hide ' + app.getName(),
               accelerator: 'Command+H',
-              selector: 'hide:'
+              role: 'hide'
             },
             {
               label: 'Hide Others',
               accelerator: 'Command+Shift+H',
-              selector: 'hideOtherApplications:'
+              role: 'hideothers'
             },
             {
               label: 'Show All',
-              selector: 'unhideAllApplications:'
+              role: 'unhide'
             },
             {
               type: 'separator'
@@ -58,12 +58,12 @@ var createDefaultMenu = function(app, appName) {
             {
               label: 'Undo',
               accelerator: 'Command+Z',
-              selector: 'undo:'
+              role: 'undo'
             },
             {
               label: 'Redo',
               accelerator: 'Shift+Command+Z',
-              selector: 'redo:'
+              role: 'redo'
             },
             {
               type: 'separator'
@@ -71,22 +71,22 @@ var createDefaultMenu = function(app, appName) {
             {
               label: 'Cut',
               accelerator: 'Command+X',
-              selector: 'cut:'
+              role: 'cut'
             },
             {
               label: 'Copy',
               accelerator: 'Command+C',
-              selector: 'copy:'
+              role: 'copy'
             },
             {
               label: 'Paste',
               accelerator: 'Command+V',
-              selector: 'paste:'
+              role: 'paste'
             },
             {
               label: 'Select All',
               accelerator: 'Command+A',
-              selector: 'selectAll:'
+              role: 'selectall'
             },
           ]
         },
@@ -98,8 +98,9 @@ var createDefaultMenu = function(app, appName) {
               accelerator: 'Command+R',
               click: function() {
                 var focusedWindow = BrowserWindow.getFocusedWindow();
-                if (focusedWindow)
-                  mainWindow.restart();
+                if (focusedWindow) {
+                  focusedWindow.restart();
+                }
               }
             },
             {
@@ -107,8 +108,9 @@ var createDefaultMenu = function(app, appName) {
               accelerator: 'Ctrl+Command+F',
               click: function() {
                 var focusedWindow = BrowserWindow.getFocusedWindow();
-                if (focusedWindow)
+                if (focusedWindow) {
                   focusedWindow.setFullScreen(!focusedWindow.isFullScreen());
+                }
               }
             }
           ]
@@ -119,23 +121,31 @@ var createDefaultMenu = function(app, appName) {
             {
               label: 'Minimize',
               accelerator: 'Command+M',
-              selector: 'performMiniaturize:'
+              role: 'minimize'
             },
             {
               label: 'Close',
               accelerator: 'Command+W',
-              selector: 'performClose:'
+              role: 'close'
             },
             {
               type: 'separator'
             },
             {
               label: 'Bring All to Front',
-              selector: 'arrangeInFront:'
+              role: 'front'
             },
           ]
         }
       ];
+
+      if (checkForUpdates) {
+        // Add 'Check for Updates' below the 'About' menu item.
+        template[0].submenu.splice(1, 0, {
+          label: 'Check for Updates',
+          click: checkForUpdates
+        });
+      }
     } else {
       template = [
         {
@@ -150,8 +160,9 @@ var createDefaultMenu = function(app, appName) {
               accelerator: 'Ctrl+W',
               click: function() {
                 var focusedWindow = BrowserWindow.getFocusedWindow();
-                if (focusedWindow)
+                if (focusedWindow) {
                   focusedWindow.close();
+                }
               }
             },
           ]
@@ -164,8 +175,9 @@ var createDefaultMenu = function(app, appName) {
               accelerator: 'Ctrl+R',
               click: function() {
                 var focusedWindow = BrowserWindow.getFocusedWindow();
-                if (focusedWindow)
+                if (focusedWindow) {
                   focusedWindow.reload();
+                }
               }
             },
             {
@@ -173,13 +185,24 @@ var createDefaultMenu = function(app, appName) {
               accelerator: 'F11',
               click: function() {
                 var focusedWindow = BrowserWindow.getFocusedWindow();
-                if (focusedWindow)
+                if (focusedWindow) {
                   focusedWindow.setFullScreen(!focusedWindow.isFullScreen());
+                }
               }
             }
           ]
         }
       ];
+
+      if (checkForUpdates) {
+        // Add a separator and 'Check for Updates' at the bottom of the 'File' menu.
+        template[0].submenu.push({
+          type: 'separator'
+        }, {
+          label: '&Check for Updates',
+          click: checkForUpdates
+        });
+      }
     }
 
     var menu = Menu.buildFromTemplate(template);
