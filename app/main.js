@@ -24,7 +24,7 @@ if (electronSettings.updateFeedUrl) {
 
 createDefaultMenu(app, checkForUpdates);
 
-var rootUrl = electronSettings.rootUrl;
+var launchUrl = electronSettings.launchUrl || electronSettings.rootUrl;
 
 var windowOptions = {
   width: electronSettings.width || 800,
@@ -81,5 +81,5 @@ app.on("ready", function(){
   mainWindow = new BrowserWindow(windowOptions);
   proxyWindowEvents(mainWindow);
   mainWindow.focus();
-  mainWindow.loadURL(rootUrl);
+  mainWindow.loadURL(launchUrl);
 });

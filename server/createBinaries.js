@@ -85,7 +85,7 @@ createBinaries = function() {
       // throw an exception.
       console.error('Developer ID signing identity is missing: remote updates will not work.');
     } else {
-      settings.updateFeedUrl = process.env.ROOT_URL + UPDATE_FEED_PATH;
+      settings.updateFeedUrl = settings.rootUrl + UPDATE_FEED_PATH;
     }
   }
 
