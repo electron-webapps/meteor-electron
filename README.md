@@ -29,8 +29,8 @@ Limited configuration is possible via `Meteor.settings.electron` For example
     "version": "0.1.0",
     // If unset, defaults to the ROOT_URL environment variable.
     "rootUrl": "https://myapp.com",
-    // If you want your app to open to a non-root URL.
-    "launchUrl": "https://myapp.com/app/landing",
+    // If you want your app to open to a non-root URL. Will be appended to the root URL.
+    "launchPath": "/app/landing",
     // Place the latest version of the built app at this location.
     "latestUrl": "...",
     // Must be set to enable auto-updates on Mac.

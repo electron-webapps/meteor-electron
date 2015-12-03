@@ -24,7 +24,10 @@ if (electronSettings.updateFeedUrl) {
 
 createDefaultMenu(app, checkForUpdates);
 
-var launchUrl = electronSettings.launchUrl || electronSettings.rootUrl;
+var launchUrl = electronSettings.rootUrl;
+if (electronSettings.launchPath) {
+  launchUrl += electronSettings.launchPath;
+}
 
 var windowOptions = {
   width: electronSettings.width || 800,
