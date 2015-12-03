@@ -27,9 +27,10 @@ Limited configuration is possible via `Meteor.settings.electron` For example
     },
     // Must conform to Semver: https://docs.npmjs.com/getting-started/semantic-versioning.
     "version": "0.1.0",
-    // If you want your app to open to a different URL than your website.
     // If unset, defaults to the ROOT_URL environment variable.
-    "rootUrl": "https://...",
+    "rootUrl": "https://myapp.com",
+    // If you want your app to open to a non-root URL.
+    "launchUrl": "https://myapp.com/app/landing",
     // Place the latest version of the built app at this location.
     "latestUrl": "...",
     // Must be set to enable auto-updates on Mac.
