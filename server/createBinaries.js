@@ -114,6 +114,9 @@ createBinaries = function() {
   if (signingIdentity) {
     packagerSettings.sign = signingIdentity;
   }
+  if (electronSettings.protocols) {
+    packagerSettings.protocols = electronSettings.protocols;
+  }
 
   var build = electronPackager(packagerSettings)[0];
   console.log("Build created at", build);
