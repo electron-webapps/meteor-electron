@@ -53,6 +53,21 @@ var createDefaultMenu = function(app, checkForUpdates) {
           ]
         },
         {
+          label: 'File',
+          submenu: [
+            {
+              label: 'Refresh',
+              accelerator: 'Command+R',
+              click: function() {
+                var focusedWindow = BrowserWindow.getFocusedWindow();
+                if (focusedWindow) {
+                  focusedWindow.restart();
+                }
+              }
+            }
+          ]
+        },
+        {
           label: 'Edit',
           submenu: [
             {
