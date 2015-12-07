@@ -20,12 +20,11 @@ Limited configuration is possible via `Meteor.settings.electron` For example
     "width": 1024,
     "frame": true,
     "resizable": true,
-    // If you want your app to open to a different URL than your website.
-    // If unset, defaults to the APP_ROOT_URL and then ROOT_URL environment variables, in that order.
     "rootUrl": "https://..."
   }
 }
 ```
+If Meteor.settings.electron.rootUrl is unset, defaults to the `APP_ROOT_URL` and then `ROOT_URL` environment variables, in that order.
 
 ## Electron specific code
 
