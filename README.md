@@ -67,6 +67,9 @@ No. By maintaining control over the main process file, we are able to offer cros
 ### Q: If I can't modify the main process file, how can I create new browser windows, set app notifications and all the other awesome native functionality that Electron gives me?
 Electron exposes these to the client (of the Meteor app in our case) via the [remote module](http://electron.atom.io/docs/v0.31.0/api/remote/)
 
+### Q: How do I prevent the Electron app from being built/served in production if for instance I want to do that separately (means forthcoming)?
+
+Set the ELECTRON_AUTO_BUILD environment variable to "false".
 
 ## Ideas
 

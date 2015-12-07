@@ -29,36 +29,17 @@ function platformSpecificSetting(settings) {
   }
 }
 
-var ElectronProcesses = new Mongo.Collection("processes");
-
-var ProcessManager = {
-  add: function(pid){
-    ElectronProcesses.insert({pid: pid, settings: Meteor.settings.electron});
-  },
-
-  running: function(){
-    //TODO restrict search based on Meteor.settings.electron
-    var isProcessRunning = false;
-    ElectronProcesses.find().forEach(function(proc){
-      if (isRunning(proc.pid)){
-        isProcessRunning = true
-      }
-      else {
-        ElectronProcesses.remove({_id: proc._id});
-      }
-    });
-    return isProcessRunning;
-  }
-};
 
 var build = null;
 var name = null;
-var tmpDir = os.tmpdir();
-// *finalDir* contains zipped apps ready to be downloaded
-var finalDir = path.join(tmpDir, "electron", "final");
-mkdirp(finalDir);
 
-var createBinaries= function(){
+function createBinaries() {
+  // TODO(jeff): Use existing binaries if the app hasn't changed.
+
+  var tmpDir = os.tmpdir();
+  // *finalDir* contains zipped apps ready to be downloaded
+  var finalDir = path.join(tmpDir, "electron", "final");
+  mkdirp(finalDir);
   var buildDir = null;
 
 
@@ -127,27 +108,49 @@ var createBinaries= function(){
   writer.on("close", function(){
     console.log("Downloadable created at", compressedDownload);
   });
-};
 
-var mainJsContents = Assets.getText("app/main.js");
-var scriptPath = path.join(os.tmpDir(), "index.js");
 
-var serve = serveStatic(finalDir);
+  var serve = serveStatic(finalDir);
 
-if (Package["iron:router"]){
-  Package["iron:router"].Router.route("/app-darwin.tar.gz", function(){
-    serve(this.request, this.response);
-  }, {where: "server"});
-} else {
+  if (Package["iron:router"]){
+    Package["iron:router"].Router.route("/app-darwin.tar.gz", function(){
+      serve(this.request, this.response);
+    }, {where: "server"});
+  } else {
   //console.log("iron router not found, using WebApp.rawConnectHandlers
-  WebApp.rawConnectHandlers.use(function(req, res, next){
-    serve(req, res, next);
-  });
+    WebApp.rawConnectHandlers.use(function(req, res, next){
+      serve(req, res, next);
+    });
+  }
 }
 
-createBinaries();
+if (process.env.ELECTRON_AUTO_BUILD !== 'false') {
+  createBinaries();
+}
 
-if (process.env.NODE_ENV === 'development'){
+if (build && (process.env.NODE_ENV === 'development')){
+  var ElectronProcesses = new Mongo.Collection("processes");
+
+  var ProcessManager = {
+    add: function(pid){
+      ElectronProcesses.insert({pid: pid, settings: Meteor.settings.electron});
+    },
+
+    running: function(){
+      //TODO restrict search based on Meteor.settings.electron
+      var isProcessRunning = false;
+      ElectronProcesses.find().forEach(function(proc){
+        if (isRunning(proc.pid)){
+          isProcessRunning = true
+        }
+        else {
+          ElectronProcesses.remove({_id: proc._id});
+        }
+      });
+      return isProcessRunning;
+    }
+  };
+
   if (ProcessManager.running()){
     // console.log("app is already running");
     return;
