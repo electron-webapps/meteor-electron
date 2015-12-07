@@ -1,3 +1,6 @@
+var app = require('electron').app; // Module to control application life.
+var BrowserWindow = require('electron').BrowserWindow; // Module to create native browser window.
+var autoUpdater = require('./autoUpdater');
 var path = require("path");
 var fs = require("fs");
 var createDefaultMenu = require('./menu.js');
@@ -7,19 +10,24 @@ require('electron-debug')({
     showDevTools: false
 });
 
+var electronSettings = JSON.parse(fs.readFileSync(
+  path.join(__dirname, "electronSettings.json"), "utf-8"));
 
-if (process.env.METEOR_SETTINGS){
-  var meteorSettings = JSON.parse(process.env.METEOR_SETTINGS);
-  var electronSettings = meteorSettings.electron || {};
-} else {
-  var electronSettings = JSON.parse(fs.readFileSync(
-    path.join(__dirname, "electronSettings.json"), "utf-8"));
+var checkForUpdates;
+if (electronSettings.updateFeedUrl) {
+  autoUpdater.setFeedURL(electronSettings.updateFeedUrl + '?version=' + electronSettings.version);
+  autoUpdater.checkForUpdates();
+  checkForUpdates = function() {
+    autoUpdater.checkForUpdates(true /* userTriggered */);
+  };
 }
 
-var rootUrl = electronSettings.rootUrl || process.env.APP_ROOT_URL || process.env.ROOT_URL;
+createDefaultMenu(app, checkForUpdates);
 
-var app = require('app'); // Module to control application life.
-var BrowserWindow = require('browser-window'); // Module to create native browser window.
+var launchUrl = electronSettings.rootUrl;
+if (electronSettings.launchPath) {
+  launchUrl += electronSettings.launchPath;
+}
 
 var windowOptions = {
   width: electronSettings.width || 800,
@@ -68,11 +76,13 @@ if (electronSettings.frame === false){
   windowOptions.frame = false;
 }
 
+// Keep a global reference of the window object so that it won't be garbage collected
+// and the window closed.
+var mainWindow = null;
+
 app.on("ready", function(){
   mainWindow = new BrowserWindow(windowOptions);
   proxyWindowEvents(mainWindow);
   mainWindow.focus();
-  mainWindow.loadURL(rootUrl);
+  mainWindow.loadURL(launchUrl);
 });
-
-createDefaultMenu(app, electronSettings.name);

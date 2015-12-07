@@ -1,0 +1,24 @@
+{
+  // If you are using SublimeLinter, after modifying this config file, be sure to close and reopen
+  // the file(s) you were editing to see the changes take effect.
+
+  "extends": "../.jshintrc",
+
+  // Whitelist the browser's global variables so JSHint doesn't complain about them being undefined.
+  "browser": true,
+
+  // Whitelist additional global variables.
+  "globals": {
+    // Globals set by `preload.js`.
+    "ElectronImplementation": false,
+
+    // Meteor's globals.
+    "Meteor": false,
+
+    // Our dependencies.
+    "_": false,
+
+    // Our exports.
+    "Electron": true
+  }
+}

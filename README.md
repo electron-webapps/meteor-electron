@@ -9,7 +9,12 @@ Meteor-electron strives to be the easiest way to create a desktop Meteor applica
 
 `meteor add quark:electron`
 
-After adding the package, an electron app wrapper will be while you develop.
+After adding the package, an electron app wrapper will be built and opened.
+
+This app, as well as the ready-to-distribute binaries (see [Deploy](#deploy)), is built within
+`YOUR_PROJECT_DIRECTORY/.meteor-electron`. This allows the apps to be easily located as well as
+(forthcoming) the apps to be cached for speedier startup. You should add this directory to your
+`.gitignore`.
 
 ## Configuration
 Limited configuration is possible via `Meteor.settings.electron` For example
@@ -20,6 +25,16 @@ Limited configuration is possible via `Meteor.settings.electron` For example
     "icon": {
       "osx": "build/MyApp.icns"
     },
+    // Must conform to Semver: https://docs.npmjs.com/getting-started/semantic-versioning.
+    "version": "0.1.0",
+    // If unset, defaults to the ROOT_URL environment variable.
+    "rootUrl": "https://myapp.com",
+    // If you want your app to open to a non-root URL. Will be appended to the root URL.
+    "launchPath": "/app/landing",
+    // Place the latest version of the built app at this location.
+    "latestUrl": "...",
+    // Must be set to enable auto-updates on Mac.
+    "sign": "Developer ID Application: ...",
     // minHeight/maxHeight are also supported.
     "height": 768,
     // minWidth/maxWidth are also supported.
@@ -45,15 +60,10 @@ if (! Electron.isDesktop){
 }
 ```
 
-## Download Button
-
-Add a download button to your app with `{{> electronDownload}}`. This button points to `/download/darwin-x64`, `/download/linux-ia64`, etc. based on platform. Feel free to point to these locations manually yourself as well.
-
-The download button will not be shown within the Electron application.
-
 ## Deploy
 
-No additional build steps are necessary. After your application has been deployed, the download links will send electron apps that point to production.
+Copy `YOUR_PROJECT_DIRECTORY/.meteor-electron/final/app-darwin.zip` to a publically-accessible
+location, then set `latestUrl` in `Meteor.settings.electron` to that URL.
 
 ## Example
 

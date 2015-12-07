@@ -1,0 +1,20 @@
+{
+  // If you are using SublimeLinter, after modifying this config file, be sure to close and reopen
+  // the file(s) you were editing to see the changes take effect.
+
+  // Suppress warnings about using [] notation when it can be expressed in dot notation,
+  // so that we can use [] notation to highlight when objects are used as maps.
+  "sub": true,
+
+  // Prohibit the use of undeclared variables. Define globals and/or use JSHint pre-defined
+  // environments (http://jshint.com/docs/options/#environments) as appropriate. You can set
+  // environments for specific folders (e.g. client vs. server) by extending this file:
+  // http://stackoverflow.com/a/25213836/495611.
+  "undef": true,
+
+  // Warn for unused variables and function parameters.
+  "unused": true
+
+  // We don't whitelist global variables here because there's nothing that's shared between the
+  // client, the server, _and_ the app.
+}
