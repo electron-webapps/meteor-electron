@@ -75,7 +75,9 @@ var createBinaries= function(){
   //TODO be smarter about caching this..
   var result = exec("npm install", {cwd: appDir});
 
-  var settings = _.extend(Meteor.settings, {rootUrl: process.env.ROOT_URL});
+  var settings = _.defaults({}, Meteor.settings.electron, {
+    rootUrl: process.env.APP_ROOT_URL || process.env.ROOT_URL
+  });
   writeFile(path.join(appDir, "electronSettings.json"), JSON.stringify(settings));
 
   var result = electronPackager({dir: appDir, name: "Electron", platform: "darwin", arch: "x64", version: "0.35.0", out: buildDir, cache: binaryDir, overwrite: true });
@@ -123,12 +125,7 @@ if (process.env.NODE_ENV === 'development'){
   //TODO figure out how to handle case where electron executable or
   //app dir don't exist
 
-  var child = proc.spawn(
-    electronExecutable, [appDir],
-    {env:{METEOR_SETTINGS: JSON.stringify(Meteor.settings),
-          ROOT_URL: process.env.ROOT_URL}});
-
-  ProcessManager.add(child.pid);
+  var child = proc.spawn(electronExecutable, [appDir]);
   child.stdout.on("data", function(data){
     console.log("ATOM:", data.toString());
   });
@@ -136,4 +133,6 @@ if (process.env.NODE_ENV === 'development'){
   child.stderr.on("data", function(data){
     console.log("ATOM:", data.toString());
   });
+
+  ProcessManager.add(child.pid);
 }
