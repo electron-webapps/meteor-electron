@@ -102,3 +102,9 @@ app.on("before-quit", function(){
   var mainWindow = BrowserWindow.fromId(1);
   mainWindow.removeListener('close', hideInsteadofClose);
 });
+
+app.on("activate", function(){
+  // Show the main window when the customer clicks on the app icon.
+  var mainWindow = BrowserWindow.fromId(1);
+  if (!mainWindow.isVisible()) mainWindow.show();
+});
