@@ -16,21 +16,18 @@ Npm.depends({
 });
 
 Package.on_use(function (api, where) {
-  // api.use("sanjo:meteor-files-helpers@1.1.0_7", "server");
-  api.use(["mongo-livedata", "webapp", "ejson", "underscore"], "server");
+  api.use(["mongo-livedata", "webapp", "ejson"], "server");
+  api.use("underscore", ["server", "client"]);
   api.use(["iron:router"], {weak: true});
-  api.add_files(['server.js'], 'server')
-  api.add_files(['index.js'], 'server', {isAsset: true});
-  api.add_files([
-    // "electron-v0.31.0-darwin-x64.zip",
-    // "electron-v0.31.0-linux-arm.zip",
-    // "electron-v0.31.0-linux-ia32.zip",
-    // "electron-v0.31.0-linux-x64.zip",
-    // "electron-v0.31.0-win32-ia32.zip",
-    // "electron-v0.31.0-win32-x64.zip",
+  api.addFiles(['server.js'], 'server');
+  // When adding new files, also edit `server.js` to write these files into the app directory.
+  api.addAssets([
     "app/package.json",
-    "app/main.js"
-  ], "server", {isAsset: true});
-  api.add_files(['client.js'], "client");
-  api.export("Electron", ["client", "server"]);
+    "app/main.js",
+    "app/menu.js",
+    "app/proxyWindowEvents.js",
+    "app/preload.js"
+  ], "server");
+  api.addFiles(['client.js'], "client");
+  api.export("Electron", ["client"]);
 });

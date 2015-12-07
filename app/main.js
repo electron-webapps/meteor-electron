@@ -1,6 +1,8 @@
 var path = require("path");
 var fs = require("fs");
-var underscore = require("underscore");
+var createDefaultMenu = require('./menu.js');
+var proxyWindowEvents = require('./proxyWindowEvents');
+
 require('electron-debug')({
     showDevTools: false
 });
@@ -32,7 +34,9 @@ var windowOptions = {
    *  - https://github.com/atom/electron/issues/1753
    */
   webPreferences: {
-    nodeIntegration: false
+    nodeIntegration: false,
+    // See comments at the top of `preload.js`.
+    preload: path.join(__dirname, 'preload.js')
   }
 };
 
@@ -66,6 +70,9 @@ if (electronSettings.frame === false){
 
 app.on("ready", function(){
   mainWindow = new BrowserWindow(windowOptions);
+  proxyWindowEvents(mainWindow);
   mainWindow.focus();
   mainWindow.loadURL(rootUrl);
 });
+
+createDefaultMenu(app, electronSettings.name);
