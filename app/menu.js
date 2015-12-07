@@ -116,17 +116,12 @@ var createDefaultMenu = function(app, checkForUpdates) {
           ]
         },
         {
-          label: 'View',
+          label: 'Window',
           submenu: [
             {
-              label: 'Reload',
-              accelerator: 'Command+R',
-              click: function() {
-                var focusedWindow = BrowserWindow.getFocusedWindow();
-                if (focusedWindow) {
-                  focusedWindow.restart();
-                }
-              }
+              label: 'Minimize',
+              accelerator: 'Command+M',
+              role: 'minimize'
             },
             {
               label: 'Toggle Full Screen',
@@ -137,21 +132,17 @@ var createDefaultMenu = function(app, checkForUpdates) {
                   focusedWindow.setFullScreen(!focusedWindow.isFullScreen());
                 }
               }
-            }
-          ]
-        },
-        {
-          label: 'Window',
-          submenu: [
-            {
-              label: 'Minimize',
-              accelerator: 'Command+M',
-              role: 'minimize'
             },
             {
-              label: 'Close',
-              accelerator: 'Command+W',
-              role: 'close'
+              type: 'separator'
+            },
+            {
+              label: 'Main Window',
+              accelerator: 'Command+1',
+              click: function() {
+                var mainWindow = BrowserWindow.fromId(1);
+                mainWindow.show();
+              }
             },
             {
               type: 'separator'
