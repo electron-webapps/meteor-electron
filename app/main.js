@@ -40,6 +40,26 @@ if (electronSettings.resizable === false){
   windowOptions.resizable = false;
 }
 
+if (electronSettings['title-bar-style']) {
+  windowOptions['title-bar-style'] = electronSettings['title-bar-style'];
+}
+
+if (electronSettings.minWidth) {
+  windowOptions.minWidth = electronSettings.minWidth;
+}
+
+if (electronSettings.maxWidth) {
+  windowOptions.maxWidth = electronSettings.maxWidth;
+}
+
+if (electronSettings.minHeight) {
+  windowOptions.minHeight = electronSettings.minHeight;
+}
+
+if (electronSettings.maxHeight) {
+  windowOptions.maxHeight = electronSettings.maxHeight;
+}
+
 if (electronSettings.frame === false){
   windowOptions.frame = false;
 }
