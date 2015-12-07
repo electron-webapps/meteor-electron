@@ -141,7 +141,9 @@ var createDefaultMenu = function(app, checkForUpdates) {
               accelerator: 'Command+1',
               click: function() {
                 var mainWindow = BrowserWindow.fromId(1);
-                mainWindow.show();
+                if (mainWindow) {
+                  mainWindow.show();
+                }
               }
             },
             {
