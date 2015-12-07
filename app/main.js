@@ -80,9 +80,25 @@ if (electronSettings.frame === false){
 // and the window closed.
 var mainWindow = null;
 
+var hideInsteadofClose = function(e) {
+  this.hide();
+  e.preventDefault();
+}
+
 app.on("ready", function(){
   mainWindow = new BrowserWindow(windowOptions);
+
+  // Hide the main window instead of closing it, so that we can bring it back
+  // more quickly.
+  mainWindow.on('close', hideInsteadofClose);
   proxyWindowEvents(mainWindow);
   mainWindow.focus();
   mainWindow.loadURL(launchUrl);
+});
+
+app.on("before-quit", function(){
+  // We need to remove our close event handler from the main window,
+  // otherwise the app will not quit.
+  var mainWindow = BrowserWindow.fromId(1);
+  mainWindow.removeListener('close', hideInsteadofClose);
 });

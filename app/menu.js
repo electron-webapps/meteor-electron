@@ -68,12 +68,7 @@ var createDefaultMenu = function(app, checkForUpdates) {
             {
               label: 'Close',
               accelerator: 'Command+W',
-              click: function() {
-                var focusedWindow = BrowserWindow.getFocusedWindow();
-                if (focusedWindow) {
-                  focusedWindow.id = 1 ? focusedWindow.hide() : focusedWindow.close();
-                }
-              }
+              role: 'close'
             }
           ]
         },
