@@ -16,6 +16,10 @@ Limited configuration is possible via `Meteor.settings.electron` For example
 ```json
 {
   "electron": {
+    "name": "MyApp",
+    "icon": {
+      "osx": "build/MyApp.icns"
+    },
     "height": 768,
     "width": 1024,
     "frame": true,
