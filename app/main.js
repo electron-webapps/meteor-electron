@@ -98,7 +98,7 @@ app.on("ready", function(){
 });
 
 var hideInsteadofClose = function(e) {
-  this.hide();
+  mainWindow.hide();
   e.preventDefault();
 };
 
