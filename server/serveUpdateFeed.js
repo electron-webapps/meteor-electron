@@ -2,13 +2,9 @@ var semver = Npm.require('semver');
 
 var electronSettings = Meteor.settings.electron || {};
 var latestVersion = electronSettings.version;
-var updateUrl = electronSettings.updateUrl;
-if (updateUrl) {
-  updateUrl = updateUrl.replace('{{version}}', latestVersion);
-}
 
 canServeUpdates = function() {
-  return latestVersion && updateUrl;
+  return latestVersion && DOWNLOAD_URL;
 };
 
 UPDATE_FEED_PATH = "/app/latest";
@@ -28,7 +24,7 @@ serveUpdateFeed = function() {
       res.statusCode = 200;
       res.setHeader('Content-Type', 'application/json');
       res.end(JSON.stringify({
-        url: updateUrl
+        url: DOWNLOAD_URL
       }));
     }
   });
