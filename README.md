@@ -45,6 +45,7 @@ Limited configuration is possible via `Meteor.settings.electron` For example
   }
 }
 ```
+If Meteor.settings.electron.rootUrl is unset, defaults to the `APP_ROOT_URL` and then `ROOT_URL` environment variables, in that order.
 
 ## Electron specific code
 
