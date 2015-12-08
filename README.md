@@ -41,7 +41,11 @@ Limited configuration is possible via `Meteor.settings.electron` For example
     "width": 1024,
     "frame": true,
     "title-bar-style": "hidden",
-    "resizable": true
+    "resizable": true,
+    "protocols": [{
+      "name": "MyApp",
+      "schemes": ["myapp"]
+    }]
   }
 }
 ```
