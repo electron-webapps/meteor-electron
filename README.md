@@ -32,7 +32,7 @@ Limited configuration is possible via `Meteor.settings.electron` For example
     // If you want your app to open to a non-root URL. Will be appended to the root URL.
     "launchPath": "/app/landing",
     // Place the built app at this location. If the URL contains '{{version}}', it will be replaced with `version`.
-    "updateUrl": "https://myapp.com/download/{{version}}/app-darwin.zip",
+    "downloadUrl": "https://myapp.com/download/{{version}}/app-darwin.zip",
     // Must be set to enable auto-updates on Mac.
     "sign": "Developer ID Application: ...",
     // minHeight/maxHeight are also supported.
@@ -63,8 +63,9 @@ if (! Electron.isDesktop){
 
 ## Deploy
 
-Copy `YOUR_PROJECT_DIRECTORY/.meteor-electron/final/app-darwin.zip` to a publically-accessible
-location, then set `latestUrl` in `Meteor.settings.electron` to that URL.
+Copy `YOUR_PROJECT_DIRECTORY/.meteor-electron/final/YOUR_APP_NAME.zip` to a publically-accessible
+location, then set `downloadUrl` in `Meteor.settings.electron` to that URL. This URL will be served
+at `/app/latest/download`.
 
 ## Example
 
