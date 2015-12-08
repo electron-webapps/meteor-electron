@@ -5,7 +5,7 @@ var Menu = require('menu');
  * Creates a default menu. Modeled after https://github.com/atom/electron/pull/1863, augmented with
  * the roles from https://github.com/atom/electron/blob/master/docs/api/menu.md.
  */
-var createDefaultMenu = function(app, checkForUpdates) {
+var createDefaultMenu = function(app, getMainWindow, checkForUpdates) {
   app.once('ready', function() {
     var template;
     if (process.platform == 'darwin') {
@@ -135,7 +135,7 @@ var createDefaultMenu = function(app, checkForUpdates) {
               label: 'Main Window',
               accelerator: 'Command+1',
               click: function() {
-                var mainWindow = BrowserWindow.fromId(1);
+                var mainWindow = getMainWindow();
                 if (mainWindow) {
                   mainWindow.show();
                 }
