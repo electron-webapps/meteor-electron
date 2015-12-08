@@ -5,7 +5,7 @@ var Menu = require('menu');
  * Creates a default menu. Modeled after https://github.com/atom/electron/pull/1863, augmented with
  * the roles from https://github.com/atom/electron/blob/master/docs/api/menu.md.
  */
-var createDefaultMenu = function(app, checkForUpdates) {
+var createDefaultMenu = function(app, getMainWindow, checkForUpdates) {
   app.once('ready', function() {
     var template;
     if (process.platform == 'darwin') {
@@ -53,6 +53,26 @@ var createDefaultMenu = function(app, checkForUpdates) {
           ]
         },
         {
+          label: 'File',
+          submenu: [
+            {
+              label: 'Refresh',
+              accelerator: 'Command+R',
+              click: function() {
+                var focusedWindow = BrowserWindow.getFocusedWindow();
+                if (focusedWindow) {
+                  focusedWindow.reload();
+                }
+              }
+            },
+            {
+              label: 'Close',
+              accelerator: 'Command+W',
+              role: 'close'
+            }
+          ]
+        },
+        {
           label: 'Edit',
           submenu: [
             {
@@ -91,17 +111,12 @@ var createDefaultMenu = function(app, checkForUpdates) {
           ]
         },
         {
-          label: 'View',
+          label: 'Window',
           submenu: [
             {
-              label: 'Reload',
-              accelerator: 'Command+R',
-              click: function() {
-                var focusedWindow = BrowserWindow.getFocusedWindow();
-                if (focusedWindow) {
-                  focusedWindow.restart();
-                }
-              }
+              label: 'Minimize',
+              accelerator: 'Command+M',
+              role: 'minimize'
             },
             {
               label: 'Toggle Full Screen',
@@ -112,21 +127,19 @@ var createDefaultMenu = function(app, checkForUpdates) {
                   focusedWindow.setFullScreen(!focusedWindow.isFullScreen());
                 }
               }
-            }
-          ]
-        },
-        {
-          label: 'Window',
-          submenu: [
-            {
-              label: 'Minimize',
-              accelerator: 'Command+M',
-              role: 'minimize'
             },
             {
-              label: 'Close',
-              accelerator: 'Command+W',
-              role: 'close'
+              type: 'separator'
+            },
+            {
+              label: 'Main Window',
+              accelerator: 'Command+1',
+              click: function() {
+                var mainWindow = getMainWindow();
+                if (mainWindow) {
+                  mainWindow.show();
+                }
+              }
             },
             {
               type: 'separator'
@@ -156,6 +169,16 @@ var createDefaultMenu = function(app, checkForUpdates) {
               accelerator: 'Ctrl+O',
             },
             {
+              label: '&Refresh',
+              accelerator: 'Ctrl+R',
+              click: function() {
+                var focusedWindow = BrowserWindow.getFocusedWindow();
+                if (focusedWindow) {
+                  focusedWindow.reload();
+                }
+              }
+            },
+            {
               label: '&Close',
               accelerator: 'Ctrl+W',
               click: function() {
@@ -168,18 +191,8 @@ var createDefaultMenu = function(app, checkForUpdates) {
           ]
         },
         {
-          label: '&View',
+          label: '&Window',
           submenu: [
-            {
-              label: '&Reload',
-              accelerator: 'Ctrl+R',
-              click: function() {
-                var focusedWindow = BrowserWindow.getFocusedWindow();
-                if (focusedWindow) {
-                  focusedWindow.reload();
-                }
-              }
-            },
             {
               label: 'Toggle &Full Screen',
               accelerator: 'F11',
