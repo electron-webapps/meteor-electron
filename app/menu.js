@@ -61,7 +61,7 @@ var createDefaultMenu = function(app, getMainWindow, checkForUpdates) {
               click: function() {
                 var focusedWindow = BrowserWindow.getFocusedWindow();
                 if (focusedWindow) {
-                  focusedWindow.restart();
+                  focusedWindow.reload();
                 }
               }
             },
