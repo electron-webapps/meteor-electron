@@ -169,6 +169,16 @@ var createDefaultMenu = function(app, getMainWindow, checkForUpdates) {
               accelerator: 'Ctrl+O',
             },
             {
+              label: '&Refresh',
+              accelerator: 'Ctrl+R',
+              click: function() {
+                var focusedWindow = BrowserWindow.getFocusedWindow();
+                if (focusedWindow) {
+                  focusedWindow.reload();
+                }
+              }
+            },
+            {
               label: '&Close',
               accelerator: 'Ctrl+W',
               click: function() {
@@ -181,18 +191,8 @@ var createDefaultMenu = function(app, getMainWindow, checkForUpdates) {
           ]
         },
         {
-          label: '&View',
+          label: '&Window',
           submenu: [
-            {
-              label: '&Reload',
-              accelerator: 'Ctrl+R',
-              click: function() {
-                var focusedWindow = BrowserWindow.getFocusedWindow();
-                if (focusedWindow) {
-                  focusedWindow.reload();
-                }
-              }
-            },
             {
               label: 'Toggle &Full Screen',
               accelerator: 'F11',
