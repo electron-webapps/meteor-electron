@@ -21,14 +21,16 @@
     "WebApp": false,
 
     // Global functions.
+    "canServeUpdates": true,
     "createBinaries": true,
     "launchApp": true,
     "platformSpecificSetting": true,
     "serve": true,
-    "canServeUpdates": true,
+    "serveDownloadUrl": true,
     "serveUpdateFeed": true,
 
     // Global variables.
+    "DOWNLOAD_URL": true,
     "UPDATE_FEED_PATH": true
   }
 }
