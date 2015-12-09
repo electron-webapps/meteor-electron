@@ -49,7 +49,7 @@ createBinaries = function() {
 
   if (electronSettings.appSrcDir) {
     // Ensure that the directory ends in a slash so that we copy its contents.
-    var resolvedAppDir = path.join(process.cwd(), 'assets', 'app', electronSettings.appSrcDir, '/');
+    var resolvedAppDir = path.join(process.env.PWD, 'private', electronSettings.appSrcDir, '/');
     ncp(resolvedAppDir, appDir);
   } else {
     [
@@ -114,7 +114,7 @@ createBinaries = function() {
   if (electronSettings.icon) {
     var icon = platformSpecificSetting(electronSettings.icon);
     if (icon) {
-      var iconPath = path.join(process.cwd(), 'assets', 'app', icon);
+      var iconPath = path.join(process.env.PWD, 'private', icon);
       packagerSettings.icon = iconPath;
     }
   }
