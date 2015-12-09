@@ -16,6 +16,11 @@ This app, as well as the ready-to-distribute binaries (see [Deploy](#deploy)), i
 (forthcoming) the apps to be cached for speedier startup. You should add this directory to your
 `.gitignore`.
 
+## Building for Windows on Mac
+1. Install [homebrew](http://brew.sh/)
+2. `brew update`
+3. `brew install wine`
+
 ## Configuration
 Limited configuration is possible via `Meteor.settings.electron` For example
 ```json
