@@ -54,8 +54,8 @@ var packagerSettings = function(buildInfo, dirs){
   var packagerSettings = {
     dir: dirs.app,
     name: electronSettings.name || "Electron",
-    platform: build.platform,
-    arch: build.arch,
+    platform: buildInfo.platform,
+    arch: buildInfo.arch,
     version: "0.35.0",
     out: dirs.build,
     cache: dirs.binary,
