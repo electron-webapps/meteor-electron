@@ -904,9 +904,6 @@
         "mv": {
           "version": "2.1.1"
         },
-        "ncp": {
-          "version": "2.0.0"
-        },
         "plist": {
           "version": "1.2.0",
           "dependencies": {
