@@ -20,6 +20,18 @@ This app, as well as the ready-to-distribute binaries (see [Deploy](#deploy)), i
 1. Install [homebrew](http://brew.sh/)
 2. `brew update`
 3. `brew install wine`
+4. Add a Windows build to your settings.
+
+```json
+{
+  "electron": {
+    "builds": [
+      {"platform": "win32",
+       "arch": "x64"}
+    ]
+  }
+}
+```
 
 ## Configuration
 Limited configuration is possible via `Meteor.settings.electron` For example
