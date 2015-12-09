@@ -11,6 +11,7 @@ Npm.depends({
   "electron-packager": "https://github.com/mixmaxhq/electron-packager/archive/f511e2680efa39c014d8bedca872168e585f8daf.tar.gz",
   "is-running": "1.0.5",
   "mkdirp": "0.5.1",
+  "ncp": "2.0.0",
   "semver": "5.1.0"
 });
 

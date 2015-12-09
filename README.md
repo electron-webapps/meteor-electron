@@ -23,6 +23,7 @@ Limited configuration is possible via `Meteor.settings.electron` For example
   "electron": {
     "name": "MyApp",
     "icon": {
+      // Relative to your app's `private` directory.
       "osx": "build/MyApp.icns"
     },
     // Must conform to Semver: https://docs.npmjs.com/getting-started/semantic-versioning.
@@ -45,7 +46,10 @@ Limited configuration is possible via `Meteor.settings.electron` For example
     "protocols": [{
       "name": "MyApp",
       "schemes": ["myapp"]
-    }]
+    }],
+    // A directory of code to use instead of meteor-electron's default application, relative to your
+    // app's `private` directory. See warning below!
+    "appSrcDir": "app"
   }
 }
 ```
@@ -87,6 +91,14 @@ This project selectively exposes such functionality to the client, in a way that
 memory leaks, via the `Electron` module--see [`client.js`](client.js). To request that this module
 expose additional functionality, please [submit a pull request](https://github.com/rissem/meteor-electron/pull/new/master)
 or [file an issue](https://github.com/rissem/meteor-electron/issues/new).
+
+You may also substitute your own application code for `meteor-electron`'s default application by
+setting the `appSrcDir` settings option. `meteor-electron` will continue to package your application
+and serve the application update feed and download URLs, but in-app functionality will be your
+responsibility.  **Warning**: this responsibility includes setting up your application window and menu,
+checking for remote updates, registering the `Electron` module (that defines `Electron.isDesktop`),
+and possibly other things. If you take this route, it's recommended that you start by copying
+`meteor-electron`'s `app` directory.
 
 ### Q: How do I prevent the Electron app from being built/served in production if for instance I want to do that separately (means forthcoming)?
 
