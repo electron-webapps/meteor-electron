@@ -46,9 +46,6 @@ Limited configuration is possible via `Meteor.settings.electron` For example
     "width": 1024,
     "frame": true,
     "title-bar-style": "hidden",
-    "resizable": true,
-    "rootUrl": "https://..."
-    "title-bar-style": "hidden",
     "resizable": true
   }
 }
