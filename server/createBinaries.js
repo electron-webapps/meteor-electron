@@ -52,14 +52,11 @@ createBinaries = function() {
     var resolvedAppDir = path.join(process.env.PWD, 'private', electronSettings.appSrcDir, '/');
     ncp(resolvedAppDir, appDir);
   } else {
-    [
-      "autoUpdater.js",
-      "main.js",
-      "menu.js",
-      "package.json",
-      "preload.js",
-      "proxyWindowEvents.js"
-    ].forEach(function(filename) {
+    // See http://stackoverflow.com/a/29745318/495611 for how the package asset directory is derived.
+    // We can't read this out of the project directory like the user-specified app directory since
+    // we may be loaded from Atmosphere rather than locally.
+    var appFiles = fs.readdirSync(path.join('assets', 'packages', 'quark_electron', 'app'));
+    appFiles.forEach(function(filename) {
       var fileContents = Assets.getText(path.join("app", filename));
 
       // Replace parameters in `package.json`.

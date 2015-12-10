@@ -32,7 +32,6 @@ Package.on_use(function (api) {
     'server/index.js'
   ], 'server');
 
-  // When adding new files, also edit `server/createBinaries.js` to write these files into the app directory.
   api.addAssets([
     "app/autoUpdater.js",
     "app/main.js",
