@@ -1,6 +1,7 @@
 var electronPackager = Meteor.wrapAsync(Npm.require("electron-packager"));
 var fs = Npm.require('fs');
 var mkdirp = Meteor.wrapAsync(Npm.require('mkdirp'));
+var ncp = Meteor.wrapAsync(Npm.require('ncp'));
 var path = Npm.require('path');
 var proc = Npm.require('child_process');
 
@@ -46,29 +47,35 @@ createBinaries = function() {
   var appVersion = electronSettings.version;
   var appName = electronSettings.name;
 
-  [
-    "autoUpdater.js",
-    "main.js",
-    "menu.js",
-    "package.json",
-    "preload.js",
-    "proxyWindowEvents.js"
-  ].forEach(function(filename) {
-    var fileContents = Assets.getText(path.join("app", filename));
+  if (electronSettings.appSrcDir) {
+    // Ensure that the directory ends in a slash so that we copy its contents.
+    var resolvedAppDir = path.join(process.env.PWD, 'private', electronSettings.appSrcDir, '/');
+    ncp(resolvedAppDir, appDir);
+  } else {
+    [
+      "autoUpdater.js",
+      "main.js",
+      "menu.js",
+      "package.json",
+      "preload.js",
+      "proxyWindowEvents.js"
+    ].forEach(function(filename) {
+      var fileContents = Assets.getText(path.join("app", filename));
 
-    // Replace parameters in `package.json`.
-    if (filename === "package.json") {
-      var packageJSON = JSON.parse(fileContents);
-      if (appVersion) packageJSON.version = appVersion;
-      if (appName) {
-        packageJSON.name = appName.toLowerCase().replace(/\s/g, '-');
-        packageJSON.productName = appName;
+      // Replace parameters in `package.json`.
+      if (filename === "package.json") {
+        var packageJSON = JSON.parse(fileContents);
+        if (appVersion) packageJSON.version = appVersion;
+        if (appName) {
+          packageJSON.name = appName.toLowerCase().replace(/\s/g, '-');
+          packageJSON.productName = appName;
+        }
+        fileContents = JSON.stringify(packageJSON);
       }
-      fileContents = JSON.stringify(packageJSON);
-    }
 
-    writeFile(path.join(appDir, filename), fileContents);
-  });
+      writeFile(path.join(appDir, filename), fileContents);
+    });
+  }
 
   //TODO be smarter about caching this..
   exec("npm install", {cwd: appDir});
@@ -107,7 +114,7 @@ createBinaries = function() {
   if (electronSettings.icon) {
     var icon = platformSpecificSetting(electronSettings.icon);
     if (icon) {
-      var iconPath = path.join(process.cwd(), 'assets', 'app', icon);
+      var iconPath = path.join(process.env.PWD, 'private', icon);
       packagerSettings.icon = iconPath;
     }
   }
