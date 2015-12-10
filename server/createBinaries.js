@@ -6,6 +6,7 @@ var path = Npm.require('path');
 var proc = Npm.require('child_process');
 
 var writeFile = Meteor.wrapAsync(fs.writeFile);
+var readdir = Meteor.wrapAsync(fs.readdir);
 
 var exec = Meteor.wrapAsync(function(command, options, callback){
   proc.exec(command, options, function(err, stdout, stderr){
@@ -55,7 +56,7 @@ createBinaries = function() {
     // See http://stackoverflow.com/a/29745318/495611 for how the package asset directory is derived.
     // We can't read this out of the project directory like the user-specified app directory since
     // we may be loaded from Atmosphere rather than locally.
-    var appFiles = fs.readdirSync(path.join('assets', 'packages', 'quark_electron', 'app'));
+    var appFiles = readdir(path.join('assets', 'packages', 'quark_electron', 'app'));
     appFiles.forEach(function(filename) {
       var fileContents = Assets.getText(path.join("app", filename));
 
@@ -130,7 +131,7 @@ createBinaries = function() {
   // TODO(wearhere): make this platform independent
 
   // Locate the app in a way that's independent of its name (which may have been customized by the user).
-  var app = path.join(build, _.find(fs.readdirSync(build), function(file) {
+  var app = path.join(build, _.find(readdir(build), function(file) {
     return /\.app$/.test(file);
   }));
 
