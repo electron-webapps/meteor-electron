@@ -44,6 +44,9 @@ ElectronImplementation = {
   /**
    * Invokes _callback_ when the specified `BrowserWindow` event is fired.
    *
+   * This differs from `onEvent` in that it directs Electron to start emitting the relevant window
+   * event.
+   *
    * See https://github.com/atom/electron/blob/master/docs/api/browser-window.md#events for a list
    * of events.
    *
@@ -56,25 +59,27 @@ ElectronImplementation = {
    *   and returns no value.
    */
   onWindowEvent: function(event, callback) {
+    this.onEvent(event, callback);
+    ipc.send('observe-window-event', event);
+  },
+
+  /**
+   * Invokes _callback_ when the specified IPC event is fired.
+   *
+   * @param {String} event - The name of an event.
+   * @param {Function} callback - A function to invoke when `event` is triggered. Takes no arguments
+   *   and returns no value.
+   */
+  onEvent: function(event, callback) {
     var listeners = this._eventListeners[event];
     if (!listeners) {
       listeners = this._eventListeners[event] = [];
+      ipc.on(event, function() {
+        _.invoke(listeners, 'call');
+      });
     }
     listeners.push(callback);
-
-    ipc.send('onWindowEvent', event);
   },
 
-  _eventListeners: {},
-
-  _triggerWindowEvent: function(event) {
-    var listeners = this._eventListeners[event];
-    if (!listeners) return;
-
-    _.invoke(listeners, 'call');
-  },
+  _eventListeners: {}
 };
-
-ipc.on('triggerWindowEvent', function(event, arg) {
-  ElectronImplementation._triggerWindowEvent(arg);
-});
