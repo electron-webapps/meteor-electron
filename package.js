@@ -21,9 +21,11 @@ Package.on_use(function (api) {
 
   api.addFiles([
     'server/createBinaries.js',
+    'server/downloadUrl.js',
     'server/launchApp.js',
     'server/platformSpecificSetting.js',
     'server/serve.js',
+    'server/serveDownloadUrl.js',
     'server/serveUpdateFeed.js',
     // Must go last so that its dependencies have been defined.
     'server/index.js'

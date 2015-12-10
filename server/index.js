@@ -3,4 +3,5 @@ if ((process.env.NODE_ENV === 'development') && (process.env.ELECTRON_AUTO_BUILD
   launchApp(build);
 }
 
+serveDownloadUrl();
 serveUpdateFeed();
