@@ -22,8 +22,6 @@ if (electronSettings.updateFeedUrl) {
   };
 }
 
-createDefaultMenu(app, checkForUpdates);
-
 var launchUrl = electronSettings.rootUrl;
 if (electronSettings.launchPath) {
   launchUrl += electronSettings.launchPath;
@@ -79,10 +77,38 @@ if (electronSettings.frame === false){
 // Keep a global reference of the window object so that it won't be garbage collected
 // and the window closed.
 var mainWindow = null;
+var getMainWindow = function() {
+  return mainWindow;
+};
+
+// Unfortunately, we must set the menu before the application becomes ready and so before the main
+// window is available to be passed directly to `createDefaultMenu`.
+createDefaultMenu(app, getMainWindow, checkForUpdates);
 
 app.on("ready", function(){
   mainWindow = new BrowserWindow(windowOptions);
   proxyWindowEvents(mainWindow);
+
+  // Hide the main window instead of closing it, so that we can bring it back
+  // more quickly.
+  mainWindow.on('close', hideInsteadofClose);
+
   mainWindow.focus();
   mainWindow.loadURL(launchUrl);
+});
+
+var hideInsteadofClose = function(e) {
+  mainWindow.hide();
+  e.preventDefault();
+};
+
+app.on("before-quit", function(){
+  // We need to remove our close event handler from the main window,
+  // otherwise the app will not quit.
+  mainWindow.removeListener('close', hideInsteadofClose);
+});
+
+app.on("activate", function(){
+  // Show the main window when the customer clicks on the app icon.
+  if (!mainWindow.isVisible()) mainWindow.show();
 });
