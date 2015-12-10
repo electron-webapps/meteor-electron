@@ -985,6 +985,9 @@
     "is-running": {
       "version": "1.0.5"
     },
+    "lucy-dirsum": {
+      "version": "https://github.com/mixmaxhq/lucy-dirsum/archive/08299b483cd0f79d18cd0fa1c5081dcab67c5649.tar.gz"
+    },
     "mkdirp": {
       "version": "0.5.1",
       "dependencies": {
