@@ -108,18 +108,22 @@ createBinaries = function() {
   });
 
   var signingIdentity = electronSettings.sign;
+  var signingIdentityRequiredAndMissing = false;
   if (canServeUpdates()) {
     // Enable the auto-updater if possible.
     if ((platform === 'darwin') && !signingIdentity) {
       // If the app isn't signed and we try to use the auto-updater, it will
-      // throw an exception.
-      console.error('Developer ID signing identity is missing: remote updates will not work.');
+      // throw an exception. Log an error if the settings have changed, below.
+      signingIdentityRequiredAndMissing = true;
     } else {
       settings.updateFeedUrl = settings.rootUrl + UPDATE_FEED_PATH;
     }
   }
 
   if (settingsHaveChanged(settings, appDir)) {
+    if (signingIdentityRequiredAndMissing) {
+      console.error('Developer ID signing identity is missing: remote updates will not work.');
+    }
     buildRequired = true;
     writeFile(settingsPath(appDir), JSON.stringify(settings));
   }
