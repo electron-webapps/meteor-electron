@@ -133,7 +133,7 @@ createBinaries = function() {
     name: appName || "Electron",
     platform: platform,
     arch: arch,
-    version: "0.35.4",
+    version: "0.36.0",
     out: buildDir,
     cache: binaryDir,
     overwrite: true
