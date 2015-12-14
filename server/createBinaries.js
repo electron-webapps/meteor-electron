@@ -1,13 +1,13 @@
 var electronPackager = Meteor.wrapAsync(Npm.require("electron-packager"));
 var fs = Npm.require('fs');
 var mkdirp = Meteor.wrapAsync(Npm.require('mkdirp'));
-var ncp = Meteor.wrapAsync(Npm.require('ncp'));
 var path = Npm.require('path');
 var proc = Npm.require('child_process');
 var dirsum = Meteor.wrapAsync(Npm.require('lucy-dirsum'));
 var readFile = Meteor.wrapAsync(fs.readFile);
 var writeFile = Meteor.wrapAsync(fs.writeFile);
 var stat = Meteor.wrapAsync(fs.stat);
+var util = Npm.require('util');
 
 var exec = Meteor.wrapAsync(function(command, options, callback){
   proc.exec(command, options, function(err, stdout, stderr){
@@ -90,16 +90,20 @@ createBinaries = function() {
     // Record whether `package.json` has changed before overwriting it.
     var packageHasChanged = packageJSONHasChanged(packageJSON, appDir);
 
-    // Ensure that the directory ends in a slash so that we copy its contents.
+    // Copy the app directory over while also pruning old files, except for node_modules, which is
+    // pruned below. Ensure that the app source directory ends in a slash so we copy its contents.
     // TODO(wearhere): Platform independence.
-    ncp(path.join(resolvedAppSrcDir, '/'), appDir);
+    // TODO(wearhere): `rsync` also uses checksums to only copy what's necessary so theoretically we
+    // could always `rsync` rather than checking if the directory's changed first.
+    exec(util.format('rsync -a --delete --force --filter="P node_modules" "%s" "%s"',
+      path.join(resolvedAppSrcDir, '/'), appDir));
 
     // If we replaced the package parameters, update it in the app dir since we just overwrote it.
     if (didReplacePackageParameters) {
       writeFile(packageJSONPath(appDir), JSON.stringify(packageJSON));
     }
     if (packageHasChanged) {
-      exec("npm install", {cwd: appDir});
+      exec("npm install && npm prune", {cwd: appDir});
     }
   }
 
