@@ -20,7 +20,7 @@ This app, as well as the ready-to-distribute binaries (see [Deploy](#deploy)), i
 1. Install [homebrew](http://brew.sh/)
 2. `brew update`
 3. `brew install wine`
-4. Add a Windows build to your settings.
+4. Specify a Windows build in your settings (otherwise defaults to current platform/arch)
 
 ```json
 {
