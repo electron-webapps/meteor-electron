@@ -19,7 +19,7 @@ var createBuildDirectories = function(build){
   // may be cached:
   // TODO(jeff): Use existing binaries if the app hasn't changed.
 
-  var workingDir = path.join(process.env.PWD, '.meteor-electron', build.platform + "-" + build.arch);
+  var workingDir = path.join(process.cwd(), '.meteor-electron', build.platform + "-" + build.arch);
   mkdirp(workingDir);
 
   //TODO consider seeding the binaryDir from package assets so package
@@ -150,8 +150,8 @@ createBinaries = function() {
     // The auto-updater framework only supports installing ZIP releases:
     // https://github.com/Squirrel/Squirrel.Mac#update-json-format
     if (appName){
-      var downloadName = appName.toLowercase() + "-" + buildInfo.platform + "-" + buildInfo.arch + ".zip";
-    } else {
+      var downloadName = appName.toLowerCase() + "-" + buildInfo.platform + "-" + buildInfo.arch + ".zip";
+   } else {
       var downloadName = "Electron-" + buildInfo.platform + "-" + buildInfo.arch + ".zip";
     }
 
