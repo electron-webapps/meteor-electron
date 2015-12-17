@@ -30,72 +30,6 @@ var electronSettings = Meteor.settings.electron || {};
 
 var IS_MAC = (process.platform === 'darwin');
 
-var createBuildDirectories = function(build){
-  // Use a predictable directory so that other scripts can locate the builds, also so that the builds
-  // may be cached:
-
-  var workingDir = path.join(process.cwd(), '.meteor-electron', build.platform + "-" + build.arch);
-  mkdirp(workingDir);
-
-  //TODO consider seeding the binaryDir from package assets so package
-  //could work without an internet connection
-
-  // *binaryDir* holds the vanilla electron apps
-  var binaryDir = path.join(workingDir, "releases");
-  mkdirp(binaryDir);
-
-  // *appDir* holds the electron application that points to a meteor app
-  var appDir = path.join(workingDir, "apps");
-  mkdirp(appDir);
-
-  // *buildDir* contains the uncompressed apps
-  var buildDir = path.join(workingDir, "builds");
-  mkdirp(buildDir);
-
-  // *finalDir* contains zipped apps ready to be downloaded
-  var finalDir = path.join(workingDir, "final");
-  mkdirp(finalDir);
-
-  return {
-    working: workingDir,
-    binary: binaryDir,
-    app: appDir,
-    build: buildDir,
-    final: finalDir
-  };
-};
-
-var getPackagerSettings = function(buildInfo, dirs){
-  var packagerSettings = {
-    dir: dirs.app,
-    name: electronSettings.name || "Electron",
-    platform: buildInfo.platform,
-    arch: buildInfo.arch,
-    version: "0.36.0",
-    out: dirs.build,
-    cache: dirs.binary,
-    overwrite: true
-  };
-
-  if (electronSettings.version) {
-    packagerSettings['app-version'] = electronSettings.version;
-  }
-  if (electronSettings.icon) {
-    var icon = platformSpecificSetting(electronSettings.icon, buildInfo.platform);
-    if (icon) {
-      var iconPath = path.join(process.cwd(), 'private', icon);
-      packagerSettings.icon = iconPath;
-    }
-  }
-  if (electronSettings.sign) {
-    packagerSettings.sign = electronSettings.sign;
-  }
-  if (electronSettings.protocols) {
-    packagerSettings.protocols = electronSettings.protocols;
-  }
-  return packagerSettings;
-};
-
 /* Entry Point */
 createBinaries = function() {
   var results = {};
@@ -249,6 +183,72 @@ createBinaries = function() {
 
   return results;
 };
+
+function createBuildDirectories(build){
+  // Use a predictable directory so that other scripts can locate the builds, also so that the builds
+  // may be cached:
+
+  var workingDir = path.join(process.cwd(), '.meteor-electron', build.platform + "-" + build.arch);
+  mkdirp(workingDir);
+
+  //TODO consider seeding the binaryDir from package assets so package
+  //could work without an internet connection
+
+  // *binaryDir* holds the vanilla electron apps
+  var binaryDir = path.join(workingDir, "releases");
+  mkdirp(binaryDir);
+
+  // *appDir* holds the electron application that points to a meteor app
+  var appDir = path.join(workingDir, "apps");
+  mkdirp(appDir);
+
+  // *buildDir* contains the uncompressed apps
+  var buildDir = path.join(workingDir, "builds");
+  mkdirp(buildDir);
+
+  // *finalDir* contains zipped apps ready to be downloaded
+  var finalDir = path.join(workingDir, "final");
+  mkdirp(finalDir);
+
+  return {
+    working: workingDir,
+    binary: binaryDir,
+    app: appDir,
+    build: buildDir,
+    final: finalDir
+  };
+}
+
+function getPackagerSettings(buildInfo, dirs){
+  var packagerSettings = {
+    dir: dirs.app,
+    name: electronSettings.name || "Electron",
+    platform: buildInfo.platform,
+    arch: buildInfo.arch,
+    version: "0.36.0",
+    out: dirs.build,
+    cache: dirs.binary,
+    overwrite: true
+  };
+
+  if (electronSettings.version) {
+    packagerSettings['app-version'] = electronSettings.version;
+  }
+  if (electronSettings.icon) {
+    var icon = platformSpecificSetting(electronSettings.icon, buildInfo.platform);
+    if (icon) {
+      var iconPath = path.join(process.cwd(), 'private', icon);
+      packagerSettings.icon = iconPath;
+    }
+  }
+  if (electronSettings.sign) {
+    packagerSettings.sign = electronSettings.sign;
+  }
+  if (electronSettings.protocols) {
+    packagerSettings.protocols = electronSettings.protocols;
+  }
+  return packagerSettings;
+}
 
 function settingsPath(appDir) {
   return path.join(appDir, 'electronSettings.json');
