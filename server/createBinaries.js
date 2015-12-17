@@ -52,7 +52,7 @@ createBinaries = function() {
 
     var resolvedAppSrcDir;
     if (electronSettings.appSrcDir) {
-      resolvedAppSrcDir = path.join(process.cwd(), 'private', electronSettings.appSrcDir);
+      resolvedAppSrcDir = path.join(process.env.PWD, 'private', electronSettings.appSrcDir);
     } else {
       // See http://stackoverflow.com/a/29745318/495611 for how the package asset directory is derived.
       // We can't read this from the project directory like the user-specified app directory since
@@ -185,7 +185,7 @@ function createBuildDirectories(build){
   // Use a predictable directory so that other scripts can locate the builds, also so that the builds
   // may be cached:
 
-  var workingDir = path.join(process.cwd(), '.meteor-electron', build.platform + "-" + build.arch);
+  var workingDir = path.join(process.env.PWD, '.meteor-electron', build.platform + "-" + build.arch);
   mkdirp(workingDir);
 
   //TODO consider seeding the binaryDir from package assets so package
@@ -234,7 +234,7 @@ function getPackagerSettings(buildInfo, dirs){
   if (electronSettings.icon) {
     var icon = platformSpecificSetting(electronSettings.icon, buildInfo.platform);
     if (icon) {
-      var iconPath = path.join(process.cwd(), 'private', icon);
+      var iconPath = path.join(process.env.PWD, 'private', icon);
       packagerSettings.icon = iconPath;
     }
   }
