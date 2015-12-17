@@ -26,6 +26,14 @@ var exists = function(path) {
   }
 };
 
+var projectRoot = function(){
+  if (process.platform === "win32"){
+    return process.env.METEOR_SHELL_DIR.split(".meteor")[0];
+  } else {
+    return process.env.PWD;
+  }
+}
+
 var electronSettings = Meteor.settings.electron || {};
 
 var IS_MAC = (process.platform === 'darwin');
@@ -52,7 +60,7 @@ createBinaries = function() {
 
     var resolvedAppSrcDir;
     if (electronSettings.appSrcDir) {
-      resolvedAppSrcDir = path.join(process.env.PWD, 'private', electronSettings.appSrcDir);
+      resolvedAppSrcDir = path.join(projectRoot(), 'private', electronSettings.appSrcDir);
     } else {
       // See http://stackoverflow.com/a/29745318/495611 for how the package asset directory is derived.
       // We can't read this from the project directory like the user-specified app directory since
@@ -185,7 +193,7 @@ function createBuildDirectories(build){
   // Use a predictable directory so that other scripts can locate the builds, also so that the builds
   // may be cached:
 
-  var workingDir = path.join(process.env.PWD, '.meteor-electron', build.platform + "-" + build.arch);
+  var workingDir = path.join(projectRoot(), '.meteor-electron', build.platform + "-" + build.arch);
   mkdirp(workingDir);
 
   //TODO consider seeding the binaryDir from package assets so package
