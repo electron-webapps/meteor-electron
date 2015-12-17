@@ -6,31 +6,38 @@ var ElectronProcesses = new Mongo.Collection("processes");
 
 var ProcessManager = {
   add: function(pid){
-    ElectronProcesses.insert({pid: pid, settings: Meteor.settings.electron});
+    ElectronProcesses.insert({ pid: pid });
   },
 
   running: function(){
-    //TODO restrict search based on Meteor.settings.electron
-    var isProcessRunning = false;
+    var runningProcess;
     ElectronProcesses.find().forEach(function(proc){
       if (isRunning(proc.pid)){
-        isProcessRunning = true;
-      }
-      else {
-        ElectronProcesses.remove({_id: proc._id});
+        runningProcess = proc.pid;
+      } else {
+        ElectronProcesses.remove({ _id: proc._id });
       }
     });
-    return isProcessRunning;
+    return runningProcess;
+  },
+
+  stop: function(pid) {
+    process.kill(pid);
+    ElectronProcesses.remove({ pid: pid });
   }
 };
 
-launchApp = function(app) {
+launchApp = function(app, appIsNew) {
   // Safeguard.
   if (process.env.NODE_ENV !== 'development') return;
 
-  if (ProcessManager.running()){
-    // console.log("app is already running");
-    return;
+  var runningProcess = ProcessManager.running();
+  if (runningProcess) {
+    if (!appIsNew) {
+      return;
+    } else {
+      ProcessManager.stop(runningProcess);
+    }
   }
 
   //TODO make this platform independent
