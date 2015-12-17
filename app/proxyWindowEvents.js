@@ -24,10 +24,10 @@ var ipc = require('ipc-main');
 var proxyWindowEvents = function(window) {
   var eventsObserved = {};
 
-  ipc.on('onWindowEvent', function(event, arg) {
+  ipc.on('observe-window-event', function(event, arg) {
     if ((event.sender === window.webContents) && !eventsObserved[arg]) {
       eventsObserved[arg] = function() {
-        window.webContents.send('triggerWindowEvent', arg);
+        window.webContents.send(arg);
       };
       window.on(arg, eventsObserved[arg]);
     }

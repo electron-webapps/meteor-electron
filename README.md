@@ -40,6 +40,7 @@ Limited configuration is possible via `Meteor.settings.electron` For example
   "electron": {
     "name": "MyApp",
     "icon": {
+      // Relative to your app's `private` directory.
       "osx": "build/MyApp.icns"
     },
     // Must conform to Semver: https://docs.npmjs.com/getting-started/semantic-versioning.
@@ -48,8 +49,8 @@ Limited configuration is possible via `Meteor.settings.electron` For example
     "rootUrl": "https://myapp.com",
     // If you want your app to open to a non-root URL. Will be appended to the root URL.
     "launchPath": "/app/landing",
-    // Place the latest version of the built app at this location.
-    "latestUrl": "...",
+    // Place the built app at this location. If the URL contains '{{version}}', it will be replaced with `version`.
+    "downloadUrl": "https://myapp.com/download/{{version}}/app-darwin.zip",
     // Must be set to enable auto-updates on Mac.
     "sign": "Developer ID Application: ...",
     // minHeight/maxHeight are also supported.
@@ -59,9 +60,13 @@ Limited configuration is possible via `Meteor.settings.electron` For example
     "frame": true,
     "title-bar-style": "hidden",
     "resizable": true,
-    "rootUrl": "https://..."
-    "title-bar-style": "hidden",
-    "resizable": true
+    "protocols": [{
+      "name": "MyApp",
+      "schemes": ["myapp"]
+    }],
+    // A directory of code to use instead of meteor-electron's default application, relative to your
+    // app's `private` directory. See warning below!
+    "appSrcDir": "app"
   }
 }
 ```
@@ -79,8 +84,9 @@ if (! Electron.isDesktop){
 
 ## Deploy
 
-Copy `YOUR_PROJECT_DIRECTORY/.meteor-electron/final/app-darwin.zip` to a publically-accessible
-location, then set `latestUrl` in `Meteor.settings.electron` to that URL.
+Copy `YOUR_PROJECT_DIRECTORY/.meteor-electron/final/YOUR_APP_NAME.zip` to a publically-accessible
+location, then set `downloadUrl` in `Meteor.settings.electron` to that URL. This URL will be served
+at `/app/latest/download`.
 
 ## Example
 
@@ -102,6 +108,14 @@ This project selectively exposes such functionality to the client, in a way that
 memory leaks, via the `Electron` module--see [`client.js`](client.js). To request that this module
 expose additional functionality, please [submit a pull request](https://github.com/rissem/meteor-electron/pull/new/master)
 or [file an issue](https://github.com/rissem/meteor-electron/issues/new).
+
+You may also substitute your own application code for `meteor-electron`'s default application by
+setting the `appSrcDir` settings option. `meteor-electron` will continue to package your application
+and serve the application update feed and download URLs, but in-app functionality will be your
+responsibility.  **Warning**: this responsibility includes setting up your application window and menu,
+checking for remote updates, registering the `Electron` module (that defines `Electron.isDesktop`),
+and possibly other things. If you take this route, it's recommended that you start by copying
+`meteor-electron`'s `app` directory.
 
 ### Q: How do I prevent the Electron app from being built/served in production if for instance I want to do that separately (means forthcoming)?
 

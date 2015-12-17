@@ -17,18 +17,23 @@ _.extend(Updater.prototype, {
   },
 
   checkForUpdates: function(userTriggered /* optional */) {
+    // Asking the updater to check while it's already checking may result in an error.
+    if (this._checkPending) return;
+
     this._clearScheduledCheck();
     if (this._updatePending) {
       this._askToApplyUpdate();
       return;
     }
 
+    this._checkPending = true;
     if (userTriggered) this._userCheckPending = true;
 
     autoUpdater.checkForUpdates();
   },
 
   _onUpdateError: function() {
+    this._checkPending = false;
     if (this._userCheckPending) {
       this._userCheckPending = false;
 
@@ -43,6 +48,7 @@ _.extend(Updater.prototype, {
   },
 
   _onUpdateNotAvailable: function() {
+    this._checkPending = false;
     if (this._userCheckPending) {
       this._userCheckPending = false;
 
@@ -57,6 +63,7 @@ _.extend(Updater.prototype, {
   },
 
   _onUpdateDownloaded: function() {
+    this._checkPending = false;
     this._userCheckPending = false;
     this._updatePending = true;
     this._askToApplyUpdate();

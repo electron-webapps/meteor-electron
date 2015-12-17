@@ -3,8 +3,13 @@ var fs = Npm.require('fs');
 var mkdirp = Meteor.wrapAsync(Npm.require('mkdirp'));
 var path = Npm.require('path');
 var proc = Npm.require('child_process');
-
+var dirsum = Meteor.wrapAsync(Npm.require('lucy-dirsum'));
+var readFile = Meteor.wrapAsync(fs.readFile);
 var writeFile = Meteor.wrapAsync(fs.writeFile);
+var stat = Meteor.wrapAsync(fs.stat);
+var util = Npm.require('util');
+var rimraf = Meteor.wrapAsync(Npm.require('rimraf'));
+var ncp = Meteor.wrapAsync(Npm.require('ncp'));
 
 var exec = Meteor.wrapAsync(function(command, options, callback){
   proc.exec(command, options, function(err, stdout, stderr){
@@ -12,12 +17,22 @@ var exec = Meteor.wrapAsync(function(command, options, callback){
   });
 });
 
+var exists = function(path) {
+  try {
+    stat(path);
+    return true;
+  } catch(e) {
+    return false;
+  }
+};
+
 var electronSettings = Meteor.settings.electron || {};
+
+var IS_MAC = (process.platform === 'darwin');
 
 var createBuildDirectories = function(build){
   // Use a predictable directory so that other scripts can locate the builds, also so that the builds
   // may be cached:
-  // TODO(jeff): Use existing binaries if the app hasn't changed.
 
   var workingDir = path.join(process.cwd(), '.meteor-electron', build.platform + "-" + build.arch);
   mkdirp(workingDir);
@@ -47,16 +62,16 @@ var createBuildDirectories = function(build){
     app: appDir,
     build: buildDir,
     final: finalDir
-  }
-}
+  };
+};
 
-var packagerSettings = function(buildInfo, dirs){
+var getPackagerSettings = function(buildInfo, dirs){
   var packagerSettings = {
     dir: dirs.app,
     name: electronSettings.name || "Electron",
     platform: buildInfo.platform,
     arch: buildInfo.arch,
-    version: "0.35.0",
+    version: "0.36.0",
     out: dirs.build,
     cache: dirs.binary,
     overwrite: true
@@ -68,102 +83,258 @@ var packagerSettings = function(buildInfo, dirs){
   if (electronSettings.icon) {
     var icon = platformSpecificSetting(electronSettings.icon, buildInfo.platform);
     if (icon) {
-      var iconPath = path.join(process.cwd(), 'assets', 'app', icon);
+      var iconPath = path.join(process.cwd(), 'private', icon);
       packagerSettings.icon = iconPath;
     }
   }
   if (electronSettings.sign) {
     packagerSettings.sign = electronSettings.sign;
   }
+  if (electronSettings.protocols) {
+    packagerSettings.protocols = electronSettings.protocols;
+  }
   return packagerSettings;
-}
+};
 
 /* Entry Point */
 createBinaries = function() {
-  var result = {};
-
+  var results = {};
+  var builds;
   if (electronSettings.builds){
-    var builds = electronSettings.builds;
+    builds = electronSettings.builds;
   } else {
     //just build for the current platform/architecture
-    var builds = [{platform: process.platform, arch: process.arch}];
+    builds = [{platform: process.platform, arch: process.arch}];
   }
 
   builds.forEach(function(buildInfo){
+    var buildRequired = false;
+
     var buildDirs = createBuildDirectories(buildInfo);
 
-    /* Write out Electron Settings */
+    /* Write out Electron application files */
     var appVersion = electronSettings.version;
     var appName = electronSettings.name;
-    var signingIdentity = electronSettings.sign;
 
-    var settings = _.defaults({}, electronSettings, {
-      rootUrl: process.env.ROOT_URL
-    });
-
-    if (canServeUpdates()) {
-      // Enable the auto-updater if possible.
-      if ((buildInfo.platform === 'darwin') && !signingIdentity) {
-        // If the app isn't signed and we try to use the auto-updater, it will
-        // throw an exception.
-        console.error('Developer ID signing identity is missing: remote updates will not work.');
-      } else {
-        settings.updateFeedUrl = settings.rootUrl + UPDATE_FEED_PATH;
-      }
+    var resolvedAppSrcDir;
+    if (electronSettings.appSrcDir) {
+      resolvedAppSrcDir = path.join(process.cwd(), 'private', electronSettings.appSrcDir);
+    } else {
+      // See http://stackoverflow.com/a/29745318/495611 for how the package asset directory is derived.
+      // We can't read this from the project directory like the user-specified app directory since
+      // we may be loaded from Atmosphere rather than locally.
+      resolvedAppSrcDir = path.join('assets', 'packages', 'quark_electron', 'app');
     }
-    writeFile(path.join(buildDirs.app, "electronSettings.json"), JSON.stringify(settings));
 
-    /* Write out Electron application files */
-    [
-      "autoUpdater.js",
-      "main.js",
-      "menu.js",
-      "package.json",
-      "preload.js",
-      "proxyWindowEvents.js"
-    ].forEach(function(filename) {
-      var fileContents = Assets.getText(path.join("app", filename));
+    if (appHasChanged(resolvedAppSrcDir, buildDirs.working)) {
+      buildRequired = true;
 
-      // Replace parameters in `package.json`.
-      if (filename === "package.json") {
-        var packageJSON = JSON.parse(fileContents);
+      var packagePath = packageJSONPath(resolvedAppSrcDir);
+      var packageJSON = Npm.require(packagePath);
+
+      // If we're using the default package.json, replace its parameters (note: before the comparison).
+      var didReplacePackageParameters = false;
+      if (!electronSettings.appSrcDir) {
         if (appVersion) packageJSON.version = appVersion;
         if (appName) {
           packageJSON.name = appName.toLowerCase().replace(/\s/g, '-');
           packageJSON.productName = appName;
         }
-        fileContents = JSON.stringify(packageJSON);
+        didReplacePackageParameters = true;
       }
 
-      writeFile(path.join(buildDirs.app, filename), fileContents);
+      // Record whether `package.json` has changed before overwriting it.
+      var packageHasChanged = packageJSONHasChanged(packageJSON, buildDirs.app);
+
+      // Copy the app directory over while also pruning old files.
+       if (IS_MAC) {
+        // Ensure that the app source directory ends in a slash so we copy its contents.
+        // Except node_modules from pruning since we prune that below.
+        // TODO(wearhere): `rsync` also uses checksums to only copy what's necessary so theoretically we
+        // could always `rsync` rather than checking if the directory's changed first.
+        exec(util.format('rsync -a --delete --force --filter="P node_modules" "%s" "%s"',
+          path.join(resolvedAppSrcDir, '/'), buildDirs.app));
+      } else {
+        // TODO(wearhere): More efficient sync on Windows (where `rsync` isn't available.)
+        rimraf(buildDirs.app);
+        mkdirp(buildDirs.app);
+        ncp(resolvedAppSrcDir, buildDirs.app);
+      }
+
+      // If we replaced the package parameters, update it in the app dir since we just overwrote it.
+      if (didReplacePackageParameters) {
+        writeFile(packageJSONPath(buildDirs.app), JSON.stringify(packageJSON));
+      }
+      if (packageHasChanged || !IS_MAC) {
+        exec("npm install && npm prune", {cwd: buildDirs.app});
+      }
+    }
+
+    /* Write out Electron Settings */
+    var settings = _.defaults({}, electronSettings, {
+      rootUrl: process.env.ROOT_URL
     });
 
-    //TODO be smarter about caching this..
-    exec("npm install", {cwd: buildDirs.app});
+    var signingIdentity = electronSettings.sign;
+    var signingIdentityRequiredAndMissing = false;
+    if (canServeUpdates()) {
+      // Enable the auto-updater if possible.
+      if ((buildInfo.platform === 'darwin') && !signingIdentity) {
+        // If the app isn't signed and we try to use the auto-updater, it will
+        // throw an exception. Log an error if the settings have changed, below.
+        signingIdentityRequiredAndMissing = true;
+      } else {
+        settings.updateFeedUrl = settings.rootUrl + UPDATE_FEED_PATH;
+      }
+    }
+
+    if (settingsHaveChanged(settings, buildDirs.app)) {
+      if (signingIdentityRequiredAndMissing) {
+        console.error('Developer ID signing identity is missing: remote updates will not work.');
+      }
+      buildRequired = true;
+      writeFile(settingsPath(buildDirs.app), JSON.stringify(settings));
+    }
+
+    var packagerSettings = getPackagerSettings(buildInfo, buildDirs);
+    if (packagerSettings.icon && iconHasChanged(packagerSettings.icon, buildDirs.working)) {
+      buildRequired = true;
+    }
+
+    // TODO(wearhere): If/when the signing identity expires, does its name change? If not, we'll need
+    // to force the app to be rebuilt somehow.
+
+    if (packagerSettingsHaveChanged(packagerSettings, buildDirs.working)) {
+      buildRequired = true;
+    }
+
+    var app = appPath(appName, buildInfo.platform, buildInfo.arch, buildDirs.build);
+    if (!exists(app)) {
+      buildRequired = true;
+    }
 
     /* Create Build */
-    var build = electronPackager(packagerSettings(buildInfo, buildDirs))[0];
-    console.log("Build created for ", buildInfo.platform, buildInfo.arch, "at", build);
+    if (buildRequired) {
+      var build = electronPackager(packagerSettings)[0];
+      console.log("Build created for ", buildInfo.platform, buildInfo.arch, "at", build);
+    }
 
     /* Package the build for download. */
 
     // The auto-updater framework only supports installing ZIP releases:
     // https://github.com/Squirrel/Squirrel.Mac#update-json-format
+    var downloadName;
     if (appName){
-      var downloadName = appName.toLowerCase() + "-" + buildInfo.platform + "-" + buildInfo.arch + ".zip";
+      downloadName = appName.toLowerCase() + "-" + buildInfo.platform + "-" + buildInfo.arch + ".zip";
    } else {
-      var downloadName = "Electron-" + buildInfo.platform + "-" + buildInfo.arch + ".zip";
+      downloadName = "Electron-" + buildInfo.platform + "-" + buildInfo.arch + ".zip";
     }
 
     var compressedDownload = path.join(buildDirs.final, downloadName);
 
-    // Use `ditto` to ZIP the app because I couldn't find a good npm module to do it and also that's
-    // what a couple of other related projects do:
-    // - https://github.com/Squirrel/Squirrel.Mac/blob/8caa2fa2007b29a253f7f5be8fc9f36ace6aa30e/Squirrel/SQRLZipArchiver.h#L24
-    // - https://github.com/jenslind/electron-release/blob/4a2a701c18664ec668c3570c3907c0fee72f5e2a/index.js#L109
-    exec('ditto -ck --sequesterRsrc --keepParent "' + build + '" "' + compressedDownload + '"');
-    console.log("Downloadable created at", compressedDownload);
-    result[buildInfo.platform + "-" + buildInfo.arch] = build
+    if (buildRequired || !exists(compressedDownload)) {
+      // Use `ditto` to ZIP the app because I couldn't find a good npm module to do it and also that's
+      // what a couple of other related projects do:
+      // - https://github.com/Squirrel/Squirrel.Mac/blob/8caa2fa2007b29a253f7f5be8fc9f36ace6aa30e/Squirrel/SQRLZipArchiver.h#L24
+      // - https://github.com/jenslind/electron-release/blob/4a2a701c18664ec668c3570c3907c0fee72f5e2a/index.js#L109
+      exec('ditto -ck --sequesterRsrc --keepParent "' + app + '" "' + compressedDownload + '"');
+      console.log("Downloadable created at", compressedDownload);
+    }
+
+    results[buildInfo.platform + "-" + buildInfo.arch] = {
+      app: app,
+      buildRequired: buildRequired
+    };
   });
-  return result;
+
+  return results;
 };
+
+function settingsPath(appDir) {
+  return path.join(appDir, 'electronSettings.json');
+}
+
+function settingsHaveChanged(settings, appDir) {
+  var electronSettingsPath = settingsPath(appDir);
+  var existingElectronSettings;
+  try {
+    existingElectronSettings = Npm.require(electronSettingsPath);
+  } catch(e) {
+    // No existing settings.
+  }
+  return !existingElectronSettings || !_.isEqual(settings, existingElectronSettings);
+}
+
+function appHasChanged(appSrcDir, workingDir) {
+  var appChecksumPath = path.join(workingDir, 'appChecksum.txt');
+  var existingAppChecksum;
+  try {
+    existingAppChecksum = readFile(appChecksumPath, 'utf8');
+  } catch(e) {
+    // No existing checksum.
+  }
+
+  var appChecksum = dirsum(appSrcDir);
+  if (appChecksum !== existingAppChecksum) {
+    writeFile(appChecksumPath, appChecksum);
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function packageJSONPath(appDir) {
+  return path.join(appDir, 'package.json');
+}
+
+function packageJSONHasChanged(packageJSON, appDir) {
+  var packagePath = packageJSONPath(appDir);
+  var existingPackageJSON;
+  try {
+    existingPackageJSON = Npm.require(packagePath);
+  } catch(e) {
+    // No existing package.
+  }
+
+  return !existingPackageJSON || !_.isEqual(packageJSON, existingPackageJSON);
+}
+
+function packagerSettingsHaveChanged(settings, workingDir) {
+  var settingsPath = path.join(workingDir, 'lastUsedPackagerSettings.json');
+  var existingPackagerSettings;
+  try {
+    existingPackagerSettings = Npm.require(settingsPath);
+  } catch(e) {
+    // No existing settings.
+  }
+
+  if (!existingPackagerSettings || !_.isEqual(settings, existingPackagerSettings)) {
+    writeFile(settingsPath, JSON.stringify(settings));
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function iconHasChanged(iconPath, workingDir) {
+  var iconChecksumPath = path.join(workingDir, 'iconChecksum.txt');
+  var existingIconChecksum;
+  try {
+    existingIconChecksum = readFile(iconChecksumPath, 'utf8');
+  } catch(e) {
+    // No existing checksum.
+  }
+
+  // `dirsum` works for files too.
+  var iconChecksum = dirsum(iconPath);
+  if (iconChecksum !== existingIconChecksum) {
+    writeFile(iconChecksumPath, iconChecksum);
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function appPath(appName, platform, arch, buildDir) {
+  return path.join(buildDir, [appName, platform, arch].join('-'), appName + '.app');
+}
