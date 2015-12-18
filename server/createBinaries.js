@@ -6,6 +6,7 @@ var proc = Npm.require('child_process');
 var dirsum = Meteor.wrapAsync(Npm.require('lucy-dirsum'));
 var readFile = Meteor.wrapAsync(fs.readFile);
 var writeFile = Meteor.wrapAsync(fs.writeFile);
+var rmFile = Meteor.wrapAsync(fs.unlink);
 var stat = Meteor.wrapAsync(fs.stat);
 var util = Npm.require('util');
 var rimraf = Meteor.wrapAsync(Npm.require('rimraf'));
@@ -56,7 +57,7 @@ createBinaries = function() {
 
     /* Write out Electron application files */
     var appVersion = electronSettings.version;
-    var appName = electronSettings.name;
+    var appName = electronSettings.name || "electron";
 
     var resolvedAppSrcDir;
     if (electronSettings.appSrcDir) {
@@ -72,7 +73,7 @@ createBinaries = function() {
       buildRequired = true;
 
       var packagePath = packageJSONPath(resolvedAppSrcDir);
-      var packageJSON = Npm.require(packagePath);
+      var packageJSON = Npm.require(path.join(process.cwd(), packagePath));
 
       // If we're using the default package.json, replace its parameters (note: before the comparison).
       var didReplacePackageParameters = false;
@@ -94,7 +95,7 @@ createBinaries = function() {
         // Except node_modules from pruning since we prune that below.
         // TODO(wearhere): `rsync` also uses checksums to only copy what's necessary so theoretically we
         // could always `rsync` rather than checking if the directory's changed first.
-        exec(util.format('rsync -a --delete --force --filter="P node_modules" "%s" "%s"',
+         exec(util.format('rsync -a --delete --force --filter="P node_modules" "%s" "%s"',
           path.join(resolvedAppSrcDir, '/'), buildDirs.app));
       } else {
         // TODO(wearhere): More efficient sync on Windows (where `rsync` isn't available.)
@@ -105,6 +106,9 @@ createBinaries = function() {
 
       // If we replaced the package parameters, update it in the app dir since we just overwrote it.
       if (didReplacePackageParameters) {
+        //for some reason when this file isn't manually removed it
+        //fails to be overwritten with an EACCES error
+        rmFile(packageJSONPath(buildDirs.app));
         writeFile(packageJSONPath(buildDirs.app), JSON.stringify(packageJSON));
       }
       if (packageHasChanged || !IS_MAC) {
@@ -242,7 +246,7 @@ function getPackagerSettings(buildInfo, dirs){
   if (electronSettings.icon) {
     var icon = platformSpecificSetting(electronSettings.icon, buildInfo.platform);
     if (icon) {
-      var iconPath = path.join(process.env.PWD, 'private', icon);
+      var iconPath = path.join(projectRoot(), 'private', icon);
       packagerSettings.icon = iconPath;
     }
   }

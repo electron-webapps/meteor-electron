@@ -904,9 +904,6 @@
         "mv": {
           "version": "2.1.1"
         },
-        "ncp": {
-          "version": "2.0.0"
-        },
         "plist": {
           "version": "1.2.0",
           "dependencies": {
@@ -931,54 +928,6 @@
         },
         "rcedit": {
           "version": "0.3.0"
-        },
-        "rimraf": {
-          "version": "2.4.4",
-          "dependencies": {
-            "glob": {
-              "version": "5.0.15",
-              "dependencies": {
-                "inflight": {
-                  "version": "1.0.4",
-                  "dependencies": {
-                    "wrappy": {
-                      "version": "1.0.1"
-                    }
-                  }
-                },
-                "inherits": {
-                  "version": "2.0.1"
-                },
-                "minimatch": {
-                  "version": "3.0.0",
-                  "dependencies": {
-                    "brace-expansion": {
-                      "version": "1.1.2",
-                      "dependencies": {
-                        "balanced-match": {
-                          "version": "0.3.0"
-                        },
-                        "concat-map": {
-                          "version": "0.0.1"
-                        }
-                      }
-                    }
-                  }
-                },
-                "once": {
-                  "version": "1.3.3",
-                  "dependencies": {
-                    "wrappy": {
-                      "version": "1.0.1"
-                    }
-                  }
-                },
-                "path-is-absolute": {
-                  "version": "1.0.0"
-                }
-              }
-            }
-          }
         },
         "run-series": {
           "version": "1.1.4"
