@@ -58,6 +58,7 @@ createBinaries = function() {
     /* Write out Electron application files */
     var appVersion = electronSettings.version;
     var appName = electronSettings.name || "electron";
+    var appDescription = electronSettings.description;
 
     var resolvedAppSrcDir;
     if (electronSettings.appSrcDir) {
@@ -82,6 +83,9 @@ createBinaries = function() {
         if (appName) {
           packageJSON.name = appName.toLowerCase().replace(/\s/g, '-');
           packageJSON.productName = appName;
+        }
+        if (appDescription){
+          packageJSON.description = appDescription;
         }
         didReplacePackageParameters = true;
       }
@@ -108,7 +112,7 @@ createBinaries = function() {
       if (didReplacePackageParameters) {
         //for some reason when this file isn't manually removed it
         //fails to be overwritten with an EACCES error
-        rmFile(packageJSONPath(buildDirs.app));
+        rimraf(packageJSONPath(buildDirs.app));
         writeFile(packageJSONPath(buildDirs.app), JSON.stringify(packageJSON));
       }
       if (packageHasChanged || !IS_MAC) {
