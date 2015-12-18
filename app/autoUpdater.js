@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var app = require('electron').app;
 var autoUpdater = require('electron').autoUpdater;
 var dialog = require('electron').dialog;
 
@@ -78,6 +79,22 @@ _.extend(Updater.prototype, {
       buttons: ['Ask me later', 'Quit and install']
     }, function(result) {
       if (result > 0) {
+        // Emit the 'before-quit' event since the app won't quit otherwise
+        // (https://app.asana.com/0/19141607276671/74169390751974) and the app won't:
+        // https://github.com/atom/electron/issues/3837
+        var event = {
+          _defaultPrevented: false,
+          isDefaultPrevented: function() {
+            return this._defaultPrevented;
+          },
+          preventDefault: function() {
+            this._defaultPrevented = true;
+          }
+        };
+
+        app.emit('before-quit', event);
+        if (event.isDefaultPrevented()) return;
+
         autoUpdater.quitAndInstall();
       } else {
         self._scheduleCheck();
