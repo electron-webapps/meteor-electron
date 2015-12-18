@@ -9,6 +9,15 @@ Electron = {
     return /Electron/.test(navigator.userAgent);
   },
 
+  /**
+   * @return {Boolean} `true` if the app is running in Windows, `false` otherwise.
+   */
+  isWindows: function(){
+    return /Windows NT/.test(navigator.userAgent);
+  },
+
+
+
   // When the app is running in Electron, the following methods will be implemented by `preload.js`.
   // Stub them out in case the client tries to call them even when not running in Electron.
 
