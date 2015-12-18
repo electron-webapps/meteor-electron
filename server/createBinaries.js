@@ -47,7 +47,21 @@ createBinaries = function() {
     builds = electronSettings.builds;
   } else {
     //just build for the current platform/architecture
-    builds = [{platform: process.platform, arch: process.arch}];
+    // TODO(wearhere): Re-enable this once https://github.com/rissem/meteor-electron/issues/39 is
+    // fixed.
+    // builds = [{platform: process.platform, arch: process.arch}];
+    console.error('You must specify one or more builds in Meteor.settings.electron.');
+    return results;
+  }
+
+  // Filter builds by platform (see reasoning in README).
+  builds = _.filter(builds, function(buildInfo) {
+    return buildInfo.platform === process.platform;
+  });
+
+  if (_.isEmpty(builds)) {
+    console.error('No builds available for this platform.');
+    return results;
   }
 
   builds.forEach(function(buildInfo){
@@ -345,5 +359,6 @@ function iconHasChanged(iconPath, workingDir) {
 }
 
 function appPath(appName, platform, arch, buildDir) {
-  return path.join(buildDir, [appName, platform, arch].join('-'), appName + '.app');
+  var appExtension = (platform === 'darwin') ? '.app' : '.exe';
+  return path.join(buildDir, [appName, platform, arch].join('-'), appName + appExtension);
 }
