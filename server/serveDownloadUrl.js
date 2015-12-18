@@ -1,11 +1,14 @@
 serveDownloadUrl = function() {
   // Abort if the user has not yet configured downloads.
-  if (!DOWNLOAD_URL) return;
+  if (!DOWNLOAD_URL_WIN32 && !DOWNLOAD_URL_OSX) return;
 
   serve('/app/latest/download', function(req, res, next) {
-    // TODO: Choose the Windows vs. Mac download URL based on the user agent.
     res.statusCode = 302; // Moved Temporarily
-    res.setHeader('Location', DOWNLOAD_URL);
+    if (req.query.platform === "osx"){
+      res.setHeader('Location', DOWNLOAD_URL_OSX);
+    } else if (req.query.platform === "win32"){
+      res.setHeader('Location', DOWNLOAD_URL_WIN32);
+    }
     res.end();
   });
 };
