@@ -164,7 +164,7 @@ createBinaries = function() {
     /* Package the build for download. */
     // TODO(rissem): make this platform independent
 
-    if (IS_MAC) {
+    if (buildInfo.platform === 'darwin') {
       // The auto-updater framework only supports installing ZIP releases:
       // https://github.com/Squirrel/Squirrel.Mac#update-json-format
       var downloadName = (appName || "app") + ".zip";
