@@ -24,7 +24,6 @@
     "canServeUpdates": true,
     "createBinaries": true,
     "launchApp": true,
-    "platformSpecificSetting": true,
     "serve": true,
     "serveDownloadUrl": true,
     "serveUpdateFeed": true,

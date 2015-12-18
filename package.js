@@ -26,7 +26,6 @@ Package.on_use(function (api) {
     'server/createBinaries.js',
     'server/downloadUrl.js',
     'server/launchApp.js',
-    'server/platformSpecificSetting.js',
     'server/serve.js',
     'server/serveDownloadUrl.js',
     'server/serveUpdateFeed.js',
