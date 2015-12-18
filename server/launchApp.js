@@ -28,9 +28,6 @@ var ProcessManager = {
 };
 
 launchApp = function(app, appIsNew) {
-    if (process.platform === 'win32'){
-      return;
-    }
   // Safeguard.
   if (process.env.NODE_ENV !== 'development') return;
 
@@ -43,14 +40,20 @@ launchApp = function(app, appIsNew) {
     }
   }
 
-  //TODO make this platform independent
-  var electronExecutable = path.join(app, "Contents", "MacOS", "Electron");
-  var appDir = path.join(app, "Contents", "Resources", "app");
+  var electronExecutable, child;
+  if (process.platform === 'win32') {
+    electronExecutable = app;
+    child = proc.spawn(electronExecutable);
+  } else {
+    electronExecutable = path.join(app, "Contents", "MacOS", "Electron");
+    var appDir = path.join(app, "Contents", "Resources", "app");
 
-  //TODO figure out how to handle case where electron executable or
-  //app dir don't exist
+    //TODO figure out how to handle case where electron executable or
+    //app dir don't exist
 
-  var child = proc.spawn(electronExecutable, [appDir]);
+    child = proc.spawn(electronExecutable, [appDir]);
+  }
+
   child.stdout.on("data", function(data){
     console.log("ATOM:", data.toString());
   });
