@@ -28,6 +28,9 @@ var ProcessManager = {
 };
 
 launchApp = function(app, appIsNew) {
+    if (process.platform === 'win32'){
+      return;
+    }
   // Safeguard.
   if (process.env.NODE_ENV !== 'development') return;
 
