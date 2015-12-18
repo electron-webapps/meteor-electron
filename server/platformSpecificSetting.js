@@ -1,5 +1,5 @@
-platformSpecificSetting = function(settings) {
-  switch (process.platform) {
+platformSpecificSetting = function(settings, platform) {
+  switch (platform) {
     case 'darwin':
       return settings.osx;
   }

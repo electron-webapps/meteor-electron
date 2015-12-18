@@ -12,7 +12,9 @@ Npm.depends({
   "is-running": "1.0.5",
   "lucy-dirsum": "https://github.com/mixmaxhq/lucy-dirsum/archive/08299b483cd0f79d18cd0fa1c5081dcab67c5649.tar.gz",
   "mkdirp": "0.5.1",
-  "semver": "5.1.0"
+  "ncp": "2.0.0",
+  "rimraf": "2.4.4",
+  "semver": "5.1.0",
 });
 
 Package.on_use(function (api) {
