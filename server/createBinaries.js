@@ -363,5 +363,6 @@ function iconHasChanged(iconPath, workingDir) {
 }
 
 function appPath(appName, platform, arch, buildDir) {
-  return path.join(buildDir, [appName, platform, arch].join('-'), appName + '.app');
+  var appExtension = (platform === 'darwin') ? '.app' : '.exe';
+  return path.join(buildDir, [appName, platform, arch].join('-'), appName + appExtension);
 }
