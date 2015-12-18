@@ -66,14 +66,14 @@ createBinaries = function() {
       // See http://stackoverflow.com/a/29745318/495611 for how the package asset directory is derived.
       // We can't read this from the project directory like the user-specified app directory since
       // we may be loaded from Atmosphere rather than locally.
-      resolvedAppSrcDir = path.join('assets', 'packages', 'quark_electron', 'app');
+      resolvedAppSrcDir = path.join(process.cwd(), 'assets', 'packages', 'quark_electron', 'app');
     }
 
     if (appHasChanged(resolvedAppSrcDir, buildDirs.working)) {
       buildRequired = true;
 
       var packagePath = packageJSONPath(resolvedAppSrcDir);
-      var packageJSON = Npm.require(path.join(process.cwd(), packagePath));
+      var packageJSON = Npm.require(packagePath);
 
       // If we're using the default package.json, replace its parameters (note: before the comparison).
       var didReplacePackageParameters = false;
