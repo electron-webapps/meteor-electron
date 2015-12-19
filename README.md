@@ -20,9 +20,12 @@ This app, as well as the ready-to-distribute binaries (see [Deploy](#deploy)), i
 1. Install [homebrew](http://brew.sh/)
 2. `brew update`
 3. `brew install wine`
-4. Specify a Windows build in your settings (otherwise defaults to current platform/arch). Note that
-each platform must be built _on that platform_. Mac cannot be built on Windows because it requires
-code-signing, and Windows cannot be be built on Mac due to https://github.com/atom/grunt-electron-installer/issues/90.
+4. Specify a Windows build in your settings (otherwise defaults to current platform/arch). **Note**:
+For deployment, both Mac and Windows apps must be built on Mac, because code-signing a Mac app
+requires a Mac, and changing a Windows application icon does not work on Windows at present due to
+https://github.com/maxogden/electron-packager/issues/53. _However_, the Windows _installer_ (that
+packages the Windows app for distribution) must be built on Windows due to
+https://github.com/atom/grunt-electron-installer/issues/90.
 
 ```json
 {

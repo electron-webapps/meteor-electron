@@ -54,11 +54,6 @@ createBinaries = function() {
     return results;
   }
 
-  // Filter builds by platform (see reasoning in README).
-  builds = _.filter(builds, function(buildInfo) {
-    return buildInfo.platform === process.platform;
-  });
-
   if (_.isEmpty(builds)) {
     console.error('No builds available for this platform.');
     return results;
