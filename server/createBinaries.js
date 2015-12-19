@@ -54,11 +54,6 @@ createBinaries = function() {
     return results;
   }
 
-  // Filter builds by platform (see reasoning in README).
-  builds = _.filter(builds, function(buildInfo) {
-    return buildInfo.platform === process.platform;
-  });
-
   if (_.isEmpty(builds)) {
     console.error('No builds available for this platform.');
     return results;
@@ -90,19 +85,14 @@ createBinaries = function() {
       var packagePath = packageJSONPath(resolvedAppSrcDir);
       var packageJSON = Npm.require(packagePath);
 
-      // If we're using the default package.json, replace its parameters (note: before the comparison).
-      var didReplacePackageParameters = false;
-      if (!electronSettings.appSrcDir) {
-        if (appVersion) packageJSON.version = appVersion;
-        if (appName) {
-          packageJSON.name = appName.toLowerCase().replace(/\s/g, '-');
-          packageJSON.productName = appName;
-        }
-        if (appDescription){
-          packageJSON.description = appDescription;
-        }
-        didReplacePackageParameters = true;
-      }
+      // Fill in missing package.json fields (note: before the comparison).
+      // This isn't just a convenience--`Squirrel.Windows` requires the description and version.
+      packageJSON = _.defaults(packageJSON, {
+        name: appName && appName.toLowerCase().replace(/\s/g, '-'),
+        productName: appName,
+        description: appDescription,
+        version: appVersion
+      });
 
       // Record whether `package.json` has changed before overwriting it.
       var packageHasChanged = packageJSONHasChanged(packageJSON, buildDirs.app);
@@ -122,13 +112,12 @@ createBinaries = function() {
         ncp(resolvedAppSrcDir, buildDirs.app);
       }
 
-      // If we replaced the package parameters, update it in the app dir since we just overwrote it.
-      if (didReplacePackageParameters) {
-        //for some reason when this file isn't manually removed it
-        //fails to be overwritten with an EACCES error
-        rimraf(packageJSONPath(buildDirs.app));
-        writeFile(packageJSONPath(buildDirs.app), JSON.stringify(packageJSON));
-      }
+      // Update the package.json (after copying the app dir, so as to not overwrite it).
+      // For some reason when this file isn't manually removed it fails to be overwritten with an
+      // EACCES error.
+      rimraf(packageJSONPath(buildDirs.app));
+      writeFile(packageJSONPath(buildDirs.app), JSON.stringify(packageJSON));
+
       if (packageHasChanged || !IS_MAC) {
         exec("npm install && npm prune", {cwd: buildDirs.app});
       }
@@ -255,7 +244,12 @@ function getPackagerSettings(buildInfo, dirs){
     version: "0.36.0",
     out: dirs.build,
     cache: dirs.binary,
-    overwrite: true
+    overwrite: true,
+    // The EXE's `ProductName` is the preferred title of application shortcuts created by `Squirrel.Windows`.
+    // If we don't set it, it will default to "Electron".
+    'version-string': {
+      ProductName: electronSettings.name || 'Electron'
+    }
   };
 
   if (electronSettings.version) {
