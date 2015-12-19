@@ -255,7 +255,12 @@ function getPackagerSettings(buildInfo, dirs){
     version: "0.36.0",
     out: dirs.build,
     cache: dirs.binary,
-    overwrite: true
+    overwrite: true,
+    // The EXE's `ProductName` is the preferred title of application shortcuts created by `Squirrel.Windows`.
+    // If we don't set it, it will default to "Electron".
+    'version-string': {
+      ProductName: electronSettings.name || 'Electron'
+    }
   };
 
   if (electronSettings.version) {
