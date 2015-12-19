@@ -1,8 +1,13 @@
+DOWNLOAD_URL_WIN32 = undefined;
+DOWNLOAD_URL_DARWIN = undefined;
+
 var electronSettings = Meteor.settings.electron || {};
 var latestVersion = electronSettings.version;
-var downloadUrl = electronSettings.downloadUrl;
-if (downloadUrl) {
-  downloadUrl = downloadUrl.replace('{{version}}', latestVersion);
+if (electronSettings.downloadUrl){
+  if (electronSettings.downloadUrl.win32){
+    DOWNLOAD_URL_WIN32 = electronSettings.downloadUrl.win32.replace('{{version}}', latestVersion);
+  }
+  if (electronSettings.downloadUrl.darwin){
+    DOWNLOAD_URL_DARWIN   = electronSettings.downloadUrl.darwin.replace('{{version}}', latestVersion);
+  }
 }
-
-DOWNLOAD_URL = downloadUrl;
