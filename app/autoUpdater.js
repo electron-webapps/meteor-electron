@@ -4,7 +4,7 @@ var autoUpdater = require('electron').autoUpdater;
 var dialog = require('electron').dialog;
 
 // Daily.
-var SCHEDULED_CHECK_INTERVAL = 1 * 60 * 1000;
+var SCHEDULED_CHECK_INTERVAL = 24 * 60 * 60 * 1000;
 
 var Updater = function() {
   autoUpdater.on('error', this._onUpdateError.bind(this));
