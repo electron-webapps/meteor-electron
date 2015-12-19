@@ -127,7 +127,7 @@ createBinaries = function() {
 
     var signingIdentity = electronSettings.sign;
     var signingIdentityRequiredAndMissing = false;
-    if (canServeUpdates()) {
+    if (canServeUpdates(buildInfo.platform)) {
       // Enable the auto-updater if possible.
       if ((buildInfo.platform === 'darwin') && !signingIdentity) {
         // If the app isn't signed and we try to use the auto-updater, it will
