@@ -47,6 +47,7 @@ Limited configuration is possible via `Meteor.settings.electron` For example
     },
     // Must conform to Semver: https://docs.npmjs.com/getting-started/semantic-versioning.
     "version": "0.1.0",
+    "description": "A really cool app.",
     // If unset, defaults to the ROOT_URL environment variable.
     "rootUrl": "https://myapp.com",
     // If you want your app to open to a non-root URL. Will be appended to the root URL.
@@ -94,8 +95,10 @@ location, then set `downloadUrl` in `Meteor.settings.electron` to that URL. This
 at `/app/latest/download`.
 
 ## Building and serving an auto-updating Windows app
-1. Build app on a windows machine. Specify the arch if desired in Meteor.settings.
-2. Ensure the URL specified by `windowsDownloadPrefix` has an empty RELEASES file.
+
+0. Make sure that you have specified `version` and `description` in `Meteor.settings.electron`.
+1. Build app on a windows machine. Specify the arch if desired in `Meteor.settings.electron`.
+2. Ensure the URL specified by `windowsDownloadPrefix` has an empty `RELEASES` file.
 2. Run the [electron installer grunt plugin](https://github.com/atom/grunt-electron-installer) against your app. Should look something like https://github.com/rissem/meteor-electron-test/tree/master/.test. `windowsDownloadPrefix` will typically point to a CDN, but can be any simple HTTP server.
 3. Copy the output of the grunt task to the server serving `windowsDownloadPrefix`
 4. Run the installer again and it will generate diffs and a new RELEASES file. After copying this to `windowsDownloadPrefix` again apps that check for updates should receive a new version.
