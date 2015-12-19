@@ -92,7 +92,8 @@ at `/app/latest/download`.
 
 ## Building and serving an auto-updating Windows app
 1. Build app on a windows machine. Specify the arch if desired in Meteor.settings.
-2. Run the [electron installer grunt plugin](https://github.com/atom/grunt-electron-installer) against your app. Should look something like https://github.com/rissem/meteor-electron-test/tree/master/.test It's important that the URL you specify at `windowsDownloadPrefix` serves a RELEASES file (I'm pretty sure the RELEASES file can be blank). `windowsDownloadPrefix` will typically point to a CDN, but can be any simple HTTP server.
+2. Ensure the URL specified by `windowsDownloadPrefix` has an empty RELEASES file.
+2. Run the [electron installer grunt plugin](https://github.com/atom/grunt-electron-installer) against your app. Should look something like https://github.com/rissem/meteor-electron-test/tree/master/.test. `windowsDownloadPrefix` will typically point to a CDN, but can be any simple HTTP server.
 3. Copy the output of the grunt task to the server serving `windowsDownloadPrefix`
 4. Run the installer again and it will generate diffs and a new RELEASES file. After copying this to `windowsDownloadPrefix` again apps that check for updates should receive a new version.
 
