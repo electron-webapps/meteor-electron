@@ -262,7 +262,7 @@ function getPackagerSettings(buildInfo, dirs){
     packagerSettings['app-version'] = electronSettings.version;
   }
   if (electronSettings.icon) {
-    var icon = platformSpecificSetting(electronSettings.icon, buildInfo.platform);
+    var icon = electronSettings.icon[buildInfo.platform];
     if (icon) {
       var iconPath = path.join(projectRoot(), 'private', icon);
       packagerSettings.icon = iconPath;

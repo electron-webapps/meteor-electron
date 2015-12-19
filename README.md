@@ -43,7 +43,7 @@ Limited configuration is possible via `Meteor.settings.electron` For example
     "name": "MyApp",
     "icon": {
       // Relative to your app's `private` directory.
-      "osx": "build/MyApp.icns"
+      "darwin": "build/MyApp.icns"
     },
     // Must conform to Semver: https://docs.npmjs.com/getting-started/semantic-versioning.
     "version": "0.1.0",
