@@ -1,4 +1,81 @@
 var app = require('electron').app; // Module to control application life.
+var childProcess = require("child_process");
+var path = require("path");
+var fs = require("fs");
+
+// var log = function(msg){
+//   fs.appendFile("C:\\Users\\Michael\\electron.log", msg + "\n", function(err){
+//     if (err){
+//       throw err;
+//     }
+//   })
+// };
+
+var log = function(){};
+
+var installShortcut = function(callback){
+  var updateDotExe = path.resolve(path.dirname(process.execPath), '..', 'update.exe');
+  var child = childProcess.spawn(updateDotExe, ["--createShortcut", "mixmax.exe"], { detached: true });
+  child.on('close', function(code) {
+    callback();
+  });
+};
+
+var handleStartupEvent = function() {
+  if (process.platform !== 'win32') {
+    return false;
+  }
+
+  var squirrelCommand = process.argv[1];
+  switch (squirrelCommand) {
+    case '--squirrel-install':
+      log("SQUIRREL INSTALL");
+
+    case '--squirrel-updated':
+      log("SQUIRREL UPDATED");
+      // Optionally do things such as:
+      //
+      // - Install desktop and start menu shortcuts
+      // - Add your .exe to the PATH
+      // - Write to the registry for things like file associations and
+      //   explorer context menus
+
+      // Always quit when done
+      installShortcut(function(){
+        app.quit();
+      })
+
+      return true;
+    case '--squirrel-uninstall':
+      log("SQUIRREL UNINSTALL");
+
+      // Undo anything you did in the --squirrel-install and
+      // --squirrel-updated handlers
+
+      // Always quit when done
+      app.quit();
+
+      return true;
+    case '--squirrel-obsolete':
+      log("SQUIRREL OBSOLETE");
+      // This is called on the outgoing version of your app before
+      // we update to the new version - it's the opposite of
+      // --squirrel-updated
+      app.quit();
+      return true;
+  }
+};
+
+app.on("window-all-closed", function(){
+  if (process.platform !== "darwin"){
+    app.quit();
+  }
+})
+
+if (handleStartupEvent()) {
+  return;
+}
+
 var BrowserWindow = require('electron').BrowserWindow; // Module to create native browser window.
 var autoUpdater = require('./autoUpdater');
 var path = require("path");
