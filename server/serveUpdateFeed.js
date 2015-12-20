@@ -35,7 +35,7 @@ serveUpdateFeed = function() {
   // https://github.com/squirrel/squirrel.windows
   // (Summary 'cause those docs are scant: the Windows app is going to expect the update feed URL
   // to represent a directory from within which it can fetch the RELEASES file and packages. The
-  // above `serve` call serves _just_ '/app/latest', whereas this serves its contents.
+  // above `serve` call serves _just_ '/app/latest', whereas this serves its contents.)
   if (canServeUpdates("win32")) {
     // `path.dirname` works even on Windows.
     var windowsDownloadPrefix = path.dirname(DOWNLOAD_URLS['win32']);
