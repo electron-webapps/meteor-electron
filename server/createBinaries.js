@@ -241,7 +241,7 @@ function getPackagerSettings(buildInfo, dirs){
     name: electronSettings.name || "Electron",
     platform: buildInfo.platform,
     arch: buildInfo.arch,
-    version: "0.36.0",
+    version: "0.36.1",
     out: dirs.build,
     cache: dirs.binary,
     overwrite: true,
