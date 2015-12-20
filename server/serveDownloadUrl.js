@@ -1,5 +1,5 @@
 serveDownloadUrl = function() {
-  serve('/app/latest/download', function(req, res, next) {
+  serve('/app/download', function(req, res, next) {
     var downloadUrl = DOWNLOAD_URLS[req.query.platform];
     if (downloadUrl) {
       res.statusCode = 302; // Moved Temporarily
