@@ -1,20 +1,18 @@
+var path = Npm.require('path');
 var semver = Npm.require('semver');
+var urlJoin = Npm.require('url-join');
 var electronSettings = Meteor.settings.electron || {};
 var latestVersion = electronSettings.version;
 
 canServeUpdates = function(platform) {
-  if (! latestVersion){
+  if (!latestVersion){
     return false;
   }
-  if (platform === "darwin"){
-    return typeof(DOWNLOAD_URL_DARWIN) !== 'undefined';
-  } else if (platform === "win32"){
-    return typeof(DOWNLOAD_URL_WIN32) !== 'undefined';
-  }
+
+  return !!DOWNLOAD_URLS[platform];
 };
 
 UPDATE_FEED_PATH = "/app/latest";
-
 
 serveUpdateFeed = function() {
   // https://github.com/Squirrel/Squirrel.Mac#server-support
@@ -28,19 +26,28 @@ serveUpdateFeed = function() {
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify({
-          url: DOWNLOAD_URL_DARWIN
+          url: DOWNLOAD_URLS['darwin']
         }));
       }
     });
   }
 
   // https://github.com/squirrel/squirrel.windows
-  if (canServeUpdates("win32")){
+  // (Summary 'cause those docs are scant: the Windows app is going to expect the update feed URL
+  // to represent a directory from within which it can fetch the RELEASES file and packages. The
+  // above `serve` call serves _just_ '/app/latest', whereas this serves its contents.)
+  if (canServeUpdates("win32")) {
+    // `path.dirname` works even on Windows.
+    var windowsDownloadPrefix = path.dirname(DOWNLOAD_URLS['win32']);
     serveDir(UPDATE_FEED_PATH, function(req, res, next){
       //first strip off the UPDATE_FEED_PATH
       var path = req.url.split(UPDATE_FEED_PATH)[1];
       res.statusCode = 302;
-      res.setHeader("Location", electronSettings.windowsDownloadURLPrefix + path);
+      // Cache-bust the RELEASES file.
+      if (/RELEASES/.test(path)) {
+        path += (/\?/.test(path) ? '&' : '?') + 'cb=' + Date.now();
+      }
+      res.setHeader("Location", urlJoin(windowsDownloadPrefix, path));
       res.end();
     });
   }

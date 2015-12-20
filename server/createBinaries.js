@@ -79,23 +79,23 @@ createBinaries = function() {
       resolvedAppSrcDir = path.join(process.cwd(), 'assets', 'packages', 'quark_electron', 'app');
     }
 
+    // Check if the package.json has changed before copying over the app files, to account for
+    // changes made in the app source dir.
+    var packagePath = packageJSONPath(resolvedAppSrcDir);
+    var packageJSON = Npm.require(packagePath);
+
+    // Fill in missing package.json fields (note: before the comparison).
+    // This isn't just a convenience--`Squirrel.Windows` requires the description and version.
+    packageJSON = _.defaults(packageJSON, {
+      name: appName && appName.toLowerCase().replace(/\s/g, '-'),
+      productName: appName,
+      description: appDescription,
+      version: appVersion
+    });
+    var packageHasChanged = packageJSONHasChanged(packageJSON, buildDirs.app);
+
     if (appHasChanged(resolvedAppSrcDir, buildDirs.working)) {
       buildRequired = true;
-
-      var packagePath = packageJSONPath(resolvedAppSrcDir);
-      var packageJSON = Npm.require(packagePath);
-
-      // Fill in missing package.json fields (note: before the comparison).
-      // This isn't just a convenience--`Squirrel.Windows` requires the description and version.
-      packageJSON = _.defaults(packageJSON, {
-        name: appName && appName.toLowerCase().replace(/\s/g, '-'),
-        productName: appName,
-        description: appDescription,
-        version: appVersion
-      });
-
-      // Record whether `package.json` has changed before overwriting it.
-      var packageHasChanged = packageJSONHasChanged(packageJSON, buildDirs.app);
 
       // Copy the app directory over while also pruning old files.
        if (IS_MAC) {
@@ -111,16 +111,18 @@ createBinaries = function() {
         mkdirp(buildDirs.app);
         ncp(resolvedAppSrcDir, buildDirs.app);
       }
+    }
 
-      // Update the package.json (after copying the app dir, so as to not overwrite it).
+    /* Write out the application package.json */
+    // Do this after writing out the application files, to not overwrite it. Do it even if the app
+    // source dir didn't change, since the change might have stemmed from a change in `Meteor.settings.electron`.
+    if (packageHasChanged || !IS_MAC) {
       // For some reason when this file isn't manually removed it fails to be overwritten with an
       // EACCES error.
       rimraf(packageJSONPath(buildDirs.app));
       writeFile(packageJSONPath(buildDirs.app), JSON.stringify(packageJSON));
 
-      if (packageHasChanged || !IS_MAC) {
-        exec("npm install && npm prune", {cwd: buildDirs.app});
-      }
+      exec("npm install && npm prune", {cwd: buildDirs.app});
     }
 
     /* Write out Electron Settings */
