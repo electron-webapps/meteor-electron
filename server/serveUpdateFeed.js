@@ -43,6 +43,10 @@ serveUpdateFeed = function() {
       //first strip off the UPDATE_FEED_PATH
       var path = req.url.split(UPDATE_FEED_PATH)[1];
       res.statusCode = 302;
+      // Cache-bust the RELEASES file.
+      if (/RELEASES/.test(path)) {
+        path += (/\?/.test(path) ? '&' : '?') + 'cb=' + Date.now();
+      }
       res.setHeader("Location", urlJoin(windowsDownloadPrefix, path));
       res.end();
     });
