@@ -17,15 +17,11 @@ This app, as well as the ready-to-distribute binaries (see [Deploy](#deploy)), i
 `.gitignore`.
 
 ## Building for Windows on Mac
+
 1. Install [homebrew](http://brew.sh/)
 2. `brew update`
 3. `brew install wine`
-4. Specify a Windows build in your settings (otherwise defaults to current platform/arch). **Note**:
-For deployment, both Mac and Windows apps must be built on Mac, because code-signing a Mac app
-requires a Mac, and changing a Windows application icon does not work on Windows at present due to
-https://github.com/maxogden/electron-packager/issues/53. _However_, the Windows _installer_ (that
-packages the Windows app for distribution) must be built on Windows due to
-https://github.com/atom/grunt-electron-installer/issues/90.
+4. Specify a Windows build in your settings (otherwise defaults to current platform/arch).
 
 ```json
 {
@@ -94,23 +90,33 @@ if (! Electron.isDesktop){
 }
 ```
 
-## Deploy
+## Deploying
 
-Copy `YOUR_PROJECT_DIRECTORY/.meteor-electron/final/YOUR_APP_NAME.zip` to a publically-accessible
+### Building and serving an auto-updating Mac app
+
+Build your app on a a Mac, because remote updates require code-signing and that requires a Mac.
+
+Copy `YOUR_PROJECT_DIRECTORY/.meteor-electron/darwin-x64/final/YOUR_APP_NAME.zip` to a publically-accessible
 location, then set `downloadUrl` in `Meteor.settings.electron` to that URL. This URL will be served
-at `/app/latest/download`.
+at `/app/download?platform=darwin`.
 
-## Building and serving an auto-updating Windows app
+### Building and serving an auto-updating Windows app
 
 0. Make sure that you have specified `version` and `description` in `Meteor.settings.electron`.
-1. Build app on a windows machine. Specify the arch if desired in `Meteor.settings.electron`.
+1. Build the app [on a Mac](#building-for-windows-on-mac), because changing a Windows application icon
+[does not work on Windows at present](https://github.com/maxogden/electron-packager/issues/53).
 2. Ensure the URL specified by `Meteor.settings.electron.downloadUrls.win32` has an empty `RELEASES` file.
-2. Run the [electron installer grunt plugin](https://github.com/atom/grunt-electron-installer) against your app. Should look something like https://github.com/rissem/meteor-electron-test/tree/master/.test. The value of `remoteReleases` should be the same as `Meteor.settings.electron.downloadUrls.win32`.
+2. On a Windows machine or in a Windows VM ([not a Mac, at present](https://github.com/atom/grunt-electron-installer/issues/90)),
+run the [electron installer grunt plugin](https://github.com/atom/grunt-electron-installer) against your app.
+Your Gruntfile should look something like https://github.com/rissem/meteor-electron-test/tree/master/.test.
+The value of `remoteReleases` should be your webapp's `ROOT_URL` + '/app/latest'.
 3. Copy the output to the server serving `Meteor.settings.electron.downloadUrls.win32`, to be served
 from that location.
 4. When you publish a new update, run the installer again and it will generate diffs, a new `RELEASES` file,
 and new installers. After copying these to `Meteor.settings.electron.downloadUrls.win32` again (overwriting
 the `RELEASES` file and installers), apps that check for updates should receive a new version.
+
+The installer for the latest version of your app will be served at `/app/download?platform=win32`.
 
 ## Example
 
