@@ -25,11 +25,12 @@
     "createBinaries": true,
     "launchApp": true,
     "serve": true,
+    "serveDir": true,
     "serveDownloadUrl": true,
     "serveUpdateFeed": true,
 
     // Global variables.
-    "DOWNLOAD_URL": true,
+    "DOWNLOAD_URLS": true,
     "UPDATE_FEED_PATH": true
   }
 }

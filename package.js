@@ -24,7 +24,7 @@ Package.on_use(function (api) {
 
   api.addFiles([
     'server/createBinaries.js',
-    'server/downloadUrl.js',
+    'server/downloadUrls.js',
     'server/launchApp.js',
     'server/serve.js',
     'server/serveDownloadUrl.js',

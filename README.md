@@ -55,9 +55,12 @@ Limited configuration is possible via `Meteor.settings.electron` For example
     "rootUrl": "https://myapp.com",
     // If you want your app to open to a non-root URL. Will be appended to the root URL.
     "launchPath": "/app/landing",
-    // Place the built app at this location. If the URL contains '{{version}}', it will be replaced with `version`.
-    "downloadUrl": {
-      "win32": "https://myapp.com/download/{{version}}/installApp.exe",
+    // URLs from which downloads are served. A CDN is recommended, but any HTTP server will do.
+    "downloadUrls": {
+      // Copy the output of `grunt-electron-installer` (see [Building and serving an auto-updating Windows app](#building-and-serving-an-auto-updating-windows-app))
+      // to this location. Do not rename the files.
+      "win32": "https://myapp.com/download/",
+      // Place the latest app at this location. If the URL contains '{{version}}', it will be replaced with `version`.
       "darwin": "https://myapp.com/download/{{version}}/app-darwin.zip"
     }
     // Must be set to enable auto-updates on Mac.
@@ -101,10 +104,13 @@ at `/app/latest/download`.
 
 0. Make sure that you have specified `version` and `description` in `Meteor.settings.electron`.
 1. Build app on a windows machine. Specify the arch if desired in `Meteor.settings.electron`.
-2. Ensure the URL specified by `windowsDownloadPrefix` has an empty `RELEASES` file.
-2. Run the [electron installer grunt plugin](https://github.com/atom/grunt-electron-installer) against your app. Should look something like https://github.com/rissem/meteor-electron-test/tree/master/.test. `windowsDownloadPrefix` will typically point to a CDN, but can be any simple HTTP server.
-3. Copy the output of the grunt task to the server serving `windowsDownloadPrefix`
-4. Run the installer again and it will generate diffs and a new RELEASES file. After copying this to `windowsDownloadPrefix` again apps that check for updates should receive a new version.
+2. Ensure the URL specified by `Meteor.settings.electron.downloadUrls.win32` has an empty `RELEASES` file.
+2. Run the [electron installer grunt plugin](https://github.com/atom/grunt-electron-installer) against your app. Should look something like https://github.com/rissem/meteor-electron-test/tree/master/.test. The value of `remoteReleases` should be the same as `Meteor.settings.electron.downloadUrls.win32`.
+3. Copy the output to the server serving `Meteor.settings.electron.downloadUrls.win32`, to be served
+from that location.
+4. When you publish a new update, run the installer again and it will generate diffs, a new `RELEASES` file,
+and new installers. After copying these to `Meteor.settings.electron.downloadUrls.win32` again (overwriting
+the `RELEASES` file and installers), apps that check for updates should receive a new version.
 
 ## Example
 

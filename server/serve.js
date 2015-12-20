@@ -16,12 +16,12 @@ serve = function(path, handler) {
 
 serveDir = function(dir, handler){
   //path starts with dir
-  var regex = new RegExp("^" + dir)
   if (Package["iron:router"]){
     Package["iron:router"].Router.route(dir + "/:stuff", function(){
       handler(this.request, this.response, this.next);
     }, {where: "server"});
   } else {
+    var regex = new RegExp("^" + dir);
     WebApp.rawConnectHandlers.use(function(req, res, next){
       if (regex.test(req.path)) {
         handler(req, res, next);
@@ -30,4 +30,4 @@ serveDir = function(dir, handler){
       }
     });
   }
-}
+};
