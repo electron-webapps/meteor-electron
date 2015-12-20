@@ -1001,6 +1001,9 @@
     },
     "semver": {
       "version": "5.1.0"
+    },
+    "url-join": {
+      "version": "0.0.1"
     }
   }
 }

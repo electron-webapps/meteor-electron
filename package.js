@@ -15,6 +15,7 @@ Npm.depends({
   "ncp": "2.0.0",
   "rimraf": "2.4.4",
   "semver": "5.1.0",
+  "url-join": "0.0.1"
 });
 
 Package.on_use(function (api) {

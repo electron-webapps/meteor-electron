@@ -1,5 +1,6 @@
 var path = Npm.require('path');
 var semver = Npm.require('semver');
+var urlJoin = Npm.require('url-join');
 var electronSettings = Meteor.settings.electron || {};
 var latestVersion = electronSettings.version;
 
@@ -42,8 +43,7 @@ serveUpdateFeed = function() {
       //first strip off the UPDATE_FEED_PATH
       var path = req.url.split(UPDATE_FEED_PATH)[1];
       res.statusCode = 302;
-      // Can't use `path.join` since this is a URL. Two slashes in a row are fine if present.
-      res.setHeader("Location", windowsDownloadPrefix + '/' + path);
+      res.setHeader("Location", urlJoin(windowsDownloadPrefix, path));
       res.end();
     });
   }
