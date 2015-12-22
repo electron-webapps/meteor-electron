@@ -12,8 +12,8 @@ Meteor-electron strives to be the easiest way to create a desktop Meteor applica
 After adding the package, an electron app wrapper will be built and opened.
 
 This app, as well as the ready-to-distribute binaries (see [Deploy](#deploy)), is built within
-`YOUR_PROJECT_DIRECTORY/.meteor-electron`. This allows the apps to be easily located as well as
-(forthcoming) the apps to be cached for speedier startup. You should add this directory to your
+`YOUR_PROJECT_DIRECTORY/.meteor-electron`. This allows the apps to be easily located as well as the
+apps to be cached for speedier startup. You should add this directory to your
 `.gitignore`.
 
 ## Building for Windows on Mac
@@ -41,8 +41,9 @@ Limited configuration is possible via `Meteor.settings.electron` For example
   "electron": {
     "name": "MyApp",
     "icon": {
-      // Relative to your app's `private` directory.
-      "darwin": "build/MyApp.icns"
+      // Relative to your app's project directory.
+      "darwin": "private/MyApp.icns",
+      "win32": "private/MyApp.ico"
     },
     // Must conform to Semver: https://docs.npmjs.com/getting-started/semantic-versioning.
     "version": "0.1.0",
@@ -73,8 +74,8 @@ Limited configuration is possible via `Meteor.settings.electron` For example
       "schemes": ["myapp"]
     }],
     // A directory of code to use instead of meteor-electron's default application, relative to your
-    // app's `private` directory. See warning below!
-    "appSrcDir": "app"
+    // app's project directory. See warning below!
+    "appSrcDir": "private/app"
   }
 }
 ```
@@ -94,11 +95,16 @@ if (! Electron.isDesktop){
 
 ### Building and serving an auto-updating Mac app
 
-Build your app on a a Mac, because remote updates require code-signing and that requires a Mac.
-
-Copy `YOUR_PROJECT_DIRECTORY/.meteor-electron/darwin-x64/final/YOUR_APP_NAME.zip` to a publically-accessible
-location, then set `downloadUrl` in `Meteor.settings.electron` to that URL. This URL will be served
-at `/app/download?platform=darwin`.
+1. Set `Meteor.settings.electron.autoPackage` to `true` to ZIP your app for distribution after it is
+built.
+2. If you wish to enable remote updates, you will need to codesign your application. This requires
+that you build your app on a Mac with a [Developer ID certificate](https://developer.apple.com/library/mac/documentation/IDEs/Conceptual/AppDistributionGuide/DistributingApplicationsOutside/DistributingApplicationsOutside.html) installed.
+Set `Meteor.settings.electron.sign` to the name of that certificate.
+3. Wait for the app to finish building and packaging, then copy
+`YOUR_PROJECT_DIRECTORY/.meteor-electron/darwin-x64/final/YOUR_APP_NAME.zip` to a publically-accessible
+location.
+4. Set `downloadUrl` in `Meteor.settings.electron` to the URL of the location where you copied the ZIP.
+This URL will be served at `/app/download?platform=darwin`.
 
 ### Building and serving an auto-updating Windows app
 
@@ -147,9 +153,13 @@ checking for remote updates, registering the `Electron` module (that defines `El
 and possibly other things. If you take this route, it's recommended that you start by copying
 `meteor-electron`'s `app` directory.
 
-### Q: How do I prevent the Electron app from being built/served in production if for instance I want to do that separately (means forthcoming)?
+Also, you also probably want to keep your application code in a subdirectory of your application's
+`private` directory so that Meteor will observe changes to it and restart the server; when it does
+so, `meteor-electron` will rebuild and relaunch the app.
 
-Set the ELECTRON_AUTO_BUILD environment variable to "false".
+### Q: How do I prevent the Electron app from being automatically built and launched?
+
+Set `Meteor.settings.electron.autoBuild` to 'false'.
 
 ## Ideas
 

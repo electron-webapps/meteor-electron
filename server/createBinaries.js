@@ -71,7 +71,7 @@ createBinaries = function() {
 
     var resolvedAppSrcDir;
     if (electronSettings.appSrcDir) {
-      resolvedAppSrcDir = path.join(projectRoot(), 'private', electronSettings.appSrcDir);
+      resolvedAppSrcDir = path.join(projectRoot(), electronSettings.appSrcDir);
     } else {
       // See http://stackoverflow.com/a/29745318/495611 for how the package asset directory is derived.
       // We can't read this from the project directory like the user-specified app directory since
@@ -174,10 +174,10 @@ createBinaries = function() {
       console.log("Build created for ", buildInfo.platform, buildInfo.arch, "at", build);
     }
 
-    /* Package the build for download. */
+    /* Package the build for download if specified. */
     // TODO(rissem): make this platform independent
 
-    if (buildInfo.platform === 'darwin') {
+    if (electronSettings.autoPackage && (buildInfo.platform === 'darwin')) {
       // The auto-updater framework only supports installing ZIP releases:
       // https://github.com/Squirrel/Squirrel.Mac#update-json-format
       var downloadName = (appName || "app") + ".zip";
@@ -260,7 +260,7 @@ function getPackagerSettings(buildInfo, dirs){
   if (electronSettings.icon) {
     var icon = electronSettings.icon[buildInfo.platform];
     if (icon) {
-      var iconPath = path.join(projectRoot(), 'private', icon);
+      var iconPath = path.join(projectRoot(), icon);
       packagerSettings.icon = iconPath;
     }
   }
