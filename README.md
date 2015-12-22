@@ -147,9 +147,9 @@ checking for remote updates, registering the `Electron` module (that defines `El
 and possibly other things. If you take this route, it's recommended that you start by copying
 `meteor-electron`'s `app` directory.
 
-### Q: How do I prevent the Electron app from being built/served in production if for instance I want to do that separately (means forthcoming)?
+### Q: How do I prevent the Electron app from being automatically built and launched?
 
-Set the ELECTRON_AUTO_BUILD environment variable to "false".
+Set `Meteor.settings.electron.autoBuild` to 'false'.
 
 ## Ideas
 
