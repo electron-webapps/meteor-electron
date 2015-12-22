@@ -12,8 +12,8 @@ Meteor-electron strives to be the easiest way to create a desktop Meteor applica
 After adding the package, an electron app wrapper will be built and opened.
 
 This app, as well as the ready-to-distribute binaries (see [Deploy](#deploy)), is built within
-`YOUR_PROJECT_DIRECTORY/.meteor-electron`. This allows the apps to be easily located as well as
-(forthcoming) the apps to be cached for speedier startup. You should add this directory to your
+`YOUR_PROJECT_DIRECTORY/.meteor-electron`. This allows the apps to be easily located as well as the
+apps to be cached for speedier startup. You should add this directory to your
 `.gitignore`.
 
 ## Building for Windows on Mac
