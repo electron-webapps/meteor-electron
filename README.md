@@ -41,8 +41,9 @@ Limited configuration is possible via `Meteor.settings.electron` For example
   "electron": {
     "name": "MyApp",
     "icon": {
-      // Relative to your app's `private` directory.
-      "darwin": "build/MyApp.icns"
+      // Relative to your app's project directory.
+      "darwin": "private/MyApp.icns",
+      "win32": "private/MyApp.ico"
     },
     // Must conform to Semver: https://docs.npmjs.com/getting-started/semantic-versioning.
     "version": "0.1.0",
@@ -73,8 +74,8 @@ Limited configuration is possible via `Meteor.settings.electron` For example
       "schemes": ["myapp"]
     }],
     // A directory of code to use instead of meteor-electron's default application, relative to your
-    // app's `private` directory. See warning below!
-    "appSrcDir": "app"
+    // app's project directory. See warning below!
+    "appSrcDir": "private/app"
   }
 }
 ```
@@ -151,6 +152,10 @@ responsibility.  **Warning**: this responsibility includes setting up your appli
 checking for remote updates, registering the `Electron` module (that defines `Electron.isDesktop`),
 and possibly other things. If you take this route, it's recommended that you start by copying
 `meteor-electron`'s `app` directory.
+
+Also, you also probably want to keep your application code in a subdirectory of your application's
+`private` directory so that Meteor will observe changes to it and restart the server; when it does
+so, `meteor-electron` will rebuild and relaunch the app.
 
 ### Q: How do I prevent the Electron app from being automatically built and launched?
 

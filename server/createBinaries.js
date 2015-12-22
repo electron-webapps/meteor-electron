@@ -71,7 +71,7 @@ createBinaries = function() {
 
     var resolvedAppSrcDir;
     if (electronSettings.appSrcDir) {
-      resolvedAppSrcDir = path.join(projectRoot(), 'private', electronSettings.appSrcDir);
+      resolvedAppSrcDir = path.join(projectRoot(), electronSettings.appSrcDir);
     } else {
       // See http://stackoverflow.com/a/29745318/495611 for how the package asset directory is derived.
       // We can't read this from the project directory like the user-specified app directory since
@@ -260,7 +260,7 @@ function getPackagerSettings(buildInfo, dirs){
   if (electronSettings.icon) {
     var icon = electronSettings.icon[buildInfo.platform];
     if (icon) {
-      var iconPath = path.join(projectRoot(), 'private', icon);
+      var iconPath = path.join(projectRoot(), icon);
       packagerSettings.icon = iconPath;
     }
   }
