@@ -174,10 +174,10 @@ createBinaries = function() {
       console.log("Build created for ", buildInfo.platform, buildInfo.arch, "at", build);
     }
 
-    /* Package the build for download. */
+    /* Package the build for download if specified. */
     // TODO(rissem): make this platform independent
 
-    if (buildInfo.platform === 'darwin') {
+    if (electronSettings.autoPackage && (buildInfo.platform === 'darwin')) {
       // The auto-updater framework only supports installing ZIP releases:
       // https://github.com/Squirrel/Squirrel.Mac#update-json-format
       var downloadName = (appName || "app") + ".zip";

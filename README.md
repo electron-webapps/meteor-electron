@@ -94,11 +94,16 @@ if (! Electron.isDesktop){
 
 ### Building and serving an auto-updating Mac app
 
-Build your app on a a Mac, because remote updates require code-signing and that requires a Mac.
-
-Copy `YOUR_PROJECT_DIRECTORY/.meteor-electron/darwin-x64/final/YOUR_APP_NAME.zip` to a publically-accessible
-location, then set `downloadUrl` in `Meteor.settings.electron` to that URL. This URL will be served
-at `/app/download?platform=darwin`.
+1. Set `Meteor.settings.electron.autoPackage` to `true` to ZIP your app for distribution after it is
+built.
+2. If you wish to enable remote updates, you will need to codesign your application. This requires
+that you build your app on a Mac with a [Developer ID certificate](https://developer.apple.com/library/mac/documentation/IDEs/Conceptual/AppDistributionGuide/DistributingApplicationsOutside/DistributingApplicationsOutside.html) installed.
+Set `Meteor.settings.electron.sign` to the name of that certificate.
+3. Wait for the app to finish building and packaging, then copy
+`YOUR_PROJECT_DIRECTORY/.meteor-electron/darwin-x64/final/YOUR_APP_NAME.zip` to a publically-accessible
+location.
+4. Set `downloadUrl` in `Meteor.settings.electron` to the URL of the location where you copied the ZIP.
+This URL will be served at `/app/download?platform=darwin`.
 
 ### Building and serving an auto-updating Windows app
 
