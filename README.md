@@ -58,7 +58,7 @@ Limited configuration is possible via `Meteor.settings.electron` For example
       // to this location. Do not rename the files.
       "win32": "https://myapp.com/download/",
       // Place the latest app at this location. If the URL contains '{{version}}', it will be replaced with `version`.
-      "darwin": "https://myapp.com/download/{{version}}/app-darwin.zip"
+      "darwin": "https://myapp.com/download/{{version}}/MyApp.zip"
     }
     // Must be set to enable auto-updates on Mac.
     "sign": "Developer ID Application: ...",
