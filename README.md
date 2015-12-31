@@ -56,9 +56,20 @@ Limited configuration is possible via `Meteor.settings.electron` For example
     "downloadUrls": {
       // Copy the output of `grunt-electron-installer` (see [Building and serving an auto-updating Windows app](#building-and-serving-an-auto-updating-windows-app))
       // to this location. Do not rename the files.
-      "win32": "https://myapp.com/download/",
+      "win32": "https://myapp.com/download/win/",
+      // If you wish to host the Windows installers at versioned URLs for caching or archival reasons,
+      // use this version of `win32`.
+      "win32": {
+        // Copy the output of `grunt-electron-installer` (see [Building and serving an auto-updating Windows app](#building-and-serving-an-auto-updating-windows-app))
+        // to this location. Do not rename the files.
+        "releases": "https://myapp.com/download/win/",
+        // If you like, you may copy the `Setup.exe` file created by `grunt-electron-installer` to
+        // this location rather than the "releases" location. If the URL contains '{{version}}', it
+        // will be replaced with `version`.
+        "installer": "https://myapp.com/download/win/{{version}}/MyAppSetup.exe"
+      },
       // Place the latest app at this location. If the URL contains '{{version}}', it will be replaced with `version`.
-      "darwin": "https://myapp.com/download/{{version}}/MyApp.zip"
+      "darwin": "https://myapp.com/download/osx/{{version}}/MyApp.zip"
     }
     // Must be set to enable auto-updates on Mac.
     "sign": "Developer ID Application: ...",

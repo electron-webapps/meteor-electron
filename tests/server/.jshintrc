@@ -1,0 +1,12 @@
+{
+  // If you are using SublimeLinter, after modifying this config file, be sure to close and reopen
+  // the file(s) you were editing to see the changes take effect.
+
+  "extends": "../../server/.jshintrc",
+
+  // Whitelist additional global variables.
+  "globals": {
+    // Meteor's globals.
+    "Tinytest": false
+  }
+}
