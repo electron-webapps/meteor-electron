@@ -1,4 +1,3 @@
-var path = Npm.require('path');
 var semver = Npm.require('semver');
 var urlJoin = Npm.require('url-join');
 var electronSettings = Meteor.settings.electron || {};
@@ -38,7 +37,7 @@ serveUpdateFeed = function() {
   // above `serve` call serves _just_ '/app/latest', whereas this serves its contents.)
   if (canServeUpdates("win32")) {
     // `path.dirname` works even on Windows.
-    var windowsDownloadPrefix = path.dirname(DOWNLOAD_URLS['win32']);
+    var releasesUrl = DOWNLOAD_URLS['win32'].releases;
     serveDir(UPDATE_FEED_PATH, function(req, res, next){
       //first strip off the UPDATE_FEED_PATH
       var path = req.url.split(UPDATE_FEED_PATH)[1];
@@ -47,7 +46,7 @@ serveUpdateFeed = function() {
       if (/RELEASES/.test(path)) {
         path += (/\?/.test(path) ? '&' : '?') + 'cb=' + Date.now();
       }
-      res.setHeader("Location", urlJoin(windowsDownloadPrefix, path));
+      res.setHeader("Location", urlJoin(releasesUrl, path));
       res.end();
     });
   }

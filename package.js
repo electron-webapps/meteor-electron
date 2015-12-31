@@ -18,7 +18,7 @@ Npm.depends({
   "url-join": "0.0.1"
 });
 
-Package.on_use(function (api) {
+Package.onUse(function (api) {
   api.use(["mongo-livedata", "webapp", "ejson"], "server");
   api.use("underscore", ["server", "client"]);
   api.use(["iron:router"], {weak: true});
@@ -45,5 +45,20 @@ Package.on_use(function (api) {
 
   api.addFiles(['client/index.js'], "client");
 
+  // Test exports.
+  api.export([
+    'parseMacDownloadUrl',
+    'parseWindowsDownloadUrls'
+  ], 'server', {
+    testOnly: true
+  });
+
+  // Public exports.
   api.export("Electron", ["client"]);
+});
+
+Package.onTest(function(api) {
+  api.use(['quark:electron', 'tinytest']);
+
+  api.addFiles('tests/server/downloadUrlsTest.js', 'server');
 });

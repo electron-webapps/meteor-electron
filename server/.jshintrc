@@ -24,6 +24,8 @@
     "canServeUpdates": true,
     "createBinaries": true,
     "launchApp": true,
+    "parseMacDownloadUrl": true,
+    "parseWindowsDownloadUrls": true,
     "serve": true,
     "serveDir": true,
     "serveDownloadUrl": true,
