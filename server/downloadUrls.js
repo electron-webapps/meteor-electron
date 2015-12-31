@@ -40,7 +40,7 @@ parseWindowsDownloadUrls = function(electronSettings) {
   }
 
   // Cachebust the installer URL if it's not versioned.
-  // (The releases URL will also be cachebusted, but by `serveDownloadUrl` since we've got to append
+  // (The releases URL will also be cachebusted, but by `serveUpdateFeed` since we've got to append
   // the particular paths requested by the client).
   if (!installerUrlIsVersioned) {
     installerUrl = cachebustedUrl(installerUrl);
