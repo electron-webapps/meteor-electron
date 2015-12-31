@@ -114,12 +114,12 @@ Set `Meteor.settings.electron.sign` to the name of that certificate.
 3. Wait for the app to finish building and packaging, then copy
 `YOUR_PROJECT_DIRECTORY/.meteor-electron/darwin-x64/final/YOUR_APP_NAME.zip` to a publically-accessible
 location.
-4. Set `downloadUrl` in `Meteor.settings.electron` to the URL of the location where you copied the ZIP.
+4. Set `downloadUrls.darwin` in `Meteor.settings.electron` to the URL of the location where you copied the ZIP.
 This URL will be served at `/app/download?platform=darwin`.
 
 ### Building and serving an auto-updating Windows app
 
-0. Make sure that you have specified `version` and `description` in `Meteor.settings.electron`.
+0. Make sure that you have specified `name`, `version`, and `description` in `Meteor.settings.electron`.
 1. Build the app [on a Mac](#building-for-windows-on-mac), because changing a Windows application icon
 [does not work on Windows at present](https://github.com/maxogden/electron-packager/issues/53).
 2. Ensure the URL specified by `Meteor.settings.electron.downloadUrls.win32` has an empty `RELEASES` file.
