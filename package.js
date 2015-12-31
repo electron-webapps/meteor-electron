@@ -18,7 +18,7 @@ Npm.depends({
   "url-join": "0.0.1"
 });
 
-Package.on_use(function (api) {
+Package.onUse(function (api) {
   api.use(["mongo-livedata", "webapp", "ejson"], "server");
   api.use("underscore", ["server", "client"]);
   api.use(["iron:router"], {weak: true});
