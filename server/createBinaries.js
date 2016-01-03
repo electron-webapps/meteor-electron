@@ -6,7 +6,6 @@ var proc = Npm.require('child_process');
 var dirsum = Meteor.wrapAsync(Npm.require('lucy-dirsum'));
 var readFile = Meteor.wrapAsync(fs.readFile);
 var writeFile = Meteor.wrapAsync(fs.writeFile);
-var rmFile = Meteor.wrapAsync(fs.unlink);
 var stat = Meteor.wrapAsync(fs.stat);
 var util = Npm.require('util');
 var rimraf = Meteor.wrapAsync(Npm.require('rimraf'));
