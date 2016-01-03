@@ -32,7 +32,7 @@ var projectRoot = function(){
   } else {
     return process.env.PWD;
   }
-}
+};
 
 var electronSettings = Meteor.settings.electron || {};
 
