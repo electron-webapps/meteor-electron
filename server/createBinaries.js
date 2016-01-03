@@ -113,8 +113,7 @@ createBinaries = function() {
     }
 
     /* Write out the application package.json */
-    // Do this after writing out the application files, to not overwrite it. Do it even if the app
-    // source dir didn't change, since the change might have stemmed from a change in `Meteor.settings.electron`.
+    // Do this after writing out the application files, since that will overwrite `package.json`.
     if (packageHasChanged || !IS_MAC) {
       // For some reason when this file isn't manually removed it fails to be overwritten with an
       // EACCES error.
