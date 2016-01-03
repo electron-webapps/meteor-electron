@@ -95,6 +95,8 @@ createBinaries = function() {
     // of course sync `package.json`.
     var packageHasChanged = packageJSONHasChanged(packageJSON, buildDirs.app);
 
+    var didOverwriteNodeModules = false;
+
     if (appHasChanged(resolvedAppSrcDir, buildDirs.working)) {
       buildRequired = true;
 
@@ -111,12 +113,16 @@ createBinaries = function() {
         rimraf(buildDirs.app);
         mkdirp(buildDirs.app);
         ncp(resolvedAppSrcDir, buildDirs.app);
+        didOverwriteNodeModules = true;
       }
     }
 
     /* Write out the application package.json */
     // Do this after writing out the application files, since that will overwrite `package.json`.
-    if (packageHasChanged || !IS_MAC) {
+    // This logic is a little bit inefficient: it's not the case that _every_ change to package.json
+    // means that we have to reinstall the node modules; and if we overwrote the node modules, we
+    // don't necessarily have to rewrite `package.json`. But doing it altogether is simplest.
+    if (packageHasChanged || didOverwriteNodeModules) {
       // For some reason when this file isn't manually removed it fails to be overwritten with an
       // EACCES error.
       rimraf(packageJSONPath(buildDirs.app));
