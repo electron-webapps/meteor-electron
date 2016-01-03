@@ -34,6 +34,8 @@ var projectRoot = function(){
   }
 };
 
+var ELECTRON_VERSION = '0.36.2';
+
 var electronSettings = Meteor.settings.electron || {};
 
 var IS_MAC = (process.platform === 'darwin');
@@ -249,7 +251,7 @@ function getPackagerSettings(buildInfo, dirs){
     name: electronSettings.name || "Electron",
     platform: buildInfo.platform,
     arch: buildInfo.arch,
-    version: "0.36.1",
+    version: ELECTRON_VERSION,
     out: dirs.build,
     cache: dirs.binary,
     overwrite: true,
