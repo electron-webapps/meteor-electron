@@ -91,6 +91,8 @@ createBinaries = function() {
       description: appDescription,
       version: appVersion
     });
+    // Check if the package has changed before we possibly copy over the app source since that will
+    // of course sync `package.json`.
     var packageHasChanged = packageJSONHasChanged(packageJSON, buildDirs.app);
 
     if (appHasChanged(resolvedAppSrcDir, buildDirs.working)) {
