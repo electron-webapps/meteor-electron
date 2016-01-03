@@ -97,7 +97,7 @@ createBinaries = function() {
       buildRequired = true;
 
       // Copy the app directory over while also pruning old files.
-       if (IS_MAC) {
+      if (IS_MAC) {
         // Ensure that the app source directory ends in a slash so we copy its contents.
         // Except node_modules from pruning since we prune that below.
         // TODO(wearhere): `rsync` also uses checksums to only copy what's necessary so theoretically we
