@@ -125,6 +125,8 @@ createBinaries = function() {
     // means that we have to reinstall the node modules; and if we overwrote the node modules, we
     // don't necessarily have to rewrite `package.json`. But doing it altogether is simplest.
     if (packageHasChanged || didOverwriteNodeModules) {
+      buildRequired = true;
+
       // For some reason when this file isn't manually removed it fails to be overwritten with an
       // EACCES error.
       rimraf(packageJSONPath(buildDirs.app));
