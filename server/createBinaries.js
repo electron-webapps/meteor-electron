@@ -6,7 +6,6 @@ var proc = Npm.require('child_process');
 var dirsum = Meteor.wrapAsync(Npm.require('lucy-dirsum'));
 var readFile = Meteor.wrapAsync(fs.readFile);
 var writeFile = Meteor.wrapAsync(fs.writeFile);
-var rmFile = Meteor.wrapAsync(fs.unlink);
 var stat = Meteor.wrapAsync(fs.stat);
 var util = Npm.require('util');
 var rimraf = Meteor.wrapAsync(Npm.require('rimraf'));
@@ -33,7 +32,9 @@ var projectRoot = function(){
   } else {
     return process.env.PWD;
   }
-}
+};
+
+var ELECTRON_VERSION = '0.36.2';
 
 var electronSettings = Meteor.settings.electron || {};
 
@@ -92,13 +93,17 @@ createBinaries = function() {
       description: appDescription,
       version: appVersion
     });
+    // Check if the package has changed before we possibly copy over the app source since that will
+    // of course sync `package.json`.
     var packageHasChanged = packageJSONHasChanged(packageJSON, buildDirs.app);
+
+    var didOverwriteNodeModules = false;
 
     if (appHasChanged(resolvedAppSrcDir, buildDirs.working)) {
       buildRequired = true;
 
       // Copy the app directory over while also pruning old files.
-       if (IS_MAC) {
+      if (IS_MAC) {
         // Ensure that the app source directory ends in a slash so we copy its contents.
         // Except node_modules from pruning since we prune that below.
         // TODO(wearhere): `rsync` also uses checksums to only copy what's necessary so theoretically we
@@ -110,13 +115,18 @@ createBinaries = function() {
         rimraf(buildDirs.app);
         mkdirp(buildDirs.app);
         ncp(resolvedAppSrcDir, buildDirs.app);
+        didOverwriteNodeModules = true;
       }
     }
 
     /* Write out the application package.json */
-    // Do this after writing out the application files, to not overwrite it. Do it even if the app
-    // source dir didn't change, since the change might have stemmed from a change in `Meteor.settings.electron`.
-    if (packageHasChanged || !IS_MAC) {
+    // Do this after writing out the application files, since that will overwrite `package.json`.
+    // This logic is a little bit inefficient: it's not the case that _every_ change to package.json
+    // means that we have to reinstall the node modules; and if we overwrote the node modules, we
+    // don't necessarily have to rewrite `package.json`. But doing it altogether is simplest.
+    if (packageHasChanged || didOverwriteNodeModules) {
+      buildRequired = true;
+
       // For some reason when this file isn't manually removed it fails to be overwritten with an
       // EACCES error.
       rimraf(packageJSONPath(buildDirs.app));
@@ -243,7 +253,7 @@ function getPackagerSettings(buildInfo, dirs){
     name: electronSettings.name || "Electron",
     platform: buildInfo.platform,
     arch: buildInfo.arch,
-    version: "0.36.1",
+    version: ELECTRON_VERSION,
     out: dirs.build,
     cache: dirs.binary,
     overwrite: true,
