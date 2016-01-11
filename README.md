@@ -9,6 +9,8 @@ Some of the things it does:
 * defines feature detection APIs and a bridge between web and native code
 * serves downloads of your application and update feeds
 
+![](docs/overview.png)
+
 ## Disclaimer
 
 If you're visiting from [the introductory blog post](https://mixmax.com/blog/turnkey-electron-apps-with-meteor),
