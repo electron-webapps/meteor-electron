@@ -122,7 +122,7 @@ If Meteor.settings.electron.rootUrl is unset, defaults to the `APP_ROOT_URL` and
 By default, all client code will be executed in Electron. To include/exclude code use `Electron.isDesktop`
 
 ```javascript
-if (! Electron.isDesktop){
+if (!Electron.isDesktop()){
   showModal("Have you considered downloading our Electron app?");
 }
 ```
