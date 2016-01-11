@@ -1,9 +1,16 @@
 # meteor-electron
-Experimental electron package
 
-## DISCLAIMER - DOCS BELOW DO NOT REFELECT CURRENT FUNCTIONALITY
+meteor-electron provides comprehensive build- and run-time support for desktop Meteor applications. Some of the things it does:
 
-Meteor-electron strives to be the easiest way to create a desktop Meteor application.
+* automatically builds and launches a desktop application, rebuilding when code changes
+* defines feature detection APIs and a bridge between web and native code
+* serves downloads of your application and update feeds
+
+## Disclaimer
+
+If you're visiting from [the introductory blog post](https://mixmax.com/blog/turnkey-electron-apps-with-meteor), welcome! This package is already being used in production, but the documentation still needs a bit of work and it has not been published to Atmosphere yet. If you'd like to try it out, clone/copy it into your project's `packages` directory and then add it as in [Installation](#installation).
+
+We ([@rissem](https://twitter.com/rissem) and [@wearhere](https://twitter.com/wear_here)) are presenting about this at the [1/21 Meteor night](http://www.meetup.com/Meteor-SFBay/events/227198908/) and we will have addressed the above issues by that date.
 
 ## Installation
 
