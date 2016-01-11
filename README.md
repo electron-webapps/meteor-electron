@@ -1,6 +1,9 @@
 # meteor-electron
 
-meteor-electron provides comprehensive build- and run-time support for desktop Meteor applications. Some of the things it does:
+meteor-electron provides comprehensive build- and run-time support for desktop Meteor applications.
+Its ultimate goal is to build `meteor add-platform desktop`.
+
+Some of the things it does:
 
 * automatically builds and launches a desktop application, rebuilding when code changes
 * defines feature detection APIs and a bridge between web and native code
@@ -8,9 +11,14 @@ meteor-electron provides comprehensive build- and run-time support for desktop M
 
 ## Disclaimer
 
-If you're visiting from [the introductory blog post](https://mixmax.com/blog/turnkey-electron-apps-with-meteor), welcome! This package is already being used in production, but the documentation still needs a bit of work and it has not been published to Atmosphere yet. If you'd like to try it out, clone/copy it into your project's `packages` directory and then add it as in [Installation](#installation).
+If you're visiting from [the introductory blog post](https://mixmax.com/blog/turnkey-electron-apps-with-meteor),
+welcome! This package is already being used in production, but the documentation still needs a bit
+of work and it has not been published to Atmosphere yet. If you'd like to try it out, clone/copy it
+into your project's `packages` directory and then add it as in [Installation](#installation).
 
-We ([@rissem](https://twitter.com/rissem) and [@wearhere](https://twitter.com/wear_here)) are presenting about this at the [1/21 Meteor night](http://www.meetup.com/Meteor-SFBay/events/227198908/) and we will have addressed the above issues by that date.
+We ([@rissem](https://twitter.com/rissem) and [@wearhere](https://twitter.com/wear_here)) are
+presenting about this at the [1/21 Meteor Night](http://www.meetup.com/Meteor-SFBay/events/227198908/)
+and we will have addressed the above issues by that date.
 
 ## Installation
 
@@ -48,67 +56,67 @@ Limited configuration is possible via `Meteor.settings.electron` For example
 {
   "electron": {
     "name": "MyApp",
-    
+
     "icon": {
       // Relative to your app's project directory.
       "darwin": "private/MyApp.icns",
       "win32": "private/MyApp.ico"
     },
-    
+
     // Must conform to Semver: https://docs.npmjs.com/getting-started/semantic-versioning.
     "version": "0.1.0",
-    
+
     "description": "A really cool app.",
-    
+
     // If unset, defaults to the ROOT_URL environment variable.
     "rootUrl": "https://myapp.com",
-    
+
     // If you want your app to open to a non-root URL. Will be appended to the root URL.
     "launchPath": "/app/landing",
-    
+
     // URLs from which downloads are served. A CDN is recommended, but any HTTP server will do.
     "downloadUrls": {
       // Copy the output of `grunt-electron-installer` (see [Building and serving an auto-updating Windows app](#building-and-serving-an-auto-updating-windows-app))
       // to this location. Do not rename the files.
       "win32": "https://myapp.com/download/win/",
-      
+
       // If you wish to host the Windows installers at versioned URLs for caching or archival reasons,
       // use this version of `win32`.
       "win32": {
         // Copy the output of `grunt-electron-installer` (see [Building and serving an auto-updating Windows app](#building-and-serving-an-auto-updating-windows-app))
         // to this location. Do not rename the files.
         "releases": "https://myapp.com/download/win/",
-        
+
         // If you like, you may copy the `Setup.exe` file created by `grunt-electron-installer` to
         // this location rather than the "releases" location. If the URL contains '{{version}}', it
         // will be replaced with `version`.
         "installer": "https://myapp.com/download/win/{{version}}/MyAppSetup.exe"
       },
-      
+
       // Place the latest app at this location. If the URL contains '{{version}}', it will be replaced with `version`.
       "darwin": "https://myapp.com/download/osx/{{version}}/MyApp.zip"
     }
-    
+
     // Must be set to enable auto-updates on Mac.
     "sign": "Developer ID Application: ...",
-    
+
     // minHeight/maxHeight are also supported.
     "height": 768,
-    
+
     // minWidth/maxWidth are also supported.
     "width": 1024,
-    
+
     "frame": true,
-    
+
     "title-bar-style": "hidden",
-    
+
     "resizable": true,
-    
+
     "protocols": [{
       "name": "MyApp",
       "schemes": ["myapp"]
     }],
-    
+
     // A directory of code to use instead of meteor-electron's default application, relative to your
     // app's project directory. See warning below!
     "appSrcDir": "private/app"
@@ -116,7 +124,7 @@ Limited configuration is possible via `Meteor.settings.electron` For example
 }
 ```
 
-## Electron specific code
+## Electron-specific code
 
 By default, all client code will be executed in Electron. To include/exclude code use `Electron.isDesktop`
 
@@ -165,12 +173,15 @@ The installer for the latest version of your app will be served at `/app/downloa
 
 ## Q&A
 
-### Q: How is this different from all the other meteor electron packages?
-This package differs from [Electrometeor](https://github.com/sircharleswatson/Electrometeor) by *not* baking Meteor into the packaged app. This makes things significantly simpler, but if you need strong offline support, Electrometeor is a better solution.
+### Q: How is this different from all the other Meteor electron packages?
 
-I have not looked at [jrudio/meteor-electron](https://github.com/jrudio/meteor-electron) or [electrify](https://github.com/arboleya/electrify) too closely, but in general the philsophy of this project is simplicity over customizability. These two are likely a better fit if you're interested in customizing the main process file or the NPM modules used within Electron. More information below.
+This package differs from [Electrometeor](https://github.com/sircharleswatson/Electrometeor) and
+[Electrify](https://github.com/arboleya/electrify) by *not* baking Meteor into the packaged app.
+This makes things significantly simpler, but if you need strong offline support, one of them is a
+better solution.
 
 ### Q: Can I modify the main process file or the NPM packages for the app?
+
 No. By maintaining control over the main process file, we are able to offer cross-platform builds. Allowing users to modify the main process file or NPM packages could easily break our build process.
 
 ### Q: If I can't modify the main process file, how can I create new browser windows, set app notifications and all the other awesome native functionality that Electron gives me?
@@ -194,12 +205,4 @@ so, `meteor-electron` will rebuild and relaunch the app.
 
 ### Q: How do I prevent the Electron app from being automatically built and launched?
 
-Set `Meteor.settings.electron.autoBuild` to 'false'.
-
-## Ideas
-
-- The ultimate goal here would be to build `meteor add-platform desktop`
-- But to start off, we'll just figure out a way to get Meteor running with electron somehow. We'll take a different approach than [electrometeor](https://github.com/sircharleswatson/Electrometeor), which runs Meteor inside electron -- instead, we want to run electron inside Meteor.
-- Step one is to have an electron package that you can add to your meteor app and configure - eg. window size, URL to load, etc.
-- Once we have this up and running we can explore how to expose more of the electron API. Eg. being able to talk to different OS-specific features (task bar, dock, etc)
-- We need to figure out how electron fits into meteor's client/server architecture. Is it a "third place"? If so, how does a Meteor developer access it?
+Set `Meteor.settings.electron.autoBuild` to `"false"`.
