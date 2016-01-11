@@ -124,7 +124,7 @@ Limited configuration is possible via `Meteor.settings.electron` For example
 }
 ```
 
-## Electron specific code
+## Electron-specific code
 
 By default, all client code will be executed in Electron. To include/exclude code use `Electron.isDesktop`
 
