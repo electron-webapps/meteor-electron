@@ -173,12 +173,15 @@ The installer for the latest version of your app will be served at `/app/downloa
 
 ## Q&A
 
-### Q: How is this different from all the other meteor electron packages?
-This package differs from [Electrometeor](https://github.com/sircharleswatson/Electrometeor) by *not* baking Meteor into the packaged app. This makes things significantly simpler, but if you need strong offline support, Electrometeor is a better solution.
+### Q: How is this different from all the other Meteor electron packages?
 
-I have not looked at [jrudio/meteor-electron](https://github.com/jrudio/meteor-electron) or [electrify](https://github.com/arboleya/electrify) too closely, but in general the philsophy of this project is simplicity over customizability. These two are likely a better fit if you're interested in customizing the main process file or the NPM modules used within Electron. More information below.
+This package differs from [Electrometeor](https://github.com/sircharleswatson/Electrometeor) and
+[Electrify](https://github.com/arboleya/electrify) by *not* baking Meteor into the packaged app.
+This makes things significantly simpler, but if you need strong offline support, one of them is a
+better solution.
 
 ### Q: Can I modify the main process file or the NPM packages for the app?
+
 No. By maintaining control over the main process file, we are able to offer cross-platform builds. Allowing users to modify the main process file or NPM packages could easily break our build process.
 
 ### Q: If I can't modify the main process file, how can I create new browser windows, set app notifications and all the other awesome native functionality that Electron gives me?
@@ -202,4 +205,4 @@ so, `meteor-electron` will rebuild and relaunch the app.
 
 ### Q: How do I prevent the Electron app from being automatically built and launched?
 
-Set `Meteor.settings.electron.autoBuild` to 'false'.
+Set `Meteor.settings.electron.autoBuild` to `"false"`.
