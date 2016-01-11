@@ -54,78 +54,61 @@ apps to be cached for speedier startup. You should add this directory to your
 ## Configuration
 Limited configuration is possible via `Meteor.settings.electron` For example
 
-```
+```json
 {
   "electron": {
     "name": "MyApp",
-
     "icon": {
-      // Relative to your app's project directory.
       "darwin": "private/MyApp.icns",
       "win32": "private/MyApp.ico"
     },
-
-    // Must conform to Semver: https://docs.npmjs.com/getting-started/semantic-versioning.
     "version": "0.1.0",
-
     "description": "A really cool app.",
-
-    // If unset, defaults to the ROOT_URL environment variable.
     "rootUrl": "https://myapp.com",
-
-    // If you want your app to open to a non-root URL. Will be appended to the root URL.
     "launchPath": "/app/landing",
-
-    // URLs from which downloads are served. A CDN is recommended, but any HTTP server will do.
     "downloadUrls": {
-      // Copy the output of `grunt-electron-installer` (see [Building and serving an auto-updating Windows app](#building-and-serving-an-auto-updating-windows-app))
-      // to this location. Do not rename the files.
       "win32": "https://myapp.com/download/win/",
-
-      // If you wish to host the Windows installers at versioned URLs for caching or archival reasons,
-      // use this version of `win32`.
-      "win32": {
-        // Copy the output of `grunt-electron-installer` (see [Building and serving an auto-updating Windows app](#building-and-serving-an-auto-updating-windows-app))
-        // to this location. Do not rename the files.
-        "releases": "https://myapp.com/download/win/",
-
-        // If you like, you may copy the `Setup.exe` file created by `grunt-electron-installer` to
-        // this location rather than the "releases" location. If the URL contains '{{version}}', it
-        // will be replaced with `version`.
-        "installer": "https://myapp.com/download/win/{{version}}/MyAppSetup.exe"
-      },
-
-      // Place the latest app at this location. If the URL contains '{{version}}', it will be replaced with `version`.
       "darwin": "https://myapp.com/download/osx/{{version}}/MyApp.zip"
-    }
-
-    // Must be set to enable auto-updates on Mac.
+    },
     "sign": "Developer ID Application: ...",
-
-    // minHeight/maxHeight are also supported.
     "height": 768,
-
-    // minWidth/maxWidth are also supported.
     "width": 1024,
-
     "frame": true,
-
     "title-bar-style": "hidden",
-
     "resizable": true,
-
     "protocols": [{
       "name": "MyApp",
       "schemes": ["myapp"]
     }],
-
-    // A directory of code to use instead of meteor-electron's default application, relative to your
-    // app's project directory. See warning below!
     "appSrcDir": "private/app"
   }
 }
 ```
-
+<dl>
+  <dt>icon</dt>
+  <dd>platform dependent icon paths relative to application root</dd>
+  <dt>version</dt>
+  <dd>must confirm to [semver](https://docs.npmjs.com/getting-started/semantic-versioning)</dd>
+  <dt>rootUrl</dt>
+  <dd>If unset, defaults to the `APP_ROOT_URL` and then `ROOT_URL` environment variables, in that order.</dd>
+  <dt>launchPath</dt>
+  <dd>If you want your app to open to a non-root URL. Will be appended to the root URL.</dd>
+  <dt>downloadUrls</dt>
+  <dd>URLs from which downloads are served. A CDN is recommended, but any HTTP server will do.</dd>
+  <dt>downloadUrls.win32<dt>
+  <dd>Copy the output of `grunt-electron-installer` (see [Building and serving an auto-updating Windows app](#building-and-serving-an-auto-updating-windows-app)) to this location. Do not rename the files.</dd>
+  <dt>downloadUrls.win32.releases</dt>
+  <dd>TODO</dd>
+  <dt>downloadUrls.win32.installer</dt>
+  <dd>TODO</dd>
+  <dt>downloadUrls.darwin</dt>
+  <dd>Place the latest app at this location. If the URL contains '{{version}}', it will be replaced with `version`.
+      "darwin": "https://myapp.com/download/osx/{{version}}/MyApp.zip"</dd>
+  <dt>sign</dt>
+  <dd>Must be set to enable auto-updates on Mac.</dd>
+  <dt>appSrcDir</dt>
+  <dd>A directory of code to use instead of meteor-electron's default application, relative to your app's project directory. See warning below!</dd>
+</dl>
 ## Electron-specific code
 
 By default, all client code will be executed in Electron. To include/exclude code use `Electron.isDesktop`
