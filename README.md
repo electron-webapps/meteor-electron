@@ -1,7 +1,7 @@
 # meteor-electron
 
-meteor-electron provides comprehensive build- and run-time support for desktop Meteor applications.
-Its ultimate goal is to build `meteor add-platform desktop`.
+meteor-electron lets you easily transform your Meteor webapp to a desktop app. Its ultimate goal is
+to build `meteor add-platform desktop`.
 
 Some of the things it does:
 
@@ -22,37 +22,21 @@ We ([@rissem](https://twitter.com/rissem) and [@wearhere](https://twitter.com/we
 presenting about this at the [1/21 Meteor Night](http://www.meetup.com/Meteor-SFBay/events/227198908/)
 and we will have addressed the above issues by that date.
 
-## Installation
+## Getting Started
 
 `meteor add quark:electron`
 
-After adding the package, an electron app wrapper will be built and opened.
+meteor-electron will download the Electron binary for your system and build and launch an Electron
+app pointing to your local development server. The download process may take a few minutes based on
+your Internet connection but only needs to be done once.
 
-This app, as well as the ready-to-distribute binaries (see [Deploy](#deploy)), is built within
+The app, as well as the ready-to-distribute binaries (see [Deploy](#deploy)), is built within
 `YOUR_PROJECT_DIRECTORY/.meteor-electron`. This allows the apps to be easily located as well as the
-apps to be cached for speedier startup. You should add this directory to your
-`.gitignore`.
-
-## Building for Windows on Mac
-
-1. Install [homebrew](http://brew.sh/)
-2. `brew update`
-3. `brew install wine`
-4. Specify a Windows build in your settings (otherwise defaults to current platform/arch).
-
-```json
-{
-  "electron": {
-    "builds": [
-      {"platform": "win32",
-       "arch": "x64"}
-    ]
-  }
-}
-```
+apps to be cached for speedier startup. You should add this directory to your `.gitignore`.
 
 ## Configuration
-Limited configuration is possible via `Meteor.settings.electron` For example
+
+Configuration is possible via `Meteor.settings.electron`. For example,
 
 ```json
 {
@@ -84,6 +68,7 @@ Limited configuration is possible via `Meteor.settings.electron` For example
   }
 }
 ```
+
 <dl>
   <dt>icon</dt>
   <dd>platform dependent icon paths relative to application root</dd>
@@ -96,22 +81,28 @@ Limited configuration is possible via `Meteor.settings.electron` For example
   <dt>downloadUrls</dt>
   <dd>URLs from which downloads are served. A CDN is recommended, but any HTTP server will do.</dd>
   <dt>downloadUrls.win32<dt>
-  <dd>Copy the output of `grunt-electron-installer` (see [Building and serving an auto-updating Windows app](#building-and-serving-an-auto-updating-windows-app)) to this location. Do not rename the files.</dd>
+  <dd>Copy the output of `grunt-electron-installer` (see [Building and serving an auto-updating Windows app](#building-and-serving-an-auto-updating-windows-app)) to this location. Do not rename the files. If you wish to host the Windows
+  installers at versioned URLs for caching or archival reasons, specify this as an object with the
+  following keys.</dd>
   <dt>downloadUrls.win32.releases</dt>
-  <dd>TODO</dd>
+  <dd>Copy the output of `grunt-electron-installer` (see [Building and serving an auto-updating Windows app](#building-and-serving-an-auto-updating-windows-app)) to this location. Do not rename the files.</dd>
   <dt>downloadUrls.win32.installer</dt>
-  <dd>TODO</dd>
+  <dd>If you like, you may copy the `Setup.exe` file created by `grunt-electron-installer` to this
+  location rather than the "releases" location. If the URL contains '{{version}}', it will be
+  replaced with `version`.</dd>
   <dt>downloadUrls.darwin</dt>
-  <dd>Place the latest app at this location. If the URL contains '{{version}}', it will be replaced with `version`.
-      "darwin": "https://myapp.com/download/osx/{{version}}/MyApp.zip"</dd>
+  <dd>Place the latest app at this location. If the URL contains '{{version}}', it will be replaced
+  with `version`.</dd>
   <dt>sign</dt>
   <dd>Must be set to enable auto-updates on Mac.</dd>
   <dt>appSrcDir</dt>
-  <dd>A directory of code to use instead of meteor-electron's default application, relative to your app's project directory. See warning below!</dd>
+  <dd>A directory of code to use instead of meteor-electron's default application, relative to your
+  app's project directory. See [warning](#q-if-i-cant-modify-the-main-process-file-how-can-i-create-new-browser-windows-set-app-notifications-and-all-the-other-awesome-native-functionality-that-electron-gives-me) below.</dd>
 </dl>
+
 ## Electron-specific code
 
-By default, all client code will be executed in Electron. To include/exclude code use `Electron.isDesktop`
+By default, all client web code will be executed in Electron. To include/exclude code use `Electron.isDesktop`
 
 ```javascript
 if (!Electron.isDesktop()){
@@ -150,7 +141,23 @@ from that location.
 and new installers. After copying these to `Meteor.settings.electron.downloadUrls.win32` again (overwriting
 the `RELEASES` file and installers), apps that check for updates should receive a new version.
 
-The installer for the latest version of your app will be served at `/app/download?platform=win32`.
+## Building for Windows on Mac
+
+1. Install [homebrew](http://brew.sh/)
+2. `brew update`
+3. `brew install wine`
+4. Specify a Windows build in your settings (otherwise defaults to current platform (mac)).
+
+```json
+{
+  "electron": {
+    "builds": [
+      {"platform": "win32",
+       "arch": "ia32"}
+    ]
+  }
+}
+```
 
 ## Example
 
@@ -165,11 +172,8 @@ This package differs from [Electrometeor](https://github.com/sircharleswatson/El
 This makes things significantly simpler, but if you need strong offline support, one of them is a
 better solution.
 
-### Q: Can I modify the main process file or the NPM packages for the app?
-
-No. By maintaining control over the main process file, we are able to offer cross-platform builds. Allowing users to modify the main process file or NPM packages could easily break our build process.
-
-### Q: If I can't modify the main process file, how can I create new browser windows, set app notifications and all the other awesome native functionality that Electron gives me?
+### Q: How can I create new browser windows, set app notifications and all the other awesome native
+functionality that Electron gives me?
 
 This project selectively exposes such functionality to the client, in a way that is safe and avoids
 memory leaks, via the `Electron` module--see [`client.js`](client.js). To request that this module
