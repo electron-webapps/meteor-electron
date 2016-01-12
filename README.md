@@ -172,8 +172,7 @@ This package differs from [Electrometeor](https://github.com/sircharleswatson/El
 This makes things significantly simpler, but if you need strong offline support, one of them is a
 better solution.
 
-### Q: How can I create new browser windows, set app notifications and all the other awesome native
-functionality that Electron gives me?
+### Q: How can I create new browser windows, set app notifications and all the other awesome native functionality that Electron gives me?
 
 This project selectively exposes such functionality to the client, in a way that is safe and avoids
 memory leaks, via the `Electron` module--see [`client.js`](client.js). To request that this module
