@@ -97,7 +97,7 @@ Configuration is possible via `Meteor.settings.electron`. For example,
   <dd>Must be set to enable auto-updates on Mac.</dd>
   <dt>appSrcDir</dt>
   <dd>A directory of code to use instead of meteor-electron's default application, relative to your
-  app's project directory. See <a href="#q-if-i-cant-modify-the-main-process-file-how-can-i-create-new-browser-windows-set-app-notifications-and-all-the-other-awesome-native-functionality-that-electron-gives-me">warning</a>) below.</dd>
+  app's project directory. See <a href="#q-if-i-cant-modify-the-main-process-file-how-can-i-create-new-browser-windows-set-app-notifications-and-all-the-other-awesome-native-functionality-that-electron-gives-me">warning</a> below.</dd>
 </dl>
 
 ## Electron-specific code
