@@ -123,7 +123,8 @@ Set `Meteor.settings.electron.sign` to the name of that certificate.
 `YOUR_PROJECT_DIRECTORY/.meteor-electron/darwin-x64/final/YOUR_APP_NAME.zip` to a publically-accessible
 location.
 4. Set `downloadUrls.darwin` in `Meteor.settings.electron` to the URL of the location where you copied the ZIP.
-This URL will be served at `/app/download?platform=darwin`.
+
+Downloads of the Mac app will be served at your webapp's `ROOT_URL` + `/app/download?platform=darwin`.
 
 ### Building and serving an auto-updating Windows app
 
@@ -140,6 +141,8 @@ from that location.
 4. When you publish a new update, run the installer again and it will generate diffs, a new `RELEASES` file,
 and new installers. After copying these to `Meteor.settings.electron.downloadUrls.win32` again (overwriting
 the `RELEASES` file and installers), apps that check for updates should receive a new version.
+
+Downloads of the Windows installer will be served at your webapp's `ROOT_URL` + `/app/download?platform=win32`.
 
 ## Building for Windows on Mac
 
