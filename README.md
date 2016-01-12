@@ -73,7 +73,7 @@ Configuration is possible via `Meteor.settings.electron`. For example,
   <dt>icon</dt>
   <dd>platform dependent icon paths relative to application root</dd>
   <dt>version</dt>
-  <dd>must confirm to [semver](https://docs.npmjs.com/getting-started/semantic-versioning)</dd>
+  <dd>must confirm to <a href="https://docs.npmjs.com/getting-started/semantic-versioning">semver</a></dd>
   <dt>rootUrl</dt>
   <dd>If unset, defaults to the `APP_ROOT_URL` and then `ROOT_URL` environment variables, in that order.</dd>
   <dt>launchPath</dt>
@@ -81,11 +81,11 @@ Configuration is possible via `Meteor.settings.electron`. For example,
   <dt>downloadUrls</dt>
   <dd>URLs from which downloads are served. A CDN is recommended, but any HTTP server will do.</dd>
   <dt>downloadUrls.win32<dt>
-  <dd>Copy the output of `grunt-electron-installer` (see [Building and serving an auto-updating Windows app](#building-and-serving-an-auto-updating-windows-app)) to this location. Do not rename the files. If you wish to host the Windows
+  <dd>Copy the output of `grunt-electron-installer` (see <a href="#building-and-serving-an-auto-updating-windows-app">Building and serving an auto-updating Windows app</a>) to this location. Do not rename the files. If you wish to host the Windows
   installers at versioned URLs for caching or archival reasons, specify this as an object with the
   following keys.</dd>
   <dt>downloadUrls.win32.releases</dt>
-  <dd>Copy the output of `grunt-electron-installer` (see [Building and serving an auto-updating Windows app](#building-and-serving-an-auto-updating-windows-app)) to this location. Do not rename the files.</dd>
+  <dd>Copy the output of `grunt-electron-installer` (see <a href="#building-and-serving-an-auto-updating-windows-app">Building and serving an auto-updating Windows app</a>) to this location. Do not rename the files.</dd>
   <dt>downloadUrls.win32.installer</dt>
   <dd>If you like, you may copy the `Setup.exe` file created by `grunt-electron-installer` to this
   location rather than the "releases" location. If the URL contains '{{version}}', it will be
@@ -97,7 +97,7 @@ Configuration is possible via `Meteor.settings.electron`. For example,
   <dd>Must be set to enable auto-updates on Mac.</dd>
   <dt>appSrcDir</dt>
   <dd>A directory of code to use instead of meteor-electron's default application, relative to your
-  app's project directory. See [warning](#q-if-i-cant-modify-the-main-process-file-how-can-i-create-new-browser-windows-set-app-notifications-and-all-the-other-awesome-native-functionality-that-electron-gives-me) below.</dd>
+  app's project directory. See <a href="#q-if-i-cant-modify-the-main-process-file-how-can-i-create-new-browser-windows-set-app-notifications-and-all-the-other-awesome-native-functionality-that-electron-gives-me">warning</a>) below.</dd>
 </dl>
 
 ## Electron-specific code
