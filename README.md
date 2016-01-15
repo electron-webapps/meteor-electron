@@ -32,7 +32,7 @@ your Internet connection but only needs to be done once.
 
 The app, as well as the ready-to-distribute binaries (see [Deploy](#deploy)), is built within
 `YOUR_PROJECT_DIRECTORY/.meteor-electron`. This allows the apps to be easily located as well as the
-apps to be cached for speedier startup. You should add this directory to your `.gitignore`.
+builds to be cached for speedier startup. You should add this directory to your `.gitignore`.
 
 ## Configuration
 
