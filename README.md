@@ -24,7 +24,7 @@ and we will have addressed the above issues by that date.
 
 ## Getting Started
 
-`meteor add quark:electron`
+`meteor add meson:electron`
 
 meteor-electron will download the Electron binary for your system and build and launch an Electron
 app pointing to your local development server. The download process may take a few minutes based on
