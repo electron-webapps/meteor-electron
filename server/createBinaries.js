@@ -48,11 +48,15 @@ createBinaries = function() {
     builds = electronSettings.builds;
   } else {
     //just build for the current platform/architecture
-    // TODO(wearhere): Re-enable this once https://github.com/rissem/meteor-electron/issues/39 is
-    // fixed.
-    // builds = [{platform: process.platform, arch: process.arch}];
-    console.error('You must specify one or more builds in Meteor.settings.electron.');
-    return results;
+    if (process.platform === "darwin"){
+      builds = [{platform: process.platform, arch: process.arch}];
+    } else if (process.platform === "win32"){
+      //arch detection doesn't always work on windows, and ia32 works everywhere
+      builds = [{platform: process.platform, arch: "ia32"}];
+    } else {
+      console.error('You must specify one or more builds in Meteor.settings.electron.');
+      return results;
+    }
   }
 
   if (_.isEmpty(builds)) {
@@ -77,7 +81,7 @@ createBinaries = function() {
       // See http://stackoverflow.com/a/29745318/495611 for how the package asset directory is derived.
       // We can't read this from the project directory like the user-specified app directory since
       // we may be loaded from Atmosphere rather than locally.
-      resolvedAppSrcDir = path.join(process.cwd(), 'assets', 'packages', 'quark_electron', 'app');
+      resolvedAppSrcDir = path.join(process.cwd(), 'assets', 'packages', 'meson_electron', 'app');
     }
 
     // Check if the package.json has changed before copying over the app files, to account for

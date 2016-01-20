@@ -1,7 +1,7 @@
 /* global Package:false, Npm:false */
 
 Package.describe({
-  name: 'quark:electron',
+  name: 'meson:electron',
   summary: "Electron",
   version: "0.1.3",
   git: "https://github.com/rissem/meteor-electron"
@@ -58,7 +58,7 @@ Package.onUse(function (api) {
 });
 
 Package.onTest(function(api) {
-  api.use(['quark:electron', 'tinytest']);
+  api.use(['meson:electron', 'tinytest']);
 
   api.addFiles('tests/server/downloadUrlsTest.js', 'server');
 });
