@@ -11,17 +11,6 @@ Some of the things it does:
 
 ![](docs/overview.png)
 
-## Disclaimer
-
-If you're visiting from [the introductory blog post](https://mixmax.com/blog/turnkey-electron-apps-with-meteor),
-welcome! This package is already being used in production, but the documentation still needs a bit
-of work and it has not been published to Atmosphere yet. If you'd like to try it out, clone/copy it
-into your project's `packages` directory and then add it as in [Getting Started](#getting-started).
-
-We ([@rissem](https://twitter.com/rissem) and [@wearhere](https://twitter.com/wear_here)) are
-presenting about this at the [1/21 Meteor Night](http://www.meetup.com/Meteor-SFBay/events/227198908/)
-and we will have addressed the above issues by that date.
-
 ## Getting Started
 
 `meteor add meson:electron`
