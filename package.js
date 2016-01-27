@@ -21,7 +21,7 @@ Npm.depends({
 Package.onUse(function (api) {
   api.use(["mongo-livedata@1.0.9", "webapp@1.2.3", "ejson@1.0.7"], "server");
   api.use("underscore@1.0.4", ["server", "client"]);
-  api.use(["iron:router@0.9.4"], {weak: true});
+  api.use(["iron:router@0.9.4||1.0.0"], {weak: true});
 
   api.addFiles([
     'server/createBinaries.js',
