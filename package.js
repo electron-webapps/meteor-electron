@@ -15,11 +15,12 @@ Npm.depends({
   "ncp": "2.0.0",
   "rimraf": "2.4.4",
   "semver": "5.1.0",
-  "url-join": "0.0.1"
+  "url-join": "0.0.1",
+  "electron-rebuild": "1.0.1"
 });
 
 Package.onUse(function (api) {
-  api.use(["mongo-livedata@1.0.9", "webapp@1.2.3", "ejson@1.0.7"], "server");
+  api.use(["mongo-livedata@1.0.9", "webapp@1.2.3", "ejson@1.0.7", "promise@0.5.1"], "server");
   api.use("underscore@1.0.4", ["server", "client"]);
   api.use(["iron:router@0.9.4||1.0.0"], {weak: true});
 

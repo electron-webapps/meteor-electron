@@ -1,4 +1,5 @@
 var electronPackager = Meteor.wrapAsync(Npm.require("electron-packager"));
+var electronRebuild = Npm.require('electron-rebuild');
 var fs = Npm.require('fs');
 var mkdirp = Meteor.wrapAsync(Npm.require('mkdirp'));
 var path = Npm.require('path');
@@ -137,6 +138,14 @@ createBinaries = function() {
       writeFile(packageJSONPath(buildDirs.app), JSON.stringify(packageJSON));
 
       exec("npm install && npm prune", {cwd: buildDirs.app});
+
+      // Rebuild native modules if any.
+      // TODO(jeff): Start using the pre-gyp fix if someone asks for it, so we can make sure it works:
+      // https://github.com/electronjs/electron-rebuild#node-pre-gyp-workaround
+      Promise.await(electronRebuild.installNodeHeaders(ELECTRON_VERSION, null /* nodeDistUrl */,
+        null /* headersDir */, buildInfo.arch));
+      Promise.await(electronRebuild.rebuildNativeModules(ELECTRON_VERSION,
+        path.join(buildDirs.app, 'node_modules'), null /* headersDir */, buildInfo.arch));
     }
 
     /* Write out Electron Settings */
