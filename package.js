@@ -20,8 +20,8 @@ Npm.depends({
 });
 
 Package.onUse(function (api) {
-  api.use(["mongo-livedata@1.0.9", "webapp@1.2.3", "ejson@1.0.7", "promise@0.5.1"], "server");
-  api.use("underscore@1.0.4", ["server", "client"]);
+  api.use(["mongo-livedata", "webapp", "ejson", "promise"], "server");
+  api.use("underscore", ["server", "client"]);
   api.use(["iron:router@0.9.4||1.0.0"], {weak: true});
 
   api.addFiles([
@@ -35,14 +35,21 @@ Package.onUse(function (api) {
     'server/index.js'
   ], 'server');
 
-  api.addAssets([
+  var assets = [
     "app/autoUpdater.js",
     "app/main.js",
     "app/menu.js",
     "app/package.json",
     "app/preload.js",
     "app/proxyWindowEvents.js"
-  ], "server");
+  ];
+
+  // Use Meteor 1.2+ API, but fall back to the pre-1.2 API if necessary
+  if (api.addAssets) {
+    api.addAssets(assets, "server");
+  } else {
+    api.addFiles(assets, "server", {isAsset: true});
+  }
 
   api.addFiles(['client/index.js'], "client");
 
