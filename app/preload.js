@@ -67,19 +67,29 @@ ElectronImplementation = {
    * Invokes _callback_ when the specified IPC event is fired.
    *
    * @param {String} event - The name of an event.
-   * @param {Function} callback - A function to invoke when `event` is triggered. Takes no arguments
-   *   and returns no value.
+   * @param {Function} callback - A function to invoke when `event` is triggered. Called with
+   *   the signature (event, ...args) - see http://electron.atom.io/docs/v0.37.2/api/ipc-renderer/#sending-messages
    */
   onEvent: function(event, callback) {
     var listeners = this._eventListeners[event];
     if (!listeners) {
       listeners = this._eventListeners[event] = [];
-      ipc.on(event, function() {
-        _.invoke(listeners, 'call');
+      ipc.on(event, function(/* event, ...args */) {
+        _.invoke(listeners, 'apply', null, arguments);
       });
     }
     listeners.push(callback);
   },
 
-  _eventListeners: {}
+  _eventListeners: {},
+
+  /**
+   * Send an event to the main Electron process.
+   *
+   * @param {String} event - The name of an event.
+   * @param {...*} arg - additional arguments to pass to event handler.
+   */
+  sendIpcEvent: function(/* event , ...args */) {
+    ipc.send.apply(null, arguments);
+  },
 };
