@@ -24,6 +24,7 @@ Package.onUse(function (api) {
   api.use(["mongo-livedata", "webapp", "ejson", "promise"], "server");
   api.use("underscore", ["server", "client"]);
   api.use(["iron:router@0.9.4||1.0.0"], {weak: true});
+  api.use("meteorhacks:picker@1.0.0", "server", {weak: true});
 
   api.addFiles([
     'server/createBinaries.js',

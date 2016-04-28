@@ -3,6 +3,11 @@ serve = function(path, handler) {
     Package["iron:router"].Router.route(path, function(){
       handler(this.request, this.response, this.next);
     }, {where: "server"});
+  } else if (Package["meteorhacks:picker"]){
+    Package["meteorhacks:picker"].Picker.route(path, function(params, req, res, next){
+      req.query = params.query;
+      handler(req, res, next);
+    });
   } else {
     WebApp.rawConnectHandlers.use(function(req, res, next){
       if (req.path === path) {
@@ -20,6 +25,11 @@ serveDir = function(dir, handler){
     Package["iron:router"].Router.route(dir + "/:stuff", function(){
       handler(this.request, this.response, this.next);
     }, {where: "server"});
+  } else if (Package["meteorhacks:picker"]){
+    Package["meteorhacks:picker"].Picker.route(dir + "/:stuff", function(params, req, res, next){
+      req.query = params.query;
+      handler(req, res, next);
+    });
   } else {
     var regex = new RegExp("^" + dir);
     WebApp.rawConnectHandlers.use(function(req, res, next){
