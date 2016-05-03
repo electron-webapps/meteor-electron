@@ -27,7 +27,7 @@ Electron = {
    *
    * @param {String} url - The URL to open.
    */
-  openExternal: _.noop,
+  openExternal: function() {},
 
   /**
    * Determines if the browser window is currently in fullscreen mode.
@@ -40,7 +40,7 @@ Electron = {
    *
    * @return {Boolean} `true` if the browser window is in fullscreen mode, `false` otherwise.
    */
-  isFullScreen: _.noop,
+  isFullScreen: function() {},
 
   /**
    * Invokes _callback_ when the specified `BrowserWindow` event is fired.
@@ -52,7 +52,7 @@ Electron = {
    * @param {Function} callback - A function to invoke when `event` is triggered. Takes no arguments
    *   and returns no value.
    */
-  onWindowEvent: _.noop
+  onWindowEvent: function() {}
 };
 
 if (typeof ElectronImplementation !== 'undefined') {
