@@ -4,7 +4,7 @@ Package.describe({
   name: 'meson:electron',
   summary: "Electron",
   version: "0.1.3",
-  git: "https://github.com/rissem/meteor-electron"
+  git: "https://github.com/electron-webapps/meteor-electron"
 });
 
 Npm.depends({
