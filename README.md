@@ -5,7 +5,7 @@ to build `meteor add-platform desktop`.
 
 Some of the things it does:
 
-* automatically builds and launches a desktop application, rebuilding when code changes
+* automatically builds and launches a desktop application, rebuilding when the native code changes
 * defines feature detection APIs and a bridge between web and native code
 * serves downloads of your application and update feeds
 
@@ -100,6 +100,11 @@ if (!Electron.isDesktop()){
 ```
 
 ## Deploying
+
+Hot code push will work to update your app's UI just like it does on the web, since the app is loading the UI
+_from_ the web. If you want to update the part of the app that interfaces with the OS, though&mdash;to change
+the app icon, to add a menu bar icon, etc.&mdash;you'll need to distribute a new version of the `.app` or
+`.exe`. Here's how to do that.
 
 ### Building and serving an auto-updating Mac app
 
