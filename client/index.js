@@ -55,7 +55,9 @@ Electron = {
   onWindowEvent: function() {}
 };
 
-if (typeof ElectronImplementation !== 'undefined') {
+// Read `ElectronImplementation` from the window vs. doing `typeof ElectronImplementation` because
+// Meteor will shadow it with a local variable in the latter case.
+if (!_.isUndefined(window.ElectronImplementation)) {
   // The app is running in Electron. Merge the implementations from `preload.js`.
-  _.extend(Electron, ElectronImplementation);
+  _.extend(Electron, window.ElectronImplementation);
 }
