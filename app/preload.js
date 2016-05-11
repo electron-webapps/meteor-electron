@@ -89,7 +89,7 @@ ElectronImplementation = {
    * @param {String} event - The name of an event.
    * @param {...*} arg - additional arguments to pass to event handler.
    */
-  sendIpcEvent: function(/* event , ...args */) {
+  send: function(/* event , ...args */) {
     ipc.send.apply(null, arguments);
   },
 };
