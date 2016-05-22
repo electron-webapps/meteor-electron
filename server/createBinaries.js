@@ -1,5 +1,6 @@
 var electronPackager = Meteor.wrapAsync(Npm.require("electron-packager"));
 var electronRebuild = Npm.require('electron-rebuild');
+var meteorBuildClient = Meteor.wrapAsync(Npm.require('meteor-build-client'));
 var fs = Npm.require('fs');
 var mkdirp = Meteor.wrapAsync(Npm.require('mkdirp'));
 var path = Npm.require('path');
@@ -191,6 +192,21 @@ createBinaries = function() {
       buildRequired = true;
     }
 
+    if (electronSettings.autoPackage && electronSettings.bundleClient) {
+      console.error("Bundling meteor client to package offline app. This will take a while...");
+      meteorBuildClient({
+        input: projectRoot(),
+        output: buildDirs.web,
+        path: './',
+        settings: _.pick(Meteor.settings, 'public'),
+      });
+      buildRequired = true;
+    } else {
+      // remove bundled meteor client
+      rimraf(buildDirs.web);
+    }
+
+
     /* Create Build */
     if (buildRequired) {
       var build = electronPackager(packagerSettings)[0];
@@ -243,6 +259,9 @@ function createBuildDirectories(build){
   var appDir = path.join(workingDir, "apps");
   mkdirp(appDir);
 
+  // *webDir* holds the meteor client code which could be packaged for offline use
+  var webDir = path.join(appDir, "web");
+
   // *buildDir* contains the uncompressed apps
   var buildDir = path.join(workingDir, "builds");
   mkdirp(buildDir);
@@ -255,6 +274,7 @@ function createBuildDirectories(build){
     working: workingDir,
     binary: binaryDir,
     app: appDir,
+    web: webDir,
     build: buildDir,
     final: finalDir
   };

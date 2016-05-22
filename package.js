@@ -16,7 +16,8 @@ Npm.depends({
   "rimraf": "2.4.4",
   "semver": "5.1.0",
   "url-join": "0.0.1",
-  "electron-rebuild": "1.0.1"
+  "electron-rebuild": "1.0.1",
+  "meteor-build-client": "https://github.com/jarnoleconte/meteor-build-client/archive/2f470fc716544021ff9a98dca6c8f7610c736a48.tar.gz",
 });
 
 Package.onUse(function (api) {
