@@ -99,9 +99,14 @@ if (electronSettings.updateFeedUrl) {
   };
 }
 
-var launchUrl = electronSettings.rootUrl;
-if (electronSettings.launchPath) {
-  launchUrl += electronSettings.launchPath;
+var launchUrl;
+if (electronSettings.autoPackage && electronSettings.bundleClient) {
+  launchUrl = 'file://' + __dirname + '/web/index.html';
+} else {
+  launchUrl = electronSettings.rootUrl;
+  if (electronSettings.launchPath) {
+    launchUrl += electronSettings.launchPath;
+  }
 }
 
 var windowOptions = {
