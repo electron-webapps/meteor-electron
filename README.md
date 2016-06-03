@@ -31,6 +31,7 @@ Configuration is possible via `Meteor.settings.electron`. For example,
 {
   "electron": {
     "name": "MyApp",
+    "title": "MyApp",
     "icon": {
       "darwin": "private/MyApp.icns",
       "win32": "private/MyApp.ico"
@@ -46,6 +47,8 @@ Configuration is possible via `Meteor.settings.electron`. For example,
     "sign": "Developer ID Application: ...",
     "height": 768,
     "width": 1024,
+    "x": 100,
+    "y": 75,
     "frame": true,
     "title-bar-style": "hidden",
     "resizable": true,

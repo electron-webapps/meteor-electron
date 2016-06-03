@@ -147,6 +147,18 @@ if (electronSettings.maxHeight) {
   windowOptions.maxHeight = electronSettings.maxHeight;
 }
 
+if (electronSettings.title) {
+  windowOptions.title = electronSettings.title;
+}
+
+if (electronSettings.x) {
+  windowOptions.x = electronSettings.x;
+}
+
+if (electronSettings.y) {
+  windowOptions.y = electronSettings.y;
+}
+
 if (electronSettings.frame === false){
   windowOptions.frame = false;
 }
