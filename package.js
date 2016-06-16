@@ -16,7 +16,12 @@ Npm.depends({
   "rimraf": "2.4.4",
   "semver": "5.1.0",
   "url-join": "0.0.1",
-  "electron-rebuild": "1.0.1"
+  "electron-rebuild": "1.0.1",
+  "electron-installer-redhat": "0.2.0",
+  "electron-installer-debian": "0.3.0",
+  "async": "2.0.0-rc.6",
+  "fs-extra": "0.30.0",
+  "bizzby-lsb-release": "0.2.0"
 });
 
 Package.onUse(function (api) {

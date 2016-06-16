@@ -10,7 +10,10 @@ serve = function(path, handler) {
     });
   } else {
     WebApp.rawConnectHandlers.use(function(req, res, next){
-      if (req.path === path) {
+      if (req._parsedUrl.query) {
+        req.query = Npm.require('querystring').parse(req._parsedUrl.query);
+      }
+      if (req._parsedUrl.pathname === path) {
         handler(req, res, next);
       } else {
         next();

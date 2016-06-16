@@ -41,10 +41,7 @@ launchApp = function(app, appIsNew) {
   }
 
   var electronExecutable, child;
-  if (process.platform === 'win32') {
-    electronExecutable = app;
-    child = proc.spawn(electronExecutable);
-  } else {
+  if (process.platform === 'darwin') {
     electronExecutable = path.join(app, "Contents", "MacOS", "Electron");
     var appDir = path.join(app, "Contents", "Resources", "app");
 
@@ -52,6 +49,9 @@ launchApp = function(app, appIsNew) {
     //app dir don't exist
 
     child = proc.spawn(electronExecutable, [appDir]);
+  } else {
+    electronExecutable = app;
+    child = proc.spawn(electronExecutable);
   }
 
   child.stdout.on("data", function(data){

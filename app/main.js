@@ -2,6 +2,11 @@ var app = require('electron').app; // Module to control application life.
 var childProcess = require("child_process");
 var path = require("path");
 var fs = require("fs");
+const util = require('util');
+const nativeImage = require('electron').nativeImage;
+const _ = require('underscore');
+const Tray = require('electron').Tray;
+const Menu = require('electron').Menu;
 
 // var log = function(msg){
 //   fs.appendFile("C:\\Users\\Michael\\electron.log", msg + "\n", function(err){
@@ -78,8 +83,6 @@ if (handleStartupEvent()) {
 
 var BrowserWindow = require('electron').BrowserWindow; // Module to create native browser window.
 var autoUpdater = require('./autoUpdater');
-var path = require("path");
-var fs = require("fs");
 var createDefaultMenu = require('./menu.js');
 var proxyWindowEvents = require('./proxyWindowEvents');
 
@@ -92,7 +95,19 @@ var electronSettings = JSON.parse(fs.readFileSync(
 
 var checkForUpdates;
 if (electronSettings.updateFeedUrl) {
-  autoUpdater.setFeedURL(electronSettings.updateFeedUrl + '?version=' + electronSettings.version);
+  autoUpdater.setFeedURL(util.format('%s?version=%s&platform=%s',
+    electronSettings.updateFeedUrl, electronSettings.version, process.platform));
+  if (process.platform === 'linux') {
+    var packageJSON = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'), 'utf-8'));
+    autoUpdater.setup({
+      feedUrl: electronSettings.updateFeedUrl,
+      format: electronSettings.format,
+      platform: process.platform,
+      version: electronSettings.version,
+      name: packageJSON.name,
+      productName: packageJSON.productName
+    });
+  }
   autoUpdater.checkForUpdates();
   checkForUpdates = function() {
     autoUpdater.checkForUpdates(true /* userTriggered */);
@@ -151,6 +166,13 @@ if (electronSettings.frame === false){
   windowOptions.frame = false;
 }
 
+// Linux icon: See https://github.com/electron-userland/electron-packager/issues/90
+var baseIcon;
+if (process.platform === 'linux' && electronSettings.icon && electronSettings.icon[process.platform]) {
+  baseIcon = path.resolve(__dirname, _.values(electronSettings.icon[process.platform])[0]);
+  windowOptions.icon = baseIcon;
+}
+
 // Keep a global reference of the window object so that it won't be garbage collected
 // and the window closed.
 var mainWindow = null;
@@ -162,6 +184,10 @@ var getMainWindow = function() {
 // window is available to be passed directly to `createDefaultMenu`.
 createDefaultMenu(app, getMainWindow, checkForUpdates);
 
+// Declare tray at global scope to avoid GC (or tray icon will disappear after some time!)
+// See https://github.com/electron/electron/issues/822
+var tray = null;
+
 app.on("ready", function(){
   mainWindow = new BrowserWindow(windowOptions);
   proxyWindowEvents(mainWindow);
@@ -172,6 +198,24 @@ app.on("ready", function(){
 
   mainWindow.focus();
   mainWindow.loadURL(launchUrl);
+
+  // When closing app in linux, it shows nowhere, so put an icon in the tray.
+  // Couldn't get it working with nativeImage, but only with absolute path.
+  if (process.platform === 'linux' && baseIcon) {
+    tray = new Tray(baseIcon);
+    tray.setToolTip(electronSettings.name);
+    var trayContextMenu = Menu.buildFromTemplate([
+      {
+        label: 'Show ' + electronSettings.name,
+        click: function() { mainWindow.show(); }
+      },
+      {
+        label: 'Quit',
+        click: function() { app.quit(); }
+      }
+    ]);
+    tray.setContextMenu(trayContextMenu);
+  }
 });
 
 var hideInsteadofClose = function(e) {
