@@ -187,5 +187,7 @@ app.on("before-quit", function(){
 
 app.on("activate", function(){
   // Show the main window when the customer clicks on the app icon.
-  if (!mainWindow.isVisible()) mainWindow.show();
+  if (mainWindow && !mainWindow.isVisible()) {
+    mainWindow.show();
+  }
 });
