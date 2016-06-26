@@ -15,18 +15,23 @@ UPDATE_FEED_PATH = "/app/latest";
 
 serveUpdateFeed = function() {
   // https://github.com/Squirrel/Squirrel.Mac#server-support
-  if (canServeUpdates("darwin")){
+  if (canServeUpdates('darwin') || canServeUpdates('linux')) {
     serve(UPDATE_FEED_PATH, function(req, res, next) {
       var appVersion = req.query.version;
-      if (semver.valid(appVersion) && semver.gte(appVersion, latestVersion)) {
+      var appPlatform = req.query.platform;
+      var appFormat = req.query.format;
+      if (!appPlatform || (appPlatform === 'linux' && (!appFormat || !DOWNLOAD_URLS[appPlatform][appFormat]))) {
+        res.statusCode = 400; // Bad request (missing parameters).
+        res.end();
+      } else if (semver.valid(appVersion) && semver.gte(appVersion, latestVersion)) {
         res.statusCode = 204; // No content.
         res.end();
       } else {
+        var url = (appPlatform === 'linux')
+          ? DOWNLOAD_URLS[appPlatform][appFormat] : DOWNLOAD_URLS[appPlatform];
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify({
-          url: DOWNLOAD_URLS['darwin']
-        }));
+        res.end(JSON.stringify({ url: url }));
       }
     });
   }

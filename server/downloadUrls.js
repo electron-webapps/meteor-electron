@@ -1,4 +1,6 @@
 var urlJoin = Npm.require('url-join');
+var util = Npm.require('util');
+var url = Npm.require('url');
 
 // Global for tests.
 parseMacDownloadUrl = function(electronSettings) {
@@ -52,12 +54,67 @@ parseWindowsDownloadUrls = function(electronSettings) {
   };
 };
 
+// Global for tests.
+parseLinuxDownloadUrls = function(electronSettings) {
+  var platform = 'linux';
+  if (!electronSettings || !electronSettings.downloadUrls || !electronSettings.downloadUrls[platform]) return;
+
+  return parseUrlVariables(electronSettings, platform,
+    electronSettings.downloadUrls[platform].formats || ['deb', 'rpm']);
+};
+
 function cachebustedUrl(url) {
   var querySeparator = (url.indexOf('?') > -1) ? '&' : '?';
   return url + querySeparator + 'cb=' + Date.now();
 }
 
+function parseUrlVariables(settings, platform, formats) {
+  if (_.isObject(settings.downloadUrls[platform])) {
+    formats = Object.keys(settings.downloadUrls[platform]);
+  }
+
+  var urls, urlsByFormat = _.isObject(settings.downloadUrls[platform]);
+  var replaces = {
+    arch: settings.arch || 'amd64',
+    ext: 'zip',
+    name: settings.name.toLowerCase().replace(/\s/g, '-') || 'electron',
+    platform: platform,
+    rootUrl: settings.rootUrl || process.env.ROOT_URL.slice(0, -1),
+    version: settings.version
+  };
+
+  if (_.isArray(formats)) {
+    urls = {};
+    _.each(formats, function(format) {
+      var url = urlsByFormat ? settings.downloadUrls[platform][format] : settings.downloadUrls[platform];
+      if (url) {
+        replaces.ext = format;
+        urls[format] = replaceUrlTokens(url, replaces);
+      } else {
+        console.warn(util.format('Missing download url for %s format on %s platform', format, platform));
+      }
+    });
+  } else if (_.isString(settings.downloadUrls[platform])) {
+    urls = replaceUrlTokens(settings.downloadUrls[platform], replaces);
+  } else {
+    console.warn(util.format('Cannot parse %s url because of provided value is not a string', platform));
+  }
+
+  return urls;
+}
+
+function replaceUrlTokens(parsedUrl, replaces) {
+  Object.keys(replaces).forEach(function(token) {
+    parsedUrl = parsedUrl.replace(new RegExp(util.format('{{%s}}', token), 'g'), replaces[token]);
+  });
+  if (!/^https?:\/\//.test(url)) {
+    parsedUrl = url.resolve(replaces.rootUrl, parsedUrl);
+  }
+  return parsedUrl;
+}
+
 DOWNLOAD_URLS = {
   darwin: parseMacDownloadUrl(Meteor.settings.electron),
+  linux: parseLinuxDownloadUrls(Meteor.settings.electron),
   win32: parseWindowsDownloadUrls(Meteor.settings.electron)
 };

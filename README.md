@@ -33,6 +33,12 @@ Configuration is possible via `Meteor.settings.electron`. For example,
     "name": "MyApp",
     "icon": {
       "darwin": "private/MyApp.icns",
+      "linux": {
+        "48x48": "private/MyApp48.png",
+        "64x64": "private/MyApp64.png",
+        "128x128": "private/MyApp128.png",
+        "256x256": "private/MyApp256.png",
+      },
       "win32": "private/MyApp.ico"
     },
     "version": "0.1.0",
@@ -41,7 +47,17 @@ Configuration is possible via `Meteor.settings.electron`. For example,
     "launchPath": "/app/landing",
     "downloadUrls": {
       "win32": "https://myapp.com/download/win/",
+      "linux": {
+        "deb": "/download/{{platform}}/{{version}}/{{name}}_{{version}}_{{arch}}.deb",
+        "rpm": "/download/{{platform}}/{{version}}/{{name}}-{{version}}.{{arch}}.rpm"
+      },
       "darwin": "https://myapp.com/download/osx/{{version}}/MyApp.zip"
+    },
+    "installer": {
+      "linux": {
+        "license": "MIT",
+        "maintainer": "electron-webapps"
+      }
     },
     "sign": "Developer ID Application: ...",
     "height": 768,
@@ -60,15 +76,16 @@ Configuration is possible via `Meteor.settings.electron`. For example,
 
 <dl>
   <dt>icon</dt>
-  <dd>platform dependent icon paths relative to application root</dd>
+  <dd>platform dependent icon paths relative to Meteor application root (not `appSrcDir`).</dd>
+  <dd>For Linux installers you can provide either a string with the path to the icon file or an object for multiple resultions as in the example (learn more <a href="https://www.npmjs.com/package/electron-installer-debian#optionsicon">here</a>). For linux icons you can even provide absolute paths, as they are resolved successfully.
   <dt>version</dt>
-  <dd>must confirm to <a href="https://docs.npmjs.com/getting-started/semantic-versioning">semver</a></dd>
+  <dd>must confirm to <a href="https://docs.npmjs.com/getting-started/semantic-versioning">semver</a>.</dd>
   <dt>rootUrl</dt>
   <dd>If unset, defaults to the `APP_ROOT_URL` and then `ROOT_URL` environment variables, in that order.</dd>
   <dt>launchPath</dt>
   <dd>If you want your app to open to a non-root URL. Will be appended to the root URL.</dd>
   <dt>downloadUrls</dt>
-  <dd>URLs from which downloads are served. A CDN is recommended, but any HTTP server will do.</dd>
+  <dd>URLs from which downloads are served. A CDN is recommended, but any HTTP server will do. You can place the installers inside the `public` folder of your Meteor app if you want Meteor to serve them.</dd>
   <dt>downloadUrls.win32<dt>
   <dd>Copy the output of `grunt-electron-installer` (see <a href="#building-and-serving-an-auto-updating-windows-app">Building and serving an auto-updating Windows app</a>) to this location. Do not rename the files. If you wish to host the Windows
   installers at versioned URLs for caching or archival reasons, specify this as an object with the
@@ -82,11 +99,34 @@ Configuration is possible via `Meteor.settings.electron`. For example,
   <dt>downloadUrls.darwin</dt>
   <dd>Place the latest app at this location. If the URL contains '{{version}}', it will be replaced
   with `version`.</dd>
+  <dt>downloadUrls.linux</dt>
+  <dd>Place the latest app at this location. The URL may contain some variables to be dynamically replaced:</dd>
+  <dd>- `{{ext}}`: defaults to `["deb", "rpm"]`.</dd>
+  <dd>- `{{name}}`: defaults to sanitized (lowercased and hyphenated) `Meteor.settings.electron.name`, or `electron` if none provided.</dd>
+  <dd>- `{{platform}}`: defaults to the platform under process (`linux` because of `Meteor.settings.downloadUrls.linux`.</dd>
+  <dd>- `{{version}}`: defaults to `Meteor.settings.electron.version`.</dd>
+  <dd>`Meteor.settings.rootUrl` or `ROOT_URL`, defaulting in that order, is automatically prepended to the download URL(s) if it does not start with `http://` or `https://`.</dd>
+  <dd>This value can be of two types: string or object. There can exist multiple different Linux systems (`deb` or `rpm` at this moment), so you can provide a generic URL pattern to build all the URLs (string) or you can provide an object with the format as key and the pattern as value. You can read more about this  <a href="#q-how-do-i-set-the-download-urls-for-linux">below</a>.</dd>
   <dt>sign</dt>
   <dd>Must be set to enable auto-updates on Mac.</dd>
   <dt>appSrcDir</dt>
   <dd>A directory of code to use instead of meteor-electron's default application, relative to your
   app's project directory. See <a href="#q-if-i-cant-modify-the-main-process-file-how-can-i-create-new-browser-windows-set-app-notifications-and-all-the-other-awesome-native-functionality-that-electron-gives-me">warning</a> below.</dd>
+  <dt>installer</dt>
+  <dd>Use it to provide additional parameters to the installer builders.</dd>
+  <dt>installer.linux</dt>
+  <dd>Use it to provide additional parameters to the linux installer builders. You can learn about the extra parameters reading the docs of the involved NPM packages: <a href="https://www.npmjs.com/package/electron-installer-debian">electron-installer-debian</a> for `.deb` packages, and <a href="https://www.npmjs.com/package/electron-installer-redhat">electron-installer-redhat</a> for `.rpm` packages.</dd>
+  <dd>When building `rpm` packages:</dd>
+  <dd>- The `license` parameter is required.</dd>
+  <dd>- `rpm` package is required when building from debian-based systems.</dd>
+  <dd>When building `deb` packages:</dd>
+  <dd>- The parameter `maintainer` is recommended to be provided.</dd>
+  <dd>- `fakeroot` package is required when building from debian-based systems.</dd>
+  <dd>Please, provide feedback to complete this section if you try to build linux installers from other linux systems (i.e., redhat-based) and/or platforms (Mac/Windows).</dd>
+  <dt>autoBuild</dt>
+  <dd>Prevent the Electorn app from automatically being built and launched when set to `false`.</dd>
+  <dt>autoPackage</dt>
+  <dd>Set to `true` to ZIP the Electron app for distribution.</dd>
 </dl>
 
 ## Electron-specific code
@@ -137,6 +177,17 @@ and new installers. After copying these to `Meteor.settings.electron.downloadUrl
 the `RELEASES` file and installers), apps that check for updates should receive a new version.
 
 Downloads of the Windows installer will be served at your webapp's `ROOT_URL` + `/app/download?platform=win32`.
+
+### Building and serving an auto-updating Linux app
+
+0. Make sure that you have specified `name`, `version`, `description`, `installer.linux.license` and `installer.linux.maintainer` in `Meteor.settings.electron`.
+2. Wait for the app to finish building and packaging, then copy `YOUR_PROJECT_DIRECTORY/.meteor-electron/linux-x64/final/{installer}` (where `{installer}` matches the name(s)/pattern(s) provided in `Meteor.settings.electron.downloadUrls.linux`) to a publically-accessible location.
+4. Set `downloadUrls.linux` in `Meteor.settings.electron` to the URL(s) of the location(s) where you copied the installer(s).
+
+Due to the different formats available for Linux, the download URLs will require an additional parameter `format`. Downloads of the Linux installers will be served at your webapp's `ROOT_URL` +:
+
+- `/app/download?platform=linux&format=deb` for the debian-based linux systems installer.
+- `/app/download?platform=linux&format=rpm` for the redhat-based linux systems installer.
 
 ## Building for Windows on Mac
 
@@ -191,3 +242,56 @@ so, `meteor-electron` will rebuild and relaunch the app.
 ### Q: How do I prevent the Electron app from being automatically built and launched?
 
 Set `Meteor.settings.electron.autoBuild` to `"false"`.
+
+### Q: How do I set the download URLs for Linux?
+
+You can provide a global pattern to automatically generate URLs for all the supported formats (deb/rpm at this moment) like this:
+
+```json
+{
+  "electron": {
+    ...
+    "name": "Wonderful Meteor App",
+    "version": "0.2.9",
+    "rootUrl": "https://myapp.com",
+    "downloadUrls": {
+      "linux": "/download/{{platform}}/{{version}}/{{name}}.{{ext}}",
+    }
+  }
+}
+```
+
+which produces:
+
+```html
+https://myapp.com/download/linux/0.2.9/wonderful-meteor-app.deb
+https://myapp.com/download/linux/0.2.9/wonderful-meteor-app.rpm
+```
+
+The other way you can set the download URLs is through an object:
+
+```json
+{
+  "electron": {
+    ...
+    "name": "Wonderful Meteor App",
+    "version": "0.2.9",
+    "rootUrl": "https://myapp.com",
+    "downloadUrls": {
+      "linux": {
+        "deb": "/download/{{platform}}/{{version}}/{{name}}_{{version}}_x64.deb",
+        "rpm": "/download/{{platform}}/{{version}}/redhat_{{name}}-{{version}}.x64.{{ext}}"
+      }
+    }
+  }
+}
+```
+
+which produces:
+
+```html
+https://myapp.com/download/linux/0.2.9/wonderful-meteor-app_0.2.9_x64.deb
+https://myapp.com/download/linux/0.2.9/redhat_wonderful-meteor-app-0.2.9.x64.rpm
+```
+
+Anyway, the generated installers will be automatically renamed after being built to match the final parsed URLs and placed into `YOUR_PROJECT_DIRECTORY/.meteor-electron/linux-x64/final/`.
