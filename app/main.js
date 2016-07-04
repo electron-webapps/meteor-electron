@@ -109,6 +109,7 @@ var windowOptions = {
   height: electronSettings.height || 600,
   resizable: true,
   frame: true,
+  title: app.getName(),
   /**
    * Disable Electron's Node integration so that browser dependencies like `moment` will load themselves
    * like normal i.e. into the window rather than into modules, and also to prevent untrusted client
