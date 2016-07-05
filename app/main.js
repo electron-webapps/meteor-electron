@@ -170,6 +170,10 @@ app.on("ready", function(){
   // more quickly.
   mainWindow.on('close', hideInsteadofClose);
 
+  if (electronSettings.maximize) {
+    mainWindow.maximize();
+  }
+
   mainWindow.focus();
   mainWindow.loadURL(launchUrl);
 });
