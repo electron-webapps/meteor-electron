@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var ipc = require('ipc-main');
+var ipc = require('electron').ipcMain;
 
 /**
  * Proxies `BrowserWindow` events to renderer processes as directed by those processes and in a way
