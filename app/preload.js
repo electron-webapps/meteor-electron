@@ -84,5 +84,8 @@ ElectronImplementation = {
 
   _eventListeners: {},
 
+  /**
+   * Expose Electrons desktopCapturer API used to enable screen capture.
+   */
   desktopCapturer: desktopCapturer,
 };

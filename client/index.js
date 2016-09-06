@@ -54,6 +54,9 @@ Electron = {
    */
   onWindowEvent: function() {},
 
+  /**
+   * Expose Electrons desktopCapturer API used to enable screen capture.
+   */
   desktopCapturer: {}
 };
 
