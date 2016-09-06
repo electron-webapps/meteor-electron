@@ -52,7 +52,12 @@ Electron = {
    * @param {Function} callback - A function to invoke when `event` is triggered. Takes no arguments
    *   and returns no value.
    */
-  onWindowEvent: function() {}
+  onWindowEvent: function() {},
+
+  /**
+   * Expose Electrons desktopCapturer API used to enable screen capture.
+   */
+  desktopCapturer: {}
 };
 
 // Read `ElectronImplementation` from the window vs. doing `typeof ElectronImplementation` because

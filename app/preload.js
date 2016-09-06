@@ -12,6 +12,7 @@ var _ = require('underscore');
 var ipc = require('electron').ipcRenderer;
 var remote = require('electron').remote;
 var shell = require('electron').shell;
+var desktopCapturer = require('electron').desktopCapturer;
 
 /**
  * Defines methods with which to extend the `Electron` module defined in `client.js`.
@@ -81,5 +82,10 @@ ElectronImplementation = {
     listeners.push(callback);
   },
 
-  _eventListeners: {}
+  _eventListeners: {},
+
+  /**
+   * Expose Electrons desktopCapturer API used to enable screen capture.
+   */
+  desktopCapturer: desktopCapturer,
 };
