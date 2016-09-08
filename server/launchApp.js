@@ -6,13 +6,13 @@ var ElectronProcesses = new Mongo.Collection("processes");
 
 var ProcessManager = {
   add: function(pid){
-    ElectronProcesses.insert({ pid: pid });
+    if (pid) ElectronProcesses.insert({ pid: pid });
   },
 
   running: function(){
     var runningProcess;
     ElectronProcesses.find().forEach(function(proc){
-      if (isRunning(proc.pid)){
+      if (proc.pid && isRunning(proc.pid)) {
         runningProcess = proc.pid;
       } else {
         ElectronProcesses.remove({ _id: proc._id });
@@ -27,31 +27,25 @@ var ProcessManager = {
   }
 };
 
-launchApp = function(app, appIsNew) {
+launchApp = function(buildResult) {
   // Safeguard.
-  if (process.env.NODE_ENV !== 'development') return;
+  if (process.env.NODE_ENV !== 'development' || !buildResult.buildRequired) return;
 
   var runningProcess = ProcessManager.running();
   if (runningProcess) {
-    if (!appIsNew) {
-      return;
-    } else {
       ProcessManager.stop(runningProcess);
-    }
   }
 
-  var electronExecutable, child;
+  var child;
   if (process.platform === 'win32') {
-    electronExecutable = app;
-    child = proc.spawn(electronExecutable);
+    child = proc.spawn(buildResult.electronExecutable);
   } else {
-    electronExecutable = path.join(app, "Contents", "MacOS", "Electron");
-    var appDir = path.join(app, "Contents", "Resources", "app");
+    var appDir = path.join(buildResult.app, "Contents", "Resources", "app");
 
     //TODO figure out how to handle case where electron executable or
     //app dir don't exist
 
-    child = proc.spawn(electronExecutable, [appDir]);
+    child = proc.spawn(buildResult.electronExecutable, [appDir]);
   }
 
   child.stdout.on("data", function(data){

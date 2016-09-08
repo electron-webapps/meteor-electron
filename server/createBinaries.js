@@ -35,7 +35,7 @@ var projectRoot = function(){
   }
 };
 
-var ELECTRON_VERSION = '0.36.7';
+var ELECTRON_VERSION = '1.3.5';
 
 var electronSettings = Meteor.settings.electron || {};
 
@@ -142,10 +142,12 @@ createBinaries = function() {
       // Rebuild native modules if any.
       // TODO(jeff): Start using the pre-gyp fix if someone asks for it, so we can make sure it works:
       // https://github.com/electronjs/electron-rebuild#node-pre-gyp-workaround
-      Promise.await(electronRebuild.installNodeHeaders(ELECTRON_VERSION, null /* nodeDistUrl */,
-        null /* headersDir */, buildInfo.arch));
+
+        // return installNodeHeaders('1.3.1')
+        //     .then(() => rebuildNativeModules('1.3.1', './node_modules'))
+        //     .then(() => preGypFixRun('./node_modules', true, pathToElectron));
       Promise.await(electronRebuild.rebuildNativeModules(ELECTRON_VERSION,
-        path.join(buildDirs.app, 'node_modules'), null /* headersDir */, buildInfo.arch));
+         path.join(buildDirs.app, 'node_modules'), null /* headersDir */, buildInfo.arch));
     }
 
     /* Write out Electron Settings */
@@ -216,9 +218,17 @@ createBinaries = function() {
       }
     }
 
+    var electronExecutable;
+    if (process.platform === 'win32') {
+      electronExecutable = app;
+    } else {
+      electronExecutable = path.join(app, "Contents", "MacOS", packagerSettings.name);
+    }
+
     results[buildInfo.platform + "-" + buildInfo.arch] = {
       app: app,
-      buildRequired: buildRequired
+      buildRequired: buildRequired,
+      electronExecutable: electronExecutable
     };
   });
 
