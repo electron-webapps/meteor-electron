@@ -9,33 +9,39 @@ var ProcessManager = {
     if (pid) ElectronProcesses.insert({ pid: pid });
   },
 
-  running: function(){
-    var runningProcess;
+  isRunning: function() {
+    var running = false;
     ElectronProcesses.find().forEach(function(proc){
-      if (proc.pid && isRunning(proc.pid)) {
-        runningProcess = proc.pid;
+      if (isRunning(proc.pid)) {
+        running = true;
       } else {
         ElectronProcesses.remove({ _id: proc._id });
       }
     });
-    return runningProcess;
+    return running;
   },
 
-  stop: function(pid) {
-    process.kill(pid);
-    ElectronProcesses.remove({ pid: pid });
+  stopAll: function() {
+    ElectronProcesses.find().forEach(function(proc){
+      isRunning(proc.pid) && process.kill(proc.pid);
+      ElectronProcesses.remove({ pid: proc.pid });
+    });
   }
 };
 
 launchApp = function(buildResult) {
   // Safeguard.
-  if (process.env.NODE_ENV !== 'development' || !buildResult.buildRequired) return;
+  if (process.env.NODE_ENV !== 'development') return;
 
-  var runningProcess = ProcessManager.running();
-  if (runningProcess) {
-      ProcessManager.stop(runningProcess);
+  var isRunning = ProcessManager.isRunning();
+  // if a process is running and something triggered a rebuild, close the app
+  if (isRunning && buildResult.buildRequired) {
+    ProcessManager.stopAll();
+    isRunning = false;
   }
 
+  // only start a process if no other process is currently running
+  if (isRunning) return;
   var child;
   if (process.platform === 'win32') {
     child = proc.spawn(buildResult.electronExecutable);
