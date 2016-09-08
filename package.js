@@ -8,8 +8,7 @@ Package.describe({
 });
 
 Npm.depends({
-  // "electron-packager": "https://github.com/mixmaxhq/electron-packager/archive/f511e2680efa39c014d8bedca872168e585f8daf.tar.gz",
-    "electron-packager": "7.5.1",
+  "electron-packager": "8.0.0",
   "is-running": "1.0.5",
   "lucy-dirsum": "https://github.com/mixmaxhq/lucy-dirsum/archive/08299b483cd0f79d18cd0fa1c5081dcab67c5649.tar.gz",
   "mkdirp": "0.5.1",
@@ -17,7 +16,7 @@ Npm.depends({
   "rimraf": "2.4.4",
   "semver": "5.1.0",
   "url-join": "0.0.1",
-  "electron-rebuild": "1.1.4"
+  "electron-rebuild": "1.2.1"
 });
 
 Package.onUse(function (api) {

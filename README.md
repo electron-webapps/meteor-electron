@@ -47,6 +47,7 @@ Configuration is possible via `Meteor.settings.electron`. For example,
     "height": 768,
     "width": 1024,
     "frame": true,
+    "maximize": true,
     "title-bar-style": "hidden",
     "resizable": true,
     "protocols": [{
