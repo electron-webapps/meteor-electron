@@ -1,66 +1,65 @@
-var isRunning = Meteor.wrapAsync(Npm.require("is-running"));
-var path = Npm.require('path');
-var proc = Npm.require('child_process');
+import _isRunning from 'is-running';
+import { spawn } from 'child_process';
+import path from 'path';
+import { Mongo } from 'meteor/mongo';
+import { Meteor } from 'meteor/meteor';
 
-var ElectronProcesses = new Mongo.Collection("processes");
+const isRunning = Meteor.wrapAsync(_isRunning);
+const ElectronProcesses = new Mongo.Collection('processes');
 
-var ProcessManager = {
-  add: function(pid){
-    ElectronProcesses.insert({ pid: pid });
+const ProcessManager = {
+  add: pid => {
+    if (pid) ElectronProcesses.insert({ pid });
   },
 
-  running: function(){
-    var runningProcess;
-    ElectronProcesses.find().forEach(function(proc){
-      if (isRunning(proc.pid)){
-        runningProcess = proc.pid;
+  isRunning: () => {
+    let running = false;
+    ElectronProcesses.find().forEach(proc => {
+      if (isRunning(proc.pid)) {
+        running = true;
       } else {
         ElectronProcesses.remove({ _id: proc._id });
       }
     });
-    return runningProcess;
+    return running;
   },
 
-  stop: function(pid) {
-    process.kill(pid);
-    ElectronProcesses.remove({ pid: pid });
-  }
+  stopAll: () => {
+    ElectronProcesses.find().forEach(proc => {
+      if (isRunning(proc.pid)) process.kill(proc.pid);
+      ElectronProcesses.remove({ pid: proc.pid });
+    });
+  },
 };
 
-launchApp = function(app, appIsNew) {
+const launchApp = buildInfo => {
   // Safeguard.
   if (process.env.NODE_ENV !== 'development') return;
+  // if we did not force a rebuild and an instance is already running there is nothing to do
+  if (!buildInfo.buildRequired && ProcessManager.isRunning()) return;
 
-  var runningProcess = ProcessManager.running();
-  if (runningProcess) {
-    if (!appIsNew) {
-      return;
-    } else {
-      ProcessManager.stop(runningProcess);
-    }
+  // close all instances
+  if (ProcessManager.isRunning()) {
+    ProcessManager.stopAll();
   }
 
-  var electronExecutable, child;
+  let binaryPath = null;
+  const args = [];
+
   if (process.platform === 'win32') {
-    electronExecutable = app;
-    child = proc.spawn(electronExecutable);
+    binaryPath = path.join(buildInfo.output, 'win-unpacked', `${buildInfo.name}.exe`);
+  } else if (process.platform === 'darwin') {
+    binaryPath = path.join(buildInfo.output, 'mac', `${buildInfo.name}.app`, 'Contents', 'MacOS', buildInfo.name);
+    args.push(path.join(buildInfo.output, 'mac', `${buildInfo.name}.app`, 'Resources'));
   } else {
-    electronExecutable = path.join(app, "Contents", "MacOS", "Electron");
-    var appDir = path.join(app, "Contents", "Resources", "app");
-
-    //TODO figure out how to handle case where electron executable or
-    //app dir don't exist
-
-    child = proc.spawn(electronExecutable, [appDir]);
+    throw new Error(`unsupported platform: ${process.platform}`);
   }
 
-  child.stdout.on("data", function(data){
-    console.log("ATOM:", data.toString());
-  });
-
-  child.stderr.on("data", function(data){
-    console.log("ATOM:", data.toString());
-  });
+  const child = spawn(binaryPath, args);
+  child.stdout.on('data', data => console.log('ATOM:', data.toString()));
+  child.stderr.on('data', data => console.error('ATOM:', data.toString()));
 
   ProcessManager.add(child.pid);
 };
+
+export default launchApp;

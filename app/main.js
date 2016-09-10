@@ -88,7 +88,7 @@ require('electron-debug')({
 });
 
 var electronSettings = JSON.parse(fs.readFileSync(
-  path.join(__dirname, "electronSettings.json"), "utf-8"));
+  path.join(__dirname, "package.json"), "utf-8"));
 
 var checkForUpdates;
 if (electronSettings.updateFeedUrl) {
@@ -109,6 +109,7 @@ var windowOptions = {
   height: electronSettings.height || 600,
   resizable: true,
   frame: true,
+  title: app.getName(),
   /**
    * Disable Electron's Node integration so that browser dependencies like `moment` will load themselves
    * like normal i.e. into the window rather than into modules, and also to prevent untrusted client
@@ -169,6 +170,10 @@ app.on("ready", function(){
   // Hide the main window instead of closing it, so that we can bring it back
   // more quickly.
   mainWindow.on('close', hideInsteadofClose);
+
+  if (electronSettings.maximize) {
+    mainWindow.maximize();
+  }
 
   mainWindow.focus();
   mainWindow.loadURL(launchUrl);
