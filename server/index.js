@@ -1,12 +1,15 @@
-var electronSettings = Meteor.settings.electron || {};
+/* eslint no-console: [2, { allow: ["error"] }] */
+import { Meteor } from 'meteor/meteor';
+import launchApp from './launchApp';
+import createBinaries from './createBinaries';
 
-if ((process.env.NODE_ENV === 'development') && (electronSettings.autoBuild !== false)) {
-  var buildResults = createBinaries();
-  var buildResultForThisPlatform = buildResults[process.platform + '-' + process.arch];
-  if (buildResultForThisPlatform) {
-    launchApp(buildResultForThisPlatform);
-  }
+const settings = Meteor.settings.electronBuilder || {};
+
+if (process.env.NODE_ENV === 'development') {
+  // Promise is returned
+  createBinaries
+    .then(packageJSON => {
+      if (packageJSON) launchApp(packageJSON);
+    })
+    .catch(err => console.error(err));
 }
-
-serveDownloadUrl();
-serveUpdateFeed();

@@ -1,4 +1,4 @@
-var _ = require('underscore');
+var _ = require('lodash');
 var ipc = require('electron').ipcMain;
 
 /**
@@ -36,7 +36,7 @@ var proxyWindowEvents = function(window) {
   // Clear our listeners when the page starts (re)loading i.e. its listeners have been purged.
   // TODO(wearhere): I'm not sure this is the right event for reload but it seems to work.
   window.webContents.on('did-start-loading', function() {
-    _.each(eventsObserved, function(listener, event) {
+    _.forEach(eventsObserved, function(listener, event) {
       window.removeListener(event, listener);
     });
     eventsObserved = {};

@@ -1,4 +1,4 @@
-var _ = require('underscore');
+var _ = require('lodash');
 var app = require('electron').app;
 var autoUpdater = require('electron').autoUpdater;
 var dialog = require('electron').dialog;
@@ -12,7 +12,7 @@ var Updater = function() {
   autoUpdater.on('update-downloaded', this._onUpdateDownloaded.bind(this));
 };
 
-_.extend(Updater.prototype, {
+_.assignIn(Updater.prototype, {
   setFeedURL: function(url) {
     autoUpdater.setFeedURL(url);
   },

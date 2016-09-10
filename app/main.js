@@ -88,7 +88,7 @@ require('electron-debug')({
 });
 
 var electronSettings = JSON.parse(fs.readFileSync(
-  path.join(__dirname, "electronSettings.json"), "utf-8"));
+  path.join(__dirname, "package.json"), "utf-8"));
 
 var checkForUpdates;
 if (electronSettings.updateFeedUrl) {

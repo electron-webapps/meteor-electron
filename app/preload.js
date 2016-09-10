@@ -8,7 +8,7 @@
  * In particular, do not save the following variables as properties of `ElectronImplementation`.
  * See https://github.com/atom/electron/issues/1753#issuecomment-104719851.
  */
-var _ = require('underscore');
+var _ = require('lodash');
 var ipc = require('electron').ipcRenderer;
 var remote = require('electron').remote;
 var shell = require('electron').shell;
