@@ -19,7 +19,7 @@ meteor-electron will download the Electron binary for your system and build and 
 app pointing to your local development server. The download process may take a few minutes based on
 your Internet connection but only needs to be done once.
 
-The app, as well as the ready-to-distribute binaries (see [Deploy](#deploy)), is built within
+The app, as well as the ready-to-distribute binaries (see [Deploy](#deploying)), is built within
 `YOUR_PROJECT_DIRECTORY/.meteor-electron`. This allows the apps to be easily located as well as the
 builds to be cached for speedier startup. You should add this directory to your `.gitignore`.
 
