@@ -3,14 +3,6 @@ var childProcess = require("child_process");
 var path = require("path");
 var fs = require("fs");
 
-// var log = function(msg){
-//   fs.appendFile("C:\\Users\\Michael\\electron.log", msg + "\n", function(err){
-//     if (err){
-//       throw err;
-//     }
-//   })
-// };
-
 var log = function(){};
 
 var installShortcut = function(callback){
@@ -120,7 +112,10 @@ var windowOptions = {
     nodeIntegration: false,
     // See comments at the top of `preload.js`.
     preload: path.join(__dirname, 'preload.js')
-  }
+  },
+
+  experimentalFeatures: electronSettings.experimentalFeatures,
+  blinkFeatures: electronSettings.blinkFeatures,
 };
 
 if (electronSettings.resizable === false){
@@ -163,6 +158,7 @@ var getMainWindow = function() {
 createDefaultMenu(app, getMainWindow, checkForUpdates);
 
 app.on("ready", function(){
+  console.log(`ELECTRON VERSION: ${process.versions.electron}\nCHROME VERSION: ${process.versions.chrome}`);
   mainWindow = new BrowserWindow(windowOptions);
   proxyWindowEvents(mainWindow);
 

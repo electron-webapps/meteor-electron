@@ -1,4 +1,4 @@
-var electronPackager = Meteor.wrapAsync(Npm.require("electron-packager"));
+var electronPackager = Meteor.wrapAsync(Npm.require('electron-packager'));
 var electronRebuild = Npm.require('electron-rebuild');
 var fs = Npm.require('fs');
 var mkdirp = Meteor.wrapAsync(Npm.require('mkdirp'));
@@ -12,48 +12,48 @@ var util = Npm.require('util');
 var rimraf = Meteor.wrapAsync(Npm.require('rimraf'));
 var ncp = Meteor.wrapAsync(Npm.require('ncp'));
 
-var exec = Meteor.wrapAsync(function(command, options, callback){
-  proc.exec(command, options, function(err, stdout, stderr){
-    callback(err, {stdout: stdout, stderr: stderr});
+var exec = Meteor.wrapAsync(function (command, options, callback) {
+  proc.exec(command, options, function (err, stdout, stderr) {
+    callback(err, { stdout: stdout, stderr: stderr });
   });
 });
 
-var exists = function(path) {
+var exists = function (path) {
   try {
     stat(path);
     return true;
-  } catch(e) {
+  } catch (e) {
     return false;
   }
 };
 
-var projectRoot = function(){
-  if (process.platform === "win32"){
-    return process.env.METEOR_SHELL_DIR.split(".meteor")[0];
+var projectRoot = function () {
+  if (process.platform === 'win32') {
+    return process.env.METEOR_SHELL_DIR.split('.meteor')[0];
   } else {
     return process.env.PWD;
   }
 };
 
-var ELECTRON_VERSION = '0.36.7';
+var ELECTRON_VERSION = '1.4.3';
 
 var electronSettings = Meteor.settings.electron || {};
 
 var IS_MAC = (process.platform === 'darwin');
 
 /* Entry Point */
-createBinaries = function() {
+createBinaries = function () {
   var results = {};
   var builds;
-  if (electronSettings.builds){
+  if (electronSettings.builds) {
     builds = electronSettings.builds;
   } else {
     //just build for the current platform/architecture
-    if (process.platform === "darwin"){
-      builds = [{platform: process.platform, arch: process.arch}];
-    } else if (process.platform === "win32"){
+    if (process.platform === 'darwin') {
+      builds = [{ platform: process.platform, arch: process.arch }];
+    } else if (process.platform === 'win32') {
       //arch detection doesn't always work on windows, and ia32 works everywhere
-      builds = [{platform: process.platform, arch: "ia32"}];
+      builds = [{ platform: process.platform, arch: 'ia32' }];
     } else {
       console.error('You must specify one or more builds in Meteor.settings.electron.');
       return results;
@@ -65,14 +65,14 @@ createBinaries = function() {
     return results;
   }
 
-  builds.forEach(function(buildInfo){
+  builds.forEach(function (buildInfo) {
     var buildRequired = false;
 
     var buildDirs = createBuildDirectories(buildInfo);
 
     /* Write out Electron application files */
     var appVersion = electronSettings.version;
-    var appName = electronSettings.name || "electron";
+    var appName = electronSettings.name || 'electron';
     var appDescription = electronSettings.description;
 
     var resolvedAppSrcDir;
@@ -82,7 +82,7 @@ createBinaries = function() {
       // See http://stackoverflow.com/a/29745318/495611 for how the package asset directory is derived.
       // We can't read this from the project directory like the user-specified app directory since
       // we may be loaded from Atmosphere rather than locally.
-      resolvedAppSrcDir = path.join(process.cwd(), 'assets', 'packages', 'meson_electron', 'app');
+      resolvedAppSrcDir = path.join(process.cwd(), 'assets', 'packages', 'meson_electron-modified', 'app');
     }
 
     // Check if the package.json has changed before copying over the app files, to account for
@@ -96,7 +96,7 @@ createBinaries = function() {
       name: appName && appName.toLowerCase().replace(/\s/g, '-'),
       productName: appName,
       description: appDescription,
-      version: appVersion
+      version: appVersion,
     });
     // Check if the package has changed before we possibly copy over the app source since that will
     // of course sync `package.json`.
@@ -113,8 +113,8 @@ createBinaries = function() {
         // Except node_modules from pruning since we prune that below.
         // TODO(wearhere): `rsync` also uses checksums to only copy what's necessary so theoretically we
         // could always `rsync` rather than checking if the directory's changed first.
-         exec(util.format('rsync -a --delete --force --filter="P node_modules" "%s" "%s"',
-          path.join(resolvedAppSrcDir, '/'), buildDirs.app));
+        exec(util.format('rsync -a --delete --force --filter="P node_modules" "%s" "%s"',
+         path.join(resolvedAppSrcDir, '/'), buildDirs.app));
       } else {
         // TODO(wearhere): More efficient sync on Windows (where `rsync` isn't available.)
         rimraf(buildDirs.app);
@@ -137,7 +137,7 @@ createBinaries = function() {
       rimraf(packageJSONPath(buildDirs.app));
       writeFile(packageJSONPath(buildDirs.app), JSON.stringify(packageJSON));
 
-      exec("npm install && npm prune", {cwd: buildDirs.app});
+      exec('npm install && npm prune', { cwd: buildDirs.app });
 
       // Rebuild native modules if any.
       // TODO(jeff): Start using the pre-gyp fix if someone asks for it, so we can make sure it works:
@@ -150,7 +150,7 @@ createBinaries = function() {
 
     /* Write out Electron Settings */
     var settings = _.defaults({}, electronSettings, {
-      rootUrl: process.env.ROOT_URL
+      rootUrl: process.env.ROOT_URL,
     });
 
     var signingIdentity = electronSettings.sign;
@@ -170,6 +170,7 @@ createBinaries = function() {
       if (signingIdentityRequiredAndMissing) {
         console.error('Developer ID signing identity is missing: remote updates will not work.');
       }
+
       buildRequired = true;
       writeFile(settingsPath(buildDirs.app), JSON.stringify(settings));
     }
@@ -194,7 +195,7 @@ createBinaries = function() {
     /* Create Build */
     if (buildRequired) {
       var build = electronPackager(packagerSettings)[0];
-      console.log("Build created for ", buildInfo.platform, buildInfo.arch, "at", build);
+      console.log('Build created for ', buildInfo.platform, buildInfo.arch, 'at', build);
     }
 
     /* Package the build for download if specified. */
@@ -203,7 +204,7 @@ createBinaries = function() {
     if (electronSettings.autoPackage && (buildInfo.platform === 'darwin')) {
       // The auto-updater framework only supports installing ZIP releases:
       // https://github.com/Squirrel/Squirrel.Mac#update-json-format
-      var downloadName = (appName || "app") + ".zip";
+      var downloadName = (appName || 'app') + '.zip';
       var compressedDownload = path.join(buildDirs.final, downloadName);
 
       if (buildRequired || !exists(compressedDownload)) {
@@ -212,43 +213,43 @@ createBinaries = function() {
         // - https://github.com/Squirrel/Squirrel.Mac/blob/8caa2fa2007b29a253f7f5be8fc9f36ace6aa30e/Squirrel/SQRLZipArchiver.h#L24
         // - https://github.com/jenslind/electron-release/blob/4a2a701c18664ec668c3570c3907c0fee72f5e2a/index.js#L109
         exec('ditto -ck --sequesterRsrc --keepParent "' + app + '" "' + compressedDownload + '"');
-        console.log("Downloadable created at", compressedDownload);
+        console.log('Downloadable created at', compressedDownload);
       }
     }
 
-    results[buildInfo.platform + "-" + buildInfo.arch] = {
+    results[buildInfo.platform + '-' + buildInfo.arch] = {
       app: app,
-      buildRequired: buildRequired
+      buildRequired: buildRequired,
     };
   });
 
   return results;
 };
 
-function createBuildDirectories(build){
+function createBuildDirectories(build) {
   // Use a predictable directory so that other scripts can locate the builds, also so that the builds
   // may be cached:
 
-  var workingDir = path.join(projectRoot(), '.meteor-electron', build.platform + "-" + build.arch);
+  var workingDir = path.join(projectRoot(), '.meteor-electron', build.platform + '-' + build.arch);
   mkdirp(workingDir);
 
   //TODO consider seeding the binaryDir from package assets so package
   //could work without an internet connection
 
   // *binaryDir* holds the vanilla electron apps
-  var binaryDir = path.join(workingDir, "releases");
+  var binaryDir = path.join(workingDir, 'releases');
   mkdirp(binaryDir);
 
   // *appDir* holds the electron application that points to a meteor app
-  var appDir = path.join(workingDir, "apps");
+  var appDir = path.join(workingDir, 'apps');
   mkdirp(appDir);
 
   // *buildDir* contains the uncompressed apps
-  var buildDir = path.join(workingDir, "builds");
+  var buildDir = path.join(workingDir, 'builds');
   mkdirp(buildDir);
 
   // *finalDir* contains zipped apps ready to be downloaded
-  var finalDir = path.join(workingDir, "final");
+  var finalDir = path.join(workingDir, 'final');
   mkdirp(finalDir);
 
   return {
@@ -256,14 +257,14 @@ function createBuildDirectories(build){
     binary: binaryDir,
     app: appDir,
     build: buildDir,
-    final: finalDir
+    final: finalDir,
   };
 }
 
-function getPackagerSettings(buildInfo, dirs){
+function getPackagerSettings(buildInfo, dirs) {
   var packagerSettings = {
     dir: dirs.app,
-    name: electronSettings.name || "Electron",
+    name: electronSettings.name || 'Electron',
     platform: buildInfo.platform,
     arch: buildInfo.arch,
     version: ELECTRON_VERSION,
@@ -273,13 +274,14 @@ function getPackagerSettings(buildInfo, dirs){
     // The EXE's `ProductName` is the preferred title of application shortcuts created by `Squirrel.Windows`.
     // If we don't set it, it will default to "Electron".
     'version-string': {
-      ProductName: electronSettings.name || 'Electron'
-    }
+      ProductName: electronSettings.name || 'Electron',
+    },
   };
 
   if (electronSettings.version) {
     packagerSettings['app-version'] = electronSettings.version;
   }
+
   if (electronSettings.icon) {
     var icon = electronSettings.icon[buildInfo.platform];
     if (icon) {
@@ -287,12 +289,15 @@ function getPackagerSettings(buildInfo, dirs){
       packagerSettings.icon = iconPath;
     }
   }
+
   if (electronSettings.sign) {
     packagerSettings.sign = electronSettings.sign;
   }
+
   if (electronSettings.protocols) {
     packagerSettings.protocols = electronSettings.protocols;
   }
+
   return packagerSettings;
 }
 
@@ -305,9 +310,10 @@ function settingsHaveChanged(settings, appDir) {
   var existingElectronSettings;
   try {
     existingElectronSettings = Npm.require(electronSettingsPath);
-  } catch(e) {
+  } catch (e) {
     // No existing settings.
   }
+
   return !existingElectronSettings || !_.isEqual(settings, existingElectronSettings);
 }
 
@@ -316,7 +322,7 @@ function appHasChanged(appSrcDir, workingDir) {
   var existingAppChecksum;
   try {
     existingAppChecksum = readFile(appChecksumPath, 'utf8');
-  } catch(e) {
+  } catch (e) {
     // No existing checksum.
   }
 
@@ -338,7 +344,7 @@ function packageJSONHasChanged(packageJSON, appDir) {
   var existingPackageJSON;
   try {
     existingPackageJSON = Npm.require(packagePath);
-  } catch(e) {
+  } catch (e) {
     // No existing package.
   }
 
@@ -350,7 +356,7 @@ function packagerSettingsHaveChanged(settings, workingDir) {
   var existingPackagerSettings;
   try {
     existingPackagerSettings = Npm.require(settingsPath);
-  } catch(e) {
+  } catch (e) {
     // No existing settings.
   }
 
@@ -367,7 +373,7 @@ function iconHasChanged(iconPath, workingDir) {
   var existingIconChecksum;
   try {
     existingIconChecksum = readFile(iconChecksumPath, 'utf8');
-  } catch(e) {
+  } catch (e) {
     // No existing checksum.
   }
 

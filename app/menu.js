@@ -1,12 +1,11 @@
-var BrowserWindow = require('browser-window');
-var Menu = require('menu');
+const { BrowserWindow, Menu } = require('electron');
 
 /**
  * Creates a default menu. Modeled after https://github.com/atom/electron/pull/1863, augmented with
  * the roles from https://github.com/atom/electron/blob/master/docs/api/menu.md.
  */
-var createDefaultMenu = function(app, getMainWindow, checkForUpdates) {
-  app.once('ready', function() {
+var createDefaultMenu = function (app, getMainWindow, checkForUpdates) {
+  app.once('ready', function () {
     var template;
     if (process.platform == 'darwin') {
       template = [
@@ -18,39 +17,39 @@ var createDefaultMenu = function(app, getMainWindow, checkForUpdates) {
               role: 'about',
             },
             {
-              type: 'separator'
+              type: 'separator',
             },
             {
               label: 'Services',
               role: 'services',
-              submenu: []
+              submenu: [],
             },
             {
-              type: 'separator'
+              type: 'separator',
             },
             {
               label: 'Hide ' + app.getName(),
               accelerator: 'Command+H',
-              role: 'hide'
+              role: 'hide',
             },
             {
               label: 'Hide Others',
               accelerator: 'Command+Shift+H',
-              role: 'hideothers'
+              role: 'hideothers',
             },
             {
               label: 'Show All',
-              role: 'unhide'
+              role: 'unhide',
             },
             {
-              type: 'separator'
+              type: 'separator',
             },
             {
               label: 'Quit',
               accelerator: 'Command+Q',
-              click: function() { app.quit(); }
+              click: function () { app.quit(); },
             },
-          ]
+          ],
         },
         {
           label: 'File',
@@ -58,19 +57,19 @@ var createDefaultMenu = function(app, getMainWindow, checkForUpdates) {
             {
               label: 'Refresh',
               accelerator: 'Command+R',
-              click: function() {
+              click: function () {
                 var focusedWindow = BrowserWindow.getFocusedWindow();
                 if (focusedWindow) {
                   focusedWindow.reload();
                 }
-              }
+              },
             },
             {
               label: 'Close',
               accelerator: 'Command+W',
-              role: 'close'
-            }
-          ]
+              role: 'close',
+            },
+          ],
         },
         {
           label: 'Edit',
@@ -78,37 +77,37 @@ var createDefaultMenu = function(app, getMainWindow, checkForUpdates) {
             {
               label: 'Undo',
               accelerator: 'Command+Z',
-              role: 'undo'
+              role: 'undo',
             },
             {
               label: 'Redo',
               accelerator: 'Shift+Command+Z',
-              role: 'redo'
+              role: 'redo',
             },
             {
-              type: 'separator'
+              type: 'separator',
             },
             {
               label: 'Cut',
               accelerator: 'Command+X',
-              role: 'cut'
+              role: 'cut',
             },
             {
               label: 'Copy',
               accelerator: 'Command+C',
-              role: 'copy'
+              role: 'copy',
             },
             {
               label: 'Paste',
               accelerator: 'Command+V',
-              role: 'paste'
+              role: 'paste',
             },
             {
               label: 'Select All',
               accelerator: 'Command+A',
-              role: 'selectall'
+              role: 'selectall',
             },
-          ]
+          ],
         },
         {
           label: 'Window',
@@ -116,47 +115,47 @@ var createDefaultMenu = function(app, getMainWindow, checkForUpdates) {
             {
               label: 'Minimize',
               accelerator: 'Command+M',
-              role: 'minimize'
+              role: 'minimize',
             },
             {
               label: 'Toggle Full Screen',
               accelerator: 'Ctrl+Command+F',
-              click: function() {
+              click: function () {
                 var focusedWindow = BrowserWindow.getFocusedWindow();
                 if (focusedWindow) {
                   focusedWindow.setFullScreen(!focusedWindow.isFullScreen());
                 }
-              }
+              },
             },
             {
-              type: 'separator'
+              type: 'separator',
             },
             {
               label: 'Main Window',
               accelerator: 'Command+1',
-              click: function() {
+              click: function () {
                 var mainWindow = getMainWindow();
                 if (mainWindow) {
                   mainWindow.show();
                 }
-              }
+              },
             },
             {
-              type: 'separator'
+              type: 'separator',
             },
             {
               label: 'Bring All to Front',
-              role: 'front'
+              role: 'front',
             },
-          ]
-        }
+          ],
+        },
       ];
 
       if (checkForUpdates) {
         // Add 'Check for Updates' below the 'About' menu item.
         template[0].submenu.splice(1, 0, {
           label: 'Check for Updates',
-          click: checkForUpdates
+          click: checkForUpdates,
         });
       }
     } else {
@@ -171,24 +170,24 @@ var createDefaultMenu = function(app, getMainWindow, checkForUpdates) {
             {
               label: '&Refresh',
               accelerator: 'Ctrl+R',
-              click: function() {
+              click: function () {
                 var focusedWindow = BrowserWindow.getFocusedWindow();
                 if (focusedWindow) {
                   focusedWindow.reload();
                 }
-              }
+              },
             },
             {
               label: '&Close',
               accelerator: 'Ctrl+W',
-              click: function() {
+              click: function () {
                 var focusedWindow = BrowserWindow.getFocusedWindow();
                 if (focusedWindow) {
                   focusedWindow.close();
                 }
-              }
+              },
             },
-          ]
+          ],
         },
         {
           label: '&Window',
@@ -196,24 +195,24 @@ var createDefaultMenu = function(app, getMainWindow, checkForUpdates) {
             {
               label: 'Toggle &Full Screen',
               accelerator: 'F11',
-              click: function() {
+              click: function () {
                 var focusedWindow = BrowserWindow.getFocusedWindow();
                 if (focusedWindow) {
                   focusedWindow.setFullScreen(!focusedWindow.isFullScreen());
                 }
-              }
-            }
-          ]
-        }
+              },
+            },
+          ],
+        },
       ];
 
       if (checkForUpdates) {
         // Add a separator and 'Check for Updates' at the bottom of the 'File' menu.
         template[0].submenu.push({
-          type: 'separator'
+          type: 'separator',
         }, {
           label: '&Check for Updates',
-          click: checkForUpdates
+          click: checkForUpdates,
         });
       }
     }
